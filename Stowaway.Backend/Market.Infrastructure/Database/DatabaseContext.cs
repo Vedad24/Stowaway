@@ -1,11 +1,42 @@
 ﻿using Market.Application.Abstractions;
+using Stowaway.Domain.Entities.Identity;
+using Stowaway.Domain.Entities.Sales;
+using Stowaway.Domain.Entities.Storage;
+using Stowaway.Domain.Entities.Storage.StorageIdentity;
 
 namespace Market.Infrastructure.Database;
 
 public partial class DatabaseContext : DbContext, IAppDbContext
 {
-    public DbSet<MarketUserEntity> Users => Set<MarketUserEntity>();
+    //Identity
+    public DbSet<UserEntity> Users => Set<UserEntity>();
+    public DbSet<RoleEntity> Roles => Set<RoleEntity>();
+    public DbSet<PermissionEntity> Permissions => Set<PermissionEntity>();
+    public DbSet<Permission_RoleEntity> PermissionRoles => Set<Permission_RoleEntity>();
     public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
+
+    //Sales
+    public DbSet<OrderEntity> OrderEntities => Set<OrderEntity>();
+    public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
+    public DbSet<OrderStatusEntity> OrderStatuses => Set<OrderStatusEntity>();
+
+    //Storage
+    public DbSet<Container_ItemEntity> ContainerItems => Set<Container_ItemEntity>();
+    public DbSet<ContainerEntity> ContainerEntities => Set<ContainerEntity>();
+    public DbSet<ContainerTypeEntity> ContainerTypes => Set<ContainerTypeEntity>();
+    public DbSet<Item_TagEntity> ItemTags => Set<Item_TagEntity>();
+    public DbSet<ItemEntity> Item => Set<ItemEntity>();
+    public DbSet<SupplierEntity> Suppliers => Set<SupplierEntity>();
+    public DbSet<TagEntity> Tags => Set<TagEntity>();
+    public DbSet<WarehouseEntity> Warehouses => Set<WarehouseEntity>();
+    public DbSet<ContainerStatusHistoryEntity> ContainerStatusHistories => Set<ContainerStatusHistoryEntity>();
+    public DbSet<ContainerStatusEntity> ContainerStatuses => Set<ContainerStatusEntity>();
+
+    //StorageIdentity
+    public DbSet<Warehouse_UserEntity> WarehouseUsers => Set<Warehouse_UserEntity>();
+    public DbSet<PriviledgeEntity> Priviledges => Set<PriviledgeEntity>();
+    public DbSet<PriviledgeGroupEntity> PriviledgeGroups => Set<PriviledgeGroupEntity>();
+    public DbSet<PriviledgeGroup_PriviledgeEntity> PriviledgeGroupsPriviledges => Set<PriviledgeGroup_PriviledgeEntity>();
 
     private readonly TimeProvider _clock;
     public DatabaseContext(DbContextOptions<DatabaseContext> options, TimeProvider clock) : base(options)
