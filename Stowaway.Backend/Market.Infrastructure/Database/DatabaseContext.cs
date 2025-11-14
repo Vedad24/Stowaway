@@ -4,8 +4,6 @@ namespace Market.Infrastructure.Database;
 
 public partial class DatabaseContext : DbContext, IAppDbContext
 {
-    public DbSet<WarehouseEntity> ProductCategories => Set<WarehouseEntity>();
-    public DbSet<ContainerEntity> Products => Set<ContainerEntity>();
     public DbSet<MarketUserEntity> Users => Set<MarketUserEntity>();
     public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
 

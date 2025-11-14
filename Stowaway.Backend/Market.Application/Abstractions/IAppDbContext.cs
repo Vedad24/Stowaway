@@ -3,8 +3,8 @@
 // Application layer
 public interface IAppDbContext
 {
-    DbSet<ContainerEntity> Products { get; }
-    DbSet<WarehouseEntity> ProductCategories { get; }
+    //DbSet<ContainerEntity> Containers { get; }
+    //DbSet<WarehouseEntity> Warehouses { get; }
     DbSet<MarketUserEntity> Users { get; }
     DbSet<RefreshTokenEntity> RefreshTokens { get; }
 

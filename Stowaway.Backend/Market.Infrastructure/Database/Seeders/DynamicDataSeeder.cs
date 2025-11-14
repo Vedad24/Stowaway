@@ -12,33 +12,33 @@ public static class DynamicDataSeeder
         // Osiguraj da baza postoji (bez migracija)
         await context.Database.EnsureCreatedAsync();
 
-        await SeedProductCategoriesAsync(context);
+        //await SeedProductCategoriesAsync(context);
         await SeedUsersAsync(context);
     }
 
-    private static async Task SeedProductCategoriesAsync(DatabaseContext context)
-    {
-        if (!await context.ProductCategories.AnyAsync())
-        {
-            context.ProductCategories.AddRange(
-                new WarehouseEntity
-                {
-                    Name = "Računari (demo)",
-                    IsEnabled = true,
-                    CreatedAtUtc = DateTime.UtcNow
-                },
-                new WarehouseEntity
-                {
-                    Name = "Mobilni uređaji (demo)",
-                    IsEnabled = true,
-                    CreatedAtUtc = DateTime.UtcNow
-                }
-            );
+    //private static async Task SeedProductCategoriesAsync(DatabaseContext context)
+    //{
+    //    if (!await context.Warehouses.AnyAsync())
+    //    {
+    //        context.Warehouses.AddRange(
+    //            new WarehouseEntity
+    //            {
+    //                Name = "Računari (demo)",
+    //                IsEnabled = true,
+    //                CreatedAtUtc = DateTime.UtcNow
+    //            },
+    //            new WarehouseEntity
+    //            {
+    //                Name = "Mobilni uređaji (demo)",
+    //                IsEnabled = true,
+    //                CreatedAtUtc = DateTime.UtcNow
+    //            }
+    //        );
 
-            await context.SaveChangesAsync();
-            Console.WriteLine("✅ Dynamic seed: product categories added.");
-        }
-    }
+    //        await context.SaveChangesAsync();
+    //        Console.WriteLine("✅ Dynamic seed: product categories added.");
+    //    }
+    //}
 
     /// <summary>
     /// Kreira demo korisnike ako ih još nema u bazi.

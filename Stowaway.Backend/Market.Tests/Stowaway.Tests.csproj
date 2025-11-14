@@ -30,4 +30,9 @@
     <ProjectReference Include="..\Market.Shared\Stowaway.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ProductCategoryTests\IntegrationTests\" />
+    <Folder Include="ProductCategoryTests\UnitTests\" />
+  </ItemGroup>
+
 </Project>
