@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace Stowaway.Domain.Entities.Storage
 {
-    [Table("Tag", Schema = "Storage")]
-
-    public class TagEntity
+    [Table("ContainerStatus", Schema = "Storage")]
+    public class ContainerStatusEntity
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Description { get; set; }
     }
 }

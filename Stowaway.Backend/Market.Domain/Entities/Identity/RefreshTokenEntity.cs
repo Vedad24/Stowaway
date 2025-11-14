@@ -1,9 +1,11 @@
 ﻿// RefreshTokenEntity.cs
 
 // RefreshTokenEntity.cs
+using System.ComponentModel.DataAnnotations.Schema;
 using Market.Domain.Common;
 
 namespace Market.Domain.Entities.Identity;
+[Table("RefreshToken", Schema = "Identity")]
 
 public sealed class RefreshTokenEntity : BaseEntity
 {

@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stowaway.Domain.Entities.Storage
+namespace Stowaway.Domain.Entities.Storage.StorageIdentity
 {
-    [Table("Tag", Schema = "Storage")]
-
-    public class TagEntity
+    [Table("PriviledgeGroup", Schema = "StorageIdentity")]
+    public class PriviledgeGroupEntity
     {
         public int Id { get; set; }
-        public string Name { get; set; }
     }
 }

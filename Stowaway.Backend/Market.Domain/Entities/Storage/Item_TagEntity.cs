@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Stowaway.Domain.Entities.Storage
 {
+    [Table("Item_Tag", Schema = "Storage")]
+
     public class Item_TagEntity
     {
         public int ItemId { get; set; }

@@ -1,12 +1,15 @@
-﻿using Stowaway.Domain.Entities.Storage;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Domain.Entities.Storage;
 
 namespace Stowaway.Domain.Entities.Sales
 {
+    [Table("OrderItem", Schema = "Sales")]
+
     public class OrderItemEntity
     {
         public int Id { get; set; }

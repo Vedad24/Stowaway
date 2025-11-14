@@ -1,9 +1,11 @@
 ﻿// MarketUserEntity.cs
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using Market.Domain.Common;
 using Stowaway.Domain.Entities.Identity;
-using System.Data;
 
 namespace Market.Domain.Entities.Identity;
+[Table("User", Schema = "Identity")]
 
 public sealed class UserEntity : BaseEntity
 {
