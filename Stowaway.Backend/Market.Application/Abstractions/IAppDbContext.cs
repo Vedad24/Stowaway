@@ -5,7 +5,7 @@ public interface IAppDbContext
 {
     //DbSet<ContainerEntity> Containers { get; }
     //DbSet<WarehouseEntity> Warehouses { get; }
-    DbSet<MarketUserEntity> Users { get; }
+    DbSet<UserEntity> Users { get; }
     DbSet<RefreshTokenEntity> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct);

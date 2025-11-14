@@ -4,7 +4,7 @@ namespace Market.Infrastructure.Database;
 
 public partial class DatabaseContext : DbContext, IAppDbContext
 {
-    public DbSet<MarketUserEntity> Users => Set<MarketUserEntity>();
+    public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
 
     private readonly TimeProvider _clock;
