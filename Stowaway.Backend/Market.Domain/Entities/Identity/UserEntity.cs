@@ -16,6 +16,7 @@ public sealed class UserEntity : BaseEntity
     //public bool IsEmployee { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
+    [ForeignKey(nameof(Role))]
     public Role? RoleId { get; set; }
     public RoleEntity? Role { get; set; }
     public int TokenVersion { get; set; } = 0;// For global revocation

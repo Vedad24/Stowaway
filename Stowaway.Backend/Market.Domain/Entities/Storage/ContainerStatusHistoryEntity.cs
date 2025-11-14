@@ -17,7 +17,7 @@ namespace Stowaway.Domain.Entities.Storage
         public int StatusId { get; set; }
         public ContainerStatusEntity Status {  get; set; }
         public int UserId { get; set; }
-        public UserEntity User { get; set; }
+        public UserEntity? User { get; set; }
         public DateTime Date {  get; set; }
     }
 }
