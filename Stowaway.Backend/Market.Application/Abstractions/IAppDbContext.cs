@@ -1,10 +1,13 @@
-﻿namespace Market.Application.Abstractions;
+﻿using Stowaway.Domain.Entities.Storage;
+
+namespace Market.Application.Abstractions;
 
 // Application layer
 public interface IAppDbContext
 {
     //DbSet<ContainerEntity> Containers { get; }
-    //DbSet<WarehouseEntity> Warehouses { get; }
+    DbSet<WarehouseEntity> Warehouses { get; }
+
     DbSet<UserEntity> Users { get; }
     DbSet<RefreshTokenEntity> RefreshTokens { get; }
 
