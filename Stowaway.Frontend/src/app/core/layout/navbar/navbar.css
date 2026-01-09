@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+.logoName{
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttons{
+    display: flex;
+    gap: 2rem;
+}
+
+.buttons button{
+    padding: 8px 12px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
