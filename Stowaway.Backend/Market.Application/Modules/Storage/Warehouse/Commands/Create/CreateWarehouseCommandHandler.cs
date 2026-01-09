@@ -14,7 +14,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Create
                 throw new ValidationException("Name is required.");
             }
 
-            bool exists = await ctx.Warehouses.AllAsync(x => x.Name == normalized, cancellationToken);
+            bool exists = await ctx.Warehouses.AnyAsync(x => x.Name == normalized, cancellationToken);
 
             if (exists) {
                 throw new Exception("Warehouse with this name already exists.");
