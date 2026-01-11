@@ -14,37 +14,31 @@ import { fileURLToPath } from 'url';
   styleUrl: './login-page.css',
 })
 export class LoginPage {
+  
   authService = inject(AuthService);
   currentUserService = inject(CurrentUserService);
   router = inject(Router);
+  
   tryLogin() {
-    //console.log('trying login');
+
     try{
 
       this.authService.login(this.loginForm.value.email!, this.loginForm.value.password!)
       .pipe(
+        
         catchError( err => { 
-          console.log('err')
           throw new Error('Login request failed: ' + err.message);
         }),
+
         tap((success) => {
-          console.log('TryLogin -> tap ->', success);
           if(success){
-            this.router.navigate(['']);
+            this.router.navigate(['']); 
           }
-        }),
-        
-      ) 
-      .subscribe(
-          //this.currentUserService.getUserFromStorage();
-          // console.log('Current user after login:');
-          // console.log(this.currentUserService._currentUser);
-        
-        //(success) => console.log('Login success:', success)
-      );
+        })
+      )
     }
     catch(error){
-      console.error('Error caught!', error);
+      console.error(error);
     }
   }
   

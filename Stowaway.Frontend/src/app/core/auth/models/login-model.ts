@@ -14,3 +14,10 @@ export interface LoginCommandDto
     expiresAtUtc : Date
 
 }
+
+export interface CurrentUserDto
+{
+    email: string;
+    roleId : number;
+    accessToken : string;
+}

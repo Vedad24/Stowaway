@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
-import { LoginCommandDto } from '../models/login-model';
-interface CurrentUserDto
-{
-    email: string;
-    roleId : number;
-    accessToken : string;
-}
+import { CurrentUserDto, LoginCommandDto } from '../models/login-model';
+
 
 @Injectable({
   providedIn: 'root',
@@ -19,14 +14,11 @@ export class CurrentUserService {
 
   initializeUser(response : LoginCommandDto, email : string)
   {
-    //console.log("Reponse as login command dto:", response)
     this._currentUser = {
       email : email,
       roleId : 1, //please for the love of God change this later
       accessToken : response.accessToken
     }
-    // console.log('Initialized current user:');
-    // console.log(this._currentUser);
     localStorage.setItem('currentUserStorage', JSON.stringify(this._currentUser));
   }
 
