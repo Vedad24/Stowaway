@@ -1,0 +1,17 @@
+<div class="flex items-center justify-center w-full">
+    <form [formGroup]="loginForm" class="flex flex-col items-center justify-center w-2xl">
+        <mat-form-field>
+            <mat-label>email</mat-label>
+            <input matInput
+            formControlName="email">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>password</mat-label>
+            <input
+            matInput
+            formControlName="password">
+        </mat-form-field>
+        <button matButton="outlined" type="submit" (submit)="tryLogin()" [disabled]="!loginForm.valid">Log in</button>
+    </form>
+</div>
+

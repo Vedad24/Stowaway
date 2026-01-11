@@ -54,7 +54,6 @@ public static class DynamicDataSeeder
         {
             Email = "admin@market.local",
             PasswordHash = hasher.HashPassword(null!, "Admin123!"),
-            
             IsEnabled = true,
         };
 

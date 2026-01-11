@@ -146,17 +146,9 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PermissionId1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId1")
-                        .HasColumnType("int");
-
                     b.HasKey("PermissionId", "RoleId");
 
-                    b.HasIndex("PermissionId1");
-
-                    b.HasIndex("RoleId1");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Permission_Role", "Identity");
                 });
@@ -587,13 +579,13 @@ namespace Stowaway.Infrastructure.Migrations
                 {
                     b.HasOne("Stowaway.Domain.Entities.Identity.PermissionEntity", "Permission")
                         .WithMany()
-                        .HasForeignKey("PermissionId1")
+                        .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Stowaway.Domain.Entities.Identity.RoleEntity", "Role")
                         .WithMany()
-                        .HasForeignKey("RoleId1")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -2,6 +2,7 @@
 using Market.API.Middleware;
 using Market.Application;
 using Market.Infrastructure;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Serilog;
 using System.Reflection;
 
@@ -48,7 +49,17 @@ public partial class Program
             builder.Services
                 .AddAPI(builder.Configuration, builder.Environment)
                 .AddInfrastructure(builder.Configuration, builder.Environment)
-                .AddApplication();
+                .AddApplication()
+                .AddCors(options =>
+                {
+                    options.AddPolicy("FrontendPolicy", policy =>
+                    {
+                        policy.WithOrigins("http://localhost:4200")
+                               .AllowAnyMethod()
+                               .AllowAnyHeader()
+                               .AllowCredentials();
+                    });
+                });
 
             //MediaR
             var assembly = Assembly.GetExecutingAssembly();
@@ -70,6 +81,11 @@ public partial class Program
             app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
             app.UseHttpsRedirection();
+
+            //CORS Policy 
+            app.UseCors("FrontendPolicy");
+            //\CORS Policy
+
             app.UseAuthentication();
             app.UseAuthorization();
 
