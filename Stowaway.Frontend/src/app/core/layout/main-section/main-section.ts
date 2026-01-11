@@ -39,6 +39,7 @@ export class MainSection
   ngOnInit() {
     this.initList();
   }
+  
   onSearchChange(searchTerm: string): void {
     this.request.search = searchTerm;
     this.request.paging.page = 1;
