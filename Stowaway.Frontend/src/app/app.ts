@@ -4,7 +4,7 @@ import { Core } from './core/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Core],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
