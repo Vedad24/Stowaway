@@ -27,6 +27,7 @@ export class Warehouse
     this.initList();
   }
   
+  //Loading all based on request
   protected override loadPagedData(): void {
     this.startLoading();
 

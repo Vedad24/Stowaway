@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment';
-import { CreateWarehouseCommand, GetWarehouseByIdDto, ListWarehouseQuery, ListWarehouseQueryResponse } from './warehouse.model';
+import { CreateWarehouseCommand, GetWarehouseByIdDto, ListWarehouseQuery, ListWarehouseQueryResponse, UpdateWarehouseCommand } from './warehouse.model';
 import { Observable } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
 import { ObjectEncodingOptions } from 'node:fs';
@@ -27,7 +27,7 @@ export class WarehouseApiService {
     return this.http.post<number>(this.baseUrl, payload);
   }
 
-  update(id: number, payload: CreateWarehouseCommand): Observable<void>{
+  update(id: number, payload: UpdateWarehouseCommand): Observable<void>{
     return this.http.put<void>(`${this.baseUrl}/${id}`, payload);
   }
 
