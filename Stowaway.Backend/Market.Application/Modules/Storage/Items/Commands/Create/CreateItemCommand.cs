@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Stowaway.Application.Modules.Storage.Supplier.Shared;
+
+namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
+{
+    public class CreateItemCommand : IRequest<int>
+    {
+        public string Name { get; init; }
+        public string Description { get; init; }
+        public byte[]? ByteImage { get; init; }
+        public int SupplierId { get; init; }
+    }
+}
