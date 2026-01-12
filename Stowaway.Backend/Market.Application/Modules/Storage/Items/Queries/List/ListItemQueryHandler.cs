@@ -32,6 +32,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 {
                     Id = x.Supplier.Id,
                     Name = x.Supplier.Name,
+                    Description = x.Supplier.Description,
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 }

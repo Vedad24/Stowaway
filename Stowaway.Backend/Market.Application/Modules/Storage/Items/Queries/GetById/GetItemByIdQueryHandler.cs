@@ -13,7 +13,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
     {
         public async Task<GetItemByIdQueryDto> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
         {
-            var q =ctx.Item.Where(x => x.Id == request.Id);
+            var q = ctx.Item.Where(x => x.Id == request.Id);
 
             var item = await q.Select(x => new GetItemByIdQueryDto
             {
@@ -25,6 +25,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
                 {
                     Id = x.Supplier.Id,
                     Name = x.Supplier.Name,
+                    Description = x.Supplier.Description,
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 }
