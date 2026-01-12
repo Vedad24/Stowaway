@@ -1,4 +1,6 @@
-﻿namespace Market.Infrastructure.Database.Seeders;
+﻿using Stowaway.Domain.Entities.Identity;
+
+namespace Market.Infrastructure.Database.Seeders;
 
 /// <summary>
 /// Dynamic seeder koji se pokreće u runtime-u,
@@ -13,6 +15,7 @@ public static class DynamicDataSeeder
         await context.Database.EnsureCreatedAsync();
 
         //await SeedProductCategoriesAsync(context);
+        await SeedRolesAsync(context);
         await SeedUsersAsync(context);
     }
 
@@ -43,6 +46,24 @@ public static class DynamicDataSeeder
     /// <summary>
     /// Kreira demo korisnike ako ih još nema u bazi.
     /// </summary>
+    
+    private static async Task SeedRolesAsync(DatabaseContext context)
+    {
+        if (await context.Roles.AnyAsync())
+            return;
+        var roleAdmin = new RoleEntity
+        {
+            Id = Role.Admin
+        };
+        var roleUser = new RoleEntity
+        {
+            Id = Role.User
+        };
+        context.Roles.AddRange(roleAdmin, roleUser);
+        await context.SaveChangesAsync();
+
+        Console.WriteLine("✅ Dynamic seed: demo roles added.");
+    }
     private static async Task SeedUsersAsync(DatabaseContext context)
     {
         if (await context.Users.AnyAsync())

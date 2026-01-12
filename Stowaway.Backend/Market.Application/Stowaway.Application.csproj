@@ -20,4 +20,10 @@
     <ProjectReference Include="..\Market.Shared\Stowaway.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules\Identity\Commands\Delete\" />
+    <Folder Include="Modules\Identity\Commands\Update\" />
+    <Folder Include="Modules\Identity\Queries\List\" />
+  </ItemGroup>
+
 </Project>
