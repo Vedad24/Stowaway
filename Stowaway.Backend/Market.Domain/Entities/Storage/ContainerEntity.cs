@@ -18,6 +18,7 @@ namespace Stowaway.Domain.Entities.Storage
         public ContainerEntity? ParentContainer { get; set; }
         public int WarehouseId { get; set; }
         public WarehouseEntity? Warehouse { get; set; }
+        public ICollection<ItemEntity> Items { get; set; } = new List<ItemEntity>();
 
     }
 }

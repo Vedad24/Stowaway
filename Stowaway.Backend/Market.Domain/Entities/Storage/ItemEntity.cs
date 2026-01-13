@@ -17,10 +17,11 @@ namespace Stowaway.Domain.Entities.Storage
         public string Name { get; set; }
         public string Description { get; set; }
         public byte[]? ByteImage { get; set; } //Image....
-
+        public int Quantity { get; set; }
         public int SupplierId { get; set; }
         public SupplierEntity? Supplier { get; set; }
-
+        public int ContainerId { get; set; }
+        public ContainerEntity Container { get; set; }
 
     }
 }

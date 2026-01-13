@@ -4,6 +4,7 @@ using Market.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Stowaway.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20260113151635_addQuantityToItem")]
+    partial class addQuantityToItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -350,6 +353,24 @@ namespace Stowaway.Infrastructure.Migrations
                     b.ToTable("ContainerType", "Storage");
                 });
 
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.Container_ItemEntity", b =>
+                {
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContainerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("ItemId", "ContainerId");
+
+                    b.HasIndex("ContainerId");
+
+                    b.ToTable("Container_Item", "Storage");
+                });
+
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ItemEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -360,9 +381,6 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.Property<byte[]>("ByteImage")
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<int>("ContainerId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -379,8 +397,6 @@ namespace Stowaway.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ContainerId");
 
                     b.HasIndex("SupplierId");
 
@@ -670,21 +686,32 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ItemEntity", b =>
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.Container_ItemEntity", b =>
                 {
                     b.HasOne("Stowaway.Domain.Entities.Storage.ContainerEntity", "Container")
-                        .WithMany("Items")
+                        .WithMany()
                         .HasForeignKey("ContainerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Stowaway.Domain.Entities.Storage.ItemEntity", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Container");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ItemEntity", b =>
+                {
                     b.HasOne("Stowaway.Domain.Entities.Storage.SupplierEntity", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Container");
 
                     b.Navigation("Supplier");
                 });
@@ -776,11 +803,6 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Market.Domain.Entities.Identity.UserEntity", b =>
                 {
                     b.Navigation("RefreshTokens");
-                });
-
-            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ContainerEntity", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

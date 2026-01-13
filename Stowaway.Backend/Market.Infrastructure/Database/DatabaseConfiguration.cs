@@ -1,7 +1,8 @@
-﻿using Market.Domain.Common;
-using Market.Infrastructure.Database.Seeders;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Runtime.Intrinsics.X86;
+using Market.Domain.Common;
+using Market.Infrastructure.Database.Seeders;
+using Stowaway.Domain.Entities.Storage;
 
 namespace Market.Infrastructure.Database;
 
