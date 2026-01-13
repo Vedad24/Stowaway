@@ -1,0 +1,43 @@
+import { BasePagedQuery } from "../../../models/paging/base-paged-query";
+import { PageResult } from "../../../models/paging/page-result";
+
+export class ListItemQuery extends BasePagedQuery{
+    search?: string | null;
+}
+
+export interface SharedSupplierDto{
+    id: number,
+    name: string
+}
+
+export interface ListItemQueryDto {
+    id: number,
+    name: string,
+    description: string,
+    byteImage?: Blob,
+    supplier: SharedSupplierDto
+}
+
+export interface ListItemQueryResponse extends PageResult<ListItemQueryDto>{ }
+
+export interface GetItemByIdDto{
+    id: number,
+    name: string,
+    description: string,
+    byteImage?: Blob,
+    supplier: SharedSupplierDto
+}
+
+export interface CreateItemCommand{
+    name: string,
+    description: string,
+    byteImage?: Blob,
+    supplierId: number
+}
+
+export interface UpdateItemCommand{
+    name: string,
+    description: string,
+    byteImage?: Blob,
+    supplierId: number
+}

@@ -8,6 +8,9 @@ public interface IAppDbContext
     //DbSet<ContainerEntity> Containers { get; }
     DbSet<WarehouseEntity> Warehouses { get; }
 
+    DbSet<ItemEntity> Item { get; }
+    DbSet<SupplierEntity> Suppliers { get; }
+
     DbSet<UserEntity> Users { get; }
     DbSet<RefreshTokenEntity> RefreshTokens { get; }
 

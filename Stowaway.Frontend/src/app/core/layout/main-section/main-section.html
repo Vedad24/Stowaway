@@ -1,1 +1,7 @@
-<p>main-section works!</p>
+  <ul>
+    @for (w of this.items; track w.id) {
+      <li>
+        {{ w.name }}
+      </li>
+    }
+  </ul>
