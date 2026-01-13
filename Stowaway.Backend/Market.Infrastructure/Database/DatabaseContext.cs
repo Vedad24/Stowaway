@@ -21,8 +21,7 @@ public partial class DatabaseContext : DbContext, IAppDbContext
     public DbSet<OrderStatusEntity> OrderStatuses => Set<OrderStatusEntity>();
 
     //Storage
-    //public DbSet<Container_ItemEntity> ContainerItems => Set<Container_ItemEntity>();
-    public DbSet<ContainerEntity> ContainerEntities => Set<ContainerEntity>();
+    public DbSet<ContainerEntity> Containers => Set<ContainerEntity>();
     public DbSet<ContainerTypeEntity> ContainerTypes => Set<ContainerTypeEntity>();
     public DbSet<Item_TagEntity> ItemTags => Set<Item_TagEntity>();
     public DbSet<ItemEntity> Item => Set<ItemEntity>();

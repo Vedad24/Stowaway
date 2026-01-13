@@ -24,10 +24,17 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
                 throw new Exception($"Supplier with id: {request.Id} not found");
             }
 
+            var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id.Equals(request.ContainerId), cancellationToken);
+            if (container == null)
+            {
+                throw new Exception("Container does not exist");
+            }
+
             item.Name = request.Name;
             item.Description = request.Description;
             item.ByteImage = request.ByteImage;
             item.SupplierId = request.SupplierId;
+            item.ContainerId = request.ContainerId;
 
             await ctx.SaveChangesAsync(cancellationToken);
 

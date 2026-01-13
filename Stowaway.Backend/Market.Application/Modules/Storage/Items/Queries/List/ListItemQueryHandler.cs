@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Application.Modules.Storage.Supplier.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Items.Queries.List
@@ -35,7 +36,8 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     Description = x.Supplier.Description,
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
-                }
+                },
+                Container = new SharedContainerDto { Name  = x.Container.Name}
             });
 
             return await PageResult<ListItemQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);

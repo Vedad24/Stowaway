@@ -35,12 +35,19 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
                 throw new Exception("Supplier is not valid");
             }
 
+            var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id.Equals(request.ContainerId), cancellationToken);
+            if (container == null) 
+            {
+                throw new Exception("Container does not exist");
+            }
+
             var item = new ItemEntity
             {
                 Name = normalizedName,
                 Description = request.Description,
                 ByteImage = request.ByteImage,
-                SupplierId = request.SupplierId
+                SupplierId = request.SupplierId,
+                ContainerId = request.ContainerId,
             };
 
             ctx.Item.Add(item);

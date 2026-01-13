@@ -12,6 +12,7 @@ namespace Stowaway.Domain.Entities.Storage
     public class ContainerEntity
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public int ContainerTypeId { get; set; }
         public ContainerTypeEntity? ContainerType { get; set; }
         public int? ParentContainerId { get; set; }

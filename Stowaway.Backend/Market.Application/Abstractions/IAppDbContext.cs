@@ -7,7 +7,7 @@ public interface IAppDbContext
 {
     //DbSet<ContainerEntity> Containers { get; }
     DbSet<WarehouseEntity> Warehouses { get; }
-
+    DbSet<ContainerEntity> Containers { get; }
     DbSet<ItemEntity> Item { get; }
     DbSet<SupplierEntity> Suppliers { get; }
 
