@@ -35,7 +35,7 @@ export class LoginPage {
             this.router.navigate(['']); 
           }
         })
-      )
+      ).subscribe();
     }
     catch(error){
       console.error(error);
