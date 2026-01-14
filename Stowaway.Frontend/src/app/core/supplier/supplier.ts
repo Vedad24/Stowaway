@@ -5,10 +5,11 @@ import {
   CreateSupplierCommand, GetSupplierByIdDto, UpdateSupplierCommand
  } from '../../services/storage/supplier/supplier.model';
 import { BaseListPagedComponent } from '../base-classes/base-list-paged-component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-supplier',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './supplier.html',
   styleUrl: './supplier.css',
 })
@@ -16,6 +17,7 @@ export class Supplier
   extends BaseListPagedComponent<ListSupplierQueryDto, ListSupplierQuery>
 {
   private supplierApiService = inject(SupplierApiService);
+  searchTerm = "";
 
   constructor() {
     super();
@@ -34,6 +36,7 @@ export class Supplier
         this.handlePageResult(response);
         this.stopLoading();
         console.log(this.items);
+        this.totalItems = this.items.length;
       },
       error: (err) => {
         console.log("error " + err.message);
@@ -42,4 +45,28 @@ export class Supplier
     })
   }
 
+  searchData() {
+    /* this.startLoading(); */
+
+    this.supplierApiService.list(
+      {
+        paging: {
+          page: 1,
+          pageSize: 1000
+        },
+        search: this.searchTerm
+      }
+    ).subscribe({
+      next: (response) => {
+        this.handlePageResult(response);
+        this.stopLoading();
+        console.log(this.items);
+        this.totalItems = this.items.length;
+      },
+      error: (err) => {
+        console.log("error " + err.message);
+        this.stopLoading();
+      }
+    })
+  }
 }

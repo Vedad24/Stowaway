@@ -10,12 +10,17 @@ export interface SharedSupplierDto{
     name: string
 }
 
+export interface SharedContainerDto{
+    name: string;
+}
+
 export interface ListItemQueryDto {
     id: number,
     name: string,
     description: string,
     byteImage?: Blob,
-    supplier: SharedSupplierDto
+    supplier: SharedSupplierDto,
+    container: SharedContainerDto
 }
 
 export interface ListItemQueryResponse extends PageResult<ListItemQueryDto>{ }
@@ -25,19 +30,22 @@ export interface GetItemByIdDto{
     name: string,
     description: string,
     byteImage?: Blob,
-    supplier: SharedSupplierDto
+    supplier: SharedSupplierDto,
+    container: SharedContainerDto
 }
 
 export interface CreateItemCommand{
     name: string,
     description: string,
     byteImage?: Blob,
-    supplierId: number
+    supplierId: number,
+    containerId: number
 }
 
 export interface UpdateItemCommand{
     name: string,
     description: string,
     byteImage?: Blob,
-    supplierId: number
+    supplierId: number,
+    containerId: number
 }

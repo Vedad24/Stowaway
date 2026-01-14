@@ -5,11 +5,11 @@ import {
   GetWarehouseByIdDto, CreateWarehouseCommand, UpdateWarehouseCommand
 } from '../../../services/storage/warehouse/warehouse.model';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
-
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-warehouse',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './warehouse.html',
   styleUrl: './warehouse.css',
 })
@@ -17,6 +17,7 @@ export class Warehouse
   extends BaseListPagedComponent<ListWarehouseQueryDto, ListWarehouseQuery>{
   
   private warehouseApiService = inject(WarehouseApiService);
+  searchTerm = "";
 
   constructor() {
     super();
@@ -36,12 +37,19 @@ export class Warehouse
         this.handlePageResult(response);
         this.stopLoading();
         console.log(this.items);
+        this.totalItems = this.items.length;
       },
       error: (err) => {
         console.log(err.message)
         this.stopLoading();
       }
     })
+  }
+
+  searchData() {
+    this.request.search = this.searchTerm;
+    this.request.paging.page = 1;
+    this.loadData();
   }
 
 }
