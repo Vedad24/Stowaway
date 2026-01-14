@@ -1,0 +1,55 @@
+<p>test-users works!</p>
+<br>
+<form [formGroup]="userForm" class="flex flex-col ">
+    <mat-form-field>
+        <mat-label>Id</mat-label>
+        <input matInput type="number" [formControl]="userForm.controls.id" placeholder="Enter id">
+    </mat-form-field>
+    <mat-form-field >
+        <mat-label>Email</mat-label>
+        <input matInput [formControl]="userForm.controls.email" placeholder="Enter email">
+    </mat-form-field>
+    <mat-form-field> 
+        <mat-label>Password</mat-label>
+        <input matInput [formControl]="userForm.controls.password" placeholder="Enter password">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>First Name</mat-label>
+        <input matInput [formControl]="userForm.controls.firstName" placeholder="Enter first name">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label>Last Name</mat-label>
+        <input matInput [formControl]="userForm.controls.lastName" placeholder="Enter last name">
+    </mat-form-field>
+    <!-- <mat-form-field>
+        <mat-label>Role</mat-label>
+        <input matInput [formControl]="userForm.controls.role" placeholder="Enter role" [disabled]="true">
+    </mat-form-field> -->
+    
+        <mat-checkbox matInput formControlName="isEnabled">Enabled</mat-checkbox>
+    
+</form>
+<button mat-raised-button color="primary" (click)="createUser()">Create User</button>
+<button mat-raised-button color="accent" (click)="updateUser()">Update User</button>
+<button mat-raised-button color="warn" (click)="deleteUser()">Delete User</button>
+
+<!-- <table>
+    <tr>
+        <th>Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Role</th>
+        <th>Is Enabled</th>
+    </tr>
+    @for (user of users; track user.id) {
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.isEnabled }}</td>
+        </tr>
+    }
+</table> -->
+<app-list-users></app-list-users>

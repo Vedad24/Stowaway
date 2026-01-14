@@ -1,4 +1,5 @@
-﻿using Stowaway.Domain.Entities.Storage;
+﻿using Stowaway.Domain.Entities.Identity;
+using Stowaway.Domain.Entities.Storage;
 
 namespace Market.Application.Abstractions;
 
@@ -12,6 +13,7 @@ public interface IAppDbContext
     DbSet<SupplierEntity> Suppliers { get; }
 
     DbSet<UserEntity> Users { get; }
+    DbSet<RoleEntity> Roles { get; }
     DbSet<RefreshTokenEntity> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct);

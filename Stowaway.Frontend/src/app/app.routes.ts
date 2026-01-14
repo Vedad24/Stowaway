@@ -4,6 +4,7 @@ import { Warehouse } from './core/warehouse/warehouse/warehouse';
 import { Item } from './core/item/item';
 import { Supplier } from './core/supplier/supplier';
 import { LoginPage } from './core/auth/login-page/login-page';
+import { TestUsers } from './core/identity/test-users/test-users';
 
 export const routes: Routes = [
     {
@@ -26,4 +27,8 @@ export const routes: Routes = [
         path: 'supplier',
         component: Supplier
     },
+    {
+        path: 'test-users',
+        component: TestUsers
+    }
 ];
