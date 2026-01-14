@@ -8,17 +8,16 @@ import { ListUserQueryDto, ListUserQueryResponse } from '../../../services/ident
 import { observeNotification } from 'rxjs/internal/Notification';
 import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
+import { PaginationTable } from "../../../shared/pagination-table/pagination-table";
 @Component({
   selector: 'app-list-users',
-  imports: [MatTableModule, MatPaginatorModule],
+  imports: [MatTableModule, MatPaginatorModule, PaginationTable],
   templateUrl: './list-users.html',
   styleUrl: './list-users.css',
   standalone: true
 })
 export class ListUsers {
-  userService = inject(UserService)
-  
-  usersCustomDataSource = new UserDataSource([]);
+  userService = inject(UserService);
   columns = [
     {
       columnDef: 'id',
@@ -69,27 +68,6 @@ export class ListUsers {
   }
 
 
-}
-
-class UserDataSource extends DataSource<ListUserQueryDto> {
-  override disconnect(collectionViewer: CollectionViewer): void {
-    // No-op
-  }
-  private _dataStream = new ReplaySubject<ListUserQueryDto[]>();
-
-  constructor(initialData : ListUserQueryDto[]) {
-    super();
-    this.setData(initialData)
-  }
-
-  connect(): Observable<ListUserQueryDto[]> {
-    return this._dataStream;
-  }
-
-  setData(initialData: ListUserQueryDto[]) {
-    this._dataStream.next([]);
-    this._dataStream.next(initialData);
-  }
 }
 
 
