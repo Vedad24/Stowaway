@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, FormBuilder} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule, MatFormField } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { CreateUserCommand, ListUserQueryDto, ListUserQueryResponse, Role } from '../../../services/identity/user/user-service.models';
+import { CreateUserCommand, ListUserQueryDto, ListUserQueryResponse, Role, UpdateUserCommand } from '../../../services/identity/user/user-service.models';
 import { ListSupplierQuery } from '../../../services/storage/supplier/supplier.model';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../../services/identity/user/user-service';
@@ -21,18 +21,32 @@ export class TestUsers {
   htpp = inject(HttpClient);
   userService = inject(UserService);
 
-  users: any
+  @ViewChild(ListUsers) listUsersComponent !: ListUsers;
   
   deleteUser() {
     console.log("Deleting user with ID: " + this.userForm.controls.id.value);
     this.userService.delete(this.userForm.controls.id.value!).pipe(
       tap((isDeleted) => {
         console.log("User deleted? " + isDeleted);
+        this.listUsersComponent.refreshUsers();
       })
     ).subscribe();
   }
   updateUser() {
-  throw new Error('Method not implemented.');
+    const command : UpdateUserCommand= {
+      id: this.userForm.controls.id.value!,
+      email: this.userForm.controls.email.value!,
+      firstName: this.userForm.controls.firstName.value!,
+      lastName: this.userForm.controls.lastName.value!,
+      role : this.userForm.controls.role.value!,
+      isEnabled : this.userForm.controls.isEnabled.value!
+    }
+    this.userService.update(command).pipe(
+      tap( () => {
+        console.log("Updated user with ID: " + command.id);
+        this.listUsersComponent.refreshUsers();
+      })
+    ).subscribe();
   }
   createUser() {
     const command : CreateUserCommand = {
@@ -44,6 +58,7 @@ export class TestUsers {
     this.userService.create( command ).pipe(
       tap( (newUserId) => {
         console.log("Created user with ID: " + newUserId);
+        this.listUsersComponent.refreshUsers();
       })
     ).subscribe();
   }

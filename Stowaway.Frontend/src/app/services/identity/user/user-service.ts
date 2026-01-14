@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CreateUserCommand, GetUserById, GetUserByIdDto, ListUserQuery, ListUserQueryResponse } from './user-service.models';
+import { CreateUserCommand, GetUserById, GetUserByIdDto, ListUserQuery, ListUserQueryResponse, UpdateUserCommand } from './user-service.models';
 import { environment } from '../../../../enviroments/enivroment';
 import { Observable } from 'rxjs';
 import { ListItemQueryResponse } from '../../storage/item/item.model';
@@ -27,7 +27,7 @@ export class UserService {
     return this.http.post<number>(this.userURL, payload);
   }
 
-  public update(payload : CreateUserCommand) : Observable<void>{
+  public update(payload : UpdateUserCommand) : Observable<void>{
     return this.http.put<void>(`${this.userURL}`, payload);
   }
 
