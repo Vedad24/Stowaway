@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ItemApiService } from '../../services/storage/item/item';
-import { ListItemQuery, ListItemQueryDto, ListItemQueryResponse } from '../../services/storage/item/item.model';
+import { ListItemQuery, ListItemQueryDto } from '../../services/storage/item/item.model';
 import { BaseListPagedComponent } from '../base-classes/base-list-paged-component';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-item',
@@ -12,13 +13,24 @@ import { FormsModule } from '@angular/forms';
 })
 export class Item
   extends BaseListPagedComponent<ListItemQueryDto, ListItemQuery>
+  implements OnInit
 {
   private itemApiService = inject(ItemApiService);
+  private cdr = inject(ChangeDetectorRef);
   searchTerm = "";
 
-  constructor() {
+  constructor(private router: Router) {
     super();
     this.request = new ListItemQuery();
+    this.request.paging = { page: 1, pageSize: 10 };
+  }
+
+  ngOnInit() {
+    this.loadPagedData();
+  }
+
+  routeToAdd() {
+    this.router.navigate(['/item/create']);
   }
 
   protected override loadPagedData(): void {
@@ -28,40 +40,30 @@ export class Item
       next: (response) => {
         this.handlePageResult(response);
         this.stopLoading();
-        console.log(this.items);
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.log(err.message);
+        console.error(err.message);
         this.stopLoading();
+        this.cdr.detectChanges();
       }
-    })
-  }
-
-  ngOnInit() {
-    this.initList();
+    });
   }
 
   searchData() {
-    this.itemApiService.list(
-      {
-        paging: {
-          page: 1,
-          pageSize: 1000
-        },
-        search: this.searchTerm
-      }
-    ).subscribe({
-      next: (response) => {
-        this.handlePageResult(response);
-        this.stopLoading();
-        console.log(this.items);
-        this.totalItems = this.items.length;
+    this.request.search = this.searchTerm;
+    this.request.paging.page = 1;
+    this.loadPagedData();
+  }
+
+  deleteItem(id: number) {
+    this.itemApiService.delete(id).subscribe({
+      next: (request) => {
+        this.loadPagedData();
       },
       error: (err) => {
-        console.log("error " + err.message);
-        this.stopLoading();
+        console.log(err.message);
       }
-    })
+    });
   }
 }
-

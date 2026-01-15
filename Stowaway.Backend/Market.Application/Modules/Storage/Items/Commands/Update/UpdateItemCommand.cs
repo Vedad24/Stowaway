@@ -12,6 +12,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
         public string Name { get; set; }
         public string Description { get; set; }
         public byte[]? ByteImage { get; set; }
+        public int Quantity { get; set; }
         public int ContainerId { get; set; }
         public int SupplierId { get; set; }
     }

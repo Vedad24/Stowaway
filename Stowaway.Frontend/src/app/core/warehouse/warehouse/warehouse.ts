@@ -1,8 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 import {
-  ListWarehouseQuery, ListWarehouseQueryDto, ListWarehouseQueryResponse,
-  GetWarehouseByIdDto, CreateWarehouseCommand, UpdateWarehouseCommand
+  ListWarehouseQuery, ListWarehouseQueryDto
 } from '../../../services/storage/warehouse/warehouse.model';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
 import { FormsModule } from '@angular/forms';
@@ -14,21 +13,23 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './warehouse.css',
 })
 export class Warehouse
-  extends BaseListPagedComponent<ListWarehouseQueryDto, ListWarehouseQuery>{
-  
+  extends BaseListPagedComponent<ListWarehouseQueryDto, ListWarehouseQuery>
+  implements OnInit
+{
   private warehouseApiService = inject(WarehouseApiService);
+  private cdr = inject(ChangeDetectorRef);
   searchTerm = "";
 
   constructor() {
     super();
     this.request = new ListWarehouseQuery();
+    this.request.paging = { page: 1, pageSize: 10 };
   }
-  
-  ngOnInit(){
-    this.initList();
+
+  ngOnInit() {
+    this.loadPagedData();
   }
-  
-  //Loading all based on request
+
   protected override loadPagedData(): void {
     this.startLoading();
 
@@ -36,20 +37,19 @@ export class Warehouse
       next: (response) => {
         this.handlePageResult(response);
         this.stopLoading();
-        console.log(this.items);
-        this.totalItems = this.items.length;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        console.log(err.message)
+        console.error(err.message);
         this.stopLoading();
+        this.cdr.detectChanges();
       }
-    })
+    });
   }
 
   searchData() {
     this.request.search = this.searchTerm;
     this.request.paging.page = 1;
-    this.loadData();
+    this.loadPagedData();
   }
-
 }

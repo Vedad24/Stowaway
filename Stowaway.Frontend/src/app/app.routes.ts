@@ -4,6 +4,7 @@ import { LoginPage } from './core/login-page/login-page';
 import { Warehouse } from './core/warehouse/warehouse/warehouse';
 import { Item } from './core/item/item';
 import { Supplier } from './core/supplier/supplier';
+import { CreateItem } from './core/item/create/create';
 
 export const routes: Routes = [
     {
@@ -21,6 +22,10 @@ export const routes: Routes = [
     {
         path: 'item',
         component: Item
+    },
+    {
+        path: 'item/create',
+        component: CreateItem
     },
     {
         path: 'supplier',

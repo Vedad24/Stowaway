@@ -1,6 +1,5 @@
 <div class="space-y-4">
 
-  <!-- Search -->
   <div class="flex gap-2">
     <input
       [(ngModel)]="searchTerm"
@@ -18,21 +17,26 @@
     </button>
   </div>
 
-  <!-- No data -->
+  <button
+    (click)="routeToAdd()"
+    class="rounded-lg bg-blue-600 px-5 py-2 text-white font-medium
+           hover:bg-blue-700 transition"
+  >
+    Add
+  </button>
+
   @if (this.totalItems === 0 && !isLoading) {
     <p class="text-sm text-gray-500 italic">
       No data found
     </p>
   }
 
-  <!-- Loading -->
   @if (isLoading) {
     <p class="text-sm text-blue-600 animate-pulse">
       Loading...
     </p>
   }
 
-  <!-- Table -->
   @if (totalItems !== 0) {
     <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
       <table class="w-full border-collapse text-sm">
@@ -41,8 +45,10 @@
             <th class="px-4 py-3 font-semibold">Id</th>
             <th class="px-4 py-3 font-semibold">Name</th>
             <th class="px-4 py-3 font-semibold">Description</th>
+            <th class="px-4 py-3 font-semibold">Quantity</th>
             <th class="px-4 py-3 font-semibold">Supplier</th>
             <th class="px-4 py-3 font-semibold">Container</th>
+            <th class="px-4 py-3 font-semibold">Delete</th>
           </tr>
         </thead>
 
@@ -52,17 +58,32 @@
               <td class="px-4 py-3 text-gray-700">
                 {{ item.id }}
               </td>
+
               <td class="px-4 py-3 font-medium text-gray-900">
                 {{ item.name }}
               </td>
+
               <td class="px-4 py-3 text-gray-600">
                 {{ item.description }}
               </td>
+
+              <td class="px-4 py-3 text-gray-900 font-semibold">
+                {{ item.quantity }}
+              </td>
+
               <td class="px-4 py-3 text-gray-700">
                 {{ item.supplier.name }}
               </td>
+
               <td class="px-4 py-3 text-gray-700">
                 {{ item.container.name }}
+              </td>
+
+              <td class="px-4 py-3 text-gray-700">
+                <Button (click)="deleteItem(item.id)"
+                class="rounded-lg bg-red-600 px-5 py-2 text-white font-medium hover:bg-red-700 transition">
+                    Delete
+                </Button>
               </td>
             </tr>
           }
@@ -70,5 +91,4 @@
       </table>
     </div>
   }
-
 </div>

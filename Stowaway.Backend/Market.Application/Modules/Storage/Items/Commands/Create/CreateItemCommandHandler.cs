@@ -41,11 +41,17 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
                 throw new Exception("Container does not exist");
             }
 
+            if (request.Quantity < 1)
+            {
+                throw new Exception("Quantity cant be less than 1");
+            }
+
             var item = new ItemEntity
             {
                 Name = normalizedName,
                 Description = request.Description,
                 ByteImage = request.ByteImage,
+                Quantity = request.Quantity,
                 SupplierId = request.SupplierId,
                 ContainerId = request.ContainerId,
             };

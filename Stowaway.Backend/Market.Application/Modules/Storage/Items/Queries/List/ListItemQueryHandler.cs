@@ -29,6 +29,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 Name = x.Name,
                 Description = x.Description,
                 ByteImage = x.ByteImage,
+                Quantity = x.Quantity,
                 Supplier = new SharedSupplierDto
                 {
                     Id = x.Supplier.Id,

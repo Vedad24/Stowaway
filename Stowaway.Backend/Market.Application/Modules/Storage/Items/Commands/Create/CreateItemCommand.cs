@@ -12,6 +12,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
         public string Name { get; init; }
         public string Description { get; init; }
         public byte[]? ByteImage { get; init; }
+        public int Quantity { get; init; }
         public int ContainerId { get; init; } 
         public int SupplierId { get; init; }
     }
