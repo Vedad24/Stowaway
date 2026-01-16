@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Stowaway.Application.Modules.Sales.Order.Commands.Delete
+{
+    public class DeleteOrderCommand : IRequest<bool>
+    {
+        public required int Id { get; set; }
+    }
+}
