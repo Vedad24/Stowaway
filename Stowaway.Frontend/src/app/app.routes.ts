@@ -5,6 +5,7 @@ import { Warehouse } from './core/warehouse/warehouse/warehouse';
 import { Item } from './core/item/item';
 import { Supplier } from './core/supplier/supplier';
 import { CreateItem } from './core/item/create/create';
+import { CreateSupplier } from './core/supplier/create/create';
 
 export const routes: Routes = [
     {
@@ -30,5 +31,9 @@ export const routes: Routes = [
     {
         path: 'supplier',
         component: Supplier
+    },
+    {
+        path: 'supplier/create',
+        component: CreateSupplier
     },
 ];

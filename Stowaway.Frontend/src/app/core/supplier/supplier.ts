@@ -5,6 +5,7 @@ import {
 } from '../../services/storage/supplier/supplier.model';
 import { BaseListPagedComponent } from '../base-classes/base-list-paged-component';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-supplier',
@@ -15,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListSupplierQuery> {
   private supplierApiService = inject(SupplierApiService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
   
   searchTerm = "";
 
@@ -47,9 +49,23 @@ export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListS
   }
 
   searchData() {
-    // 1. Update the request object parameters
     this.request.search = this.searchTerm;
     this.request.paging.page = 1;
     this.loadPagedData();
+  }
+
+  deleteItem(id: number) {
+    this.supplierApiService.delete(id).subscribe({
+      next: (request) => {
+        this.loadPagedData();
+      },
+      error: (err) => {
+        console.log(err.message);
+      }
+    });
+  }
+
+   routeToAdd() {
+    this.router.navigate(['/supplier/create']);
   }
 }
