@@ -1,6 +1,4 @@
 <div class="space-y-4">
-
-  <!-- Search -->
   <div class="flex gap-2">
     <input
       [(ngModel)]="searchTerm"
@@ -18,21 +16,18 @@
     </button>
   </div>
 
-  <!-- No data -->
   @if (this.totalItems === 0 && !isLoading) {
     <p class="text-sm text-gray-500 italic">
       No data found
     </p>
   }
 
-  <!-- Loading -->
   @if (isLoading) {
     <p class="text-sm text-blue-600 animate-pulse">
       Loading...
     </p>
   }
 
-  <!-- Table -->
   @if (totalItems !== 0) {
     <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
       <table class="w-full border-collapse text-sm">
@@ -40,6 +35,12 @@
           <tr class="text-left text-gray-600">
             <th class="px-4 py-3 font-semibold">Id</th>
             <th class="px-4 py-3 font-semibold">Name</th>
+            <th class="px-4 py-3 font-semibold">Description</th>
+            <th class="px-6 py-3 font-semibold">City</th>
+            <th class="px-2 py-3 font-semibold">Address</th>
+            <th class="px-1 py-3 font-semibold text-right">Capacity</th>
+            <th class="px-1 py-3 font-semibold text-center">Enabled</th>
+            <th class="px-1 py-3 font-semibold text-center">Actions</th>
           </tr>
         </thead>
 
@@ -48,6 +49,34 @@
             <tr class="hover:bg-gray-50 transition">
               <td class="px-4 py-3 text-gray-700">{{ item.id }}</td>
               <td class="px-4 py-3 font-medium text-gray-900">{{ item.name }}</td>
+              <td class="px-4 py-3 text-gray-700">
+                {{ item.description }}
+              </td>
+              <td class="px-4 py-3 text-gray-700">
+                {{ item.city }}
+              </td>
+              <td class="px-4 py-3 text-gray-700">
+                {{ item.address }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-700">
+                {{ item.capacity }}
+              </td>
+              <td class="px-4 py-3 text-center">
+                <input
+                  type="checkbox"
+                  [checked]="item.isEnabled"
+                  class="h-4 w-4 accent-blue-600"
+                />
+              </td>
+              <td class="px-4 py-3 text-center">
+                <button
+                  (click)="deleteItem(item.id)"
+                  class="rounded-md bg-red-600 px-3 py-1.5 text-white text-xs font-medium
+                         hover:bg-red-700 transition"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           }
         </tbody>

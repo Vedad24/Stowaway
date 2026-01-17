@@ -18,6 +18,11 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Queries.List
             {
                 Id = x.Id,
                 Name = x.Name,
+                Description = x.Description,
+                City = x.City,
+                Address = x.Address,
+                Capacity = x.Capacity,
+                isEnabled = x.isEnabled
             });
 
             return await PageResult<ListWarehouseQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);

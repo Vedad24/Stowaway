@@ -22,7 +22,12 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Create
 
             var warehouse = new WarehouseEntity
             {
-                Name = normalized
+                Name = normalized,
+                Description = request.Description,
+                City = request.City,
+                Address = request.Address,
+                Capacity = request.Capacity,
+                isEnabled = request.isEnabled
             };
 
             ctx.Warehouses.Add(warehouse);

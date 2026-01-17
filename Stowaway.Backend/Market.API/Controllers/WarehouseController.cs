@@ -28,6 +28,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<int>> CreateWarehouse(CreateWarehouseCommand command, CancellationToken ct)
         {
             int id = await sender.Send(command, ct);
@@ -35,12 +36,14 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [AllowAnonymous]
         public async Task Delete(int id, CancellationToken ct)
         {
             await sender.Send(new DeleteWarehouseCommand { Id = id}, ct);
         }
 
         [HttpPut("{id:int}")]
+        [AllowAnonymous]
         public async Task Update(int id, UpdateWarehouseCommand command, CancellationToken ct)
         {
             command.Id = id;

@@ -12,6 +12,11 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Queries.GetById
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    Description = x.Description,
+                    City = x.City,
+                    Address = x.Address,
+                    Capacity = x.Capacity,
+                    isEnabled = x.isEnabled
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 

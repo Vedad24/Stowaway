@@ -8,6 +8,11 @@ export class ListWarehouseQuery extends BasePagedQuery{
 export interface ListWarehouseQueryDto {
     id: number,
     name: string,
+    description: string,
+    city: string,
+    address: string,
+    capacity: number,
+    isEnabled: boolean
 }
 
 export interface ListWarehouseQueryResponse extends PageResult<ListWarehouseQueryDto>{ }
@@ -15,12 +20,27 @@ export interface ListWarehouseQueryResponse extends PageResult<ListWarehouseQuer
 export interface GetWarehouseByIdDto{
     id: number
     name: string,
+    description: string,
+    city: string,
+    address: string,
+    capacity: number,
+    isEnabled: boolean
 }
 
 export interface CreateWarehouseCommand{
-    name: string
+    name: string,
+    description: string,
+    city: string,
+    address: string,
+    capacity: number,
+    isEnabled: boolean
 }
 
 export interface UpdateWarehouseCommand{
-    name: string
+    name: string,
+    description: string,
+    city: string,
+    address: string,
+    capacity: number,
+    isEnabled: boolean
 }

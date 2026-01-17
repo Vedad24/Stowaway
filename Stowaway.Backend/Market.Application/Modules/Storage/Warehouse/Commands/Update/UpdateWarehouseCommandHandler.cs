@@ -24,6 +24,11 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Update
             }
 
             warehouse.Name = request.Name.Trim();
+            warehouse.Description = request.Description.Trim();
+            warehouse.City = request.City.Trim();
+            warehouse.Address = request.Address.Trim();
+            warehouse.Capacity = request.Capacity;
+            warehouse.isEnabled = request.isEnabled;
 
             await ctx.SaveChangesAsync(cancellationToken);
 

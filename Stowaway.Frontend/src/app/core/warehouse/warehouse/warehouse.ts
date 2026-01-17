@@ -19,20 +19,20 @@ export class Warehouse
   private warehouseApiService = inject(WarehouseApiService);
   private cdr = inject(ChangeDetectorRef);
   searchTerm = "";
-
+  
   constructor() {
     super();
     this.request = new ListWarehouseQuery();
     this.request.paging = { page: 1, pageSize: 10 };
   }
-
+  
   ngOnInit() {
     this.loadPagedData();
   }
-
+  
   protected override loadPagedData(): void {
     this.startLoading();
-
+    
     this.warehouseApiService.list(this.request).subscribe({
       next: (response) => {
         this.handlePageResult(response);
@@ -45,6 +45,17 @@ export class Warehouse
         this.cdr.detectChanges();
       }
     });
+  }
+  
+  deleteItem(id: number) {
+    this.warehouseApiService.delete(id).subscribe({
+      next: (response) => {
+        this.loadPagedData();
+      },
+      error: (err) => {
+        console.log(err.message);
+      }
+    })
   }
 
   searchData() {
