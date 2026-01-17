@@ -5,6 +5,7 @@ import { Item } from './core/item/item';
 import { Supplier } from './core/supplier/supplier';
 import { LoginPage } from './core/auth/login-page/login-page';
 import { TestUsers } from './core/identity/test-users/test-users';
+import { TestSales } from './core/sales/test-sales/test-sales';
 
 export const routes: Routes = [
     {
@@ -30,5 +31,9 @@ export const routes: Routes = [
     {
         path: 'test-users',
         component: TestUsers
+    },
+    {
+        path: 'orders-test',
+        component: TestSales
     }
 ];

@@ -13,6 +13,7 @@ namespace Stowaway.Domain.Entities.Sales
     public class OrderEntity
     {
         public int Id { get; set; }
+        [ForeignKey(nameof(User))]
         public int UserId { get; set; }
         public UserEntity? User { get; set; }
         public decimal Subtotal { get; set; }

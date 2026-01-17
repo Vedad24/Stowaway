@@ -26,7 +26,9 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
             #region Get containerTypes
             var typeDictionary = db.ContainerTypes.Where(ct => lstTypes.Contains(ct.Id)).ToDictionary(x => (int)x.Id);
             #endregion
-
+            
+            if (request.allContainerTypes.Count <= 0)
+                throw new StowawayBusinessRuleException("O1","Orders must have items in them");
             var newItems = request.allContainerTypes.Select(item =>
             {
 

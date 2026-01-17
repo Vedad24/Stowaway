@@ -11,7 +11,7 @@ import { CollectionViewer } from '@angular/cdk/collections';
 import { PaginationTable } from "../../../shared/pagination-table/pagination-table";
 @Component({
   selector: 'app-list-users',
-  imports: [MatTableModule, MatPaginatorModule, PaginationTable],
+  imports: [MatTableModule, MatPaginatorModule],
   templateUrl: './list-users.html',
   styleUrl: './list-users.css',
   standalone: true
@@ -50,6 +50,7 @@ export class ListUsers {
 
   ngAfterViewInit() {
     this.users.paginator = this.paginator;
+    this.refreshUsers();
   }
 
   refreshUsers()

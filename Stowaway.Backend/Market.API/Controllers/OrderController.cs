@@ -10,7 +10,7 @@ using Stowaway.Application.Modules.Storage.Items.Queries.List;
 
 namespace Stowaway.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [AllowAnonymous] //delete later
     public class OrderController(ISender sender) : ControllerBase
