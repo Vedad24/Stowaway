@@ -1,7 +1,7 @@
 ﻿using Stowaway.Domain.Entities.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Stowaway.Application.Modules.Identity.Queries.List
+namespace Stowaway.Application.Modules.Identity.Users.Queries.List
 {
     public class ListUserQueryDto
     {

@@ -7,12 +7,14 @@ import { CreateUserCommand, ListUserQueryDto, ListUserQueryResponse, Role, Updat
 import { ListSupplierQuery } from '../../../services/storage/supplier/supplier.model';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../../services/identity/user/user-service';
-import { tap } from 'rxjs';
+import { delay, tap } from 'rxjs';
 import { ListUsers } from "../list-users/list-users";
+import { AutocompleteComponent, IOptionsInfo } from '../../../shared/autocomplete-component/autocomplete-component';
+import { environment } from '../../../../enviroments/enivroment';
 
 @Component({
   selector: 'app-test-users',
-  imports: [MatButtonModule, FormsModule, MatInputModule, ReactiveFormsModule, MatFormField, MatCheckboxModule, ListUsers],
+  imports: [MatButtonModule, FormsModule, MatInputModule, ReactiveFormsModule, MatFormField, MatCheckboxModule, ListUsers, AutocompleteComponent],
   templateUrl: './test-users.html',
   styleUrl: './test-users.css',
 })
@@ -22,6 +24,23 @@ export class TestUsers {
   userService = inject(UserService);
 
   @ViewChild(ListUsers) listUsersComponent !: ListUsers;
+
+
+  roles: any[] = [];  
+  rolesDisplayInfo : IOptionsInfo = {displayName : "roleName"};
+  ngOnInit()
+  {
+    this.htpp.get<any[]>(`${environment.apiUrl}/Roles`, {})
+    .pipe(
+      tap((response) => 
+      {
+        delay(0);
+        this.roles = response;
+      })
+    )
+    .subscribe();
+    
+  }
   
   deleteUser() {
     console.log("Deleting user with ID: " + this.userForm.controls.id.value);

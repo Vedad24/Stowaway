@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.Extensions.Configuration;
 
-namespace Stowaway.Application.Modules.Identity.Commands.Update
+namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
 {
     public class UpdateUserCommandHandler(IAppDbContext context) : IRequestHandler<UpdateUserCommand, UpdateUserCommandDto>
     {
@@ -12,7 +12,7 @@ namespace Stowaway.Application.Modules.Identity.Commands.Update
             user.FirstName = request.FirstName ?? user.FirstName;
             user.LastName = request.LastName ?? user.LastName;
             user.IsEnabled = request.IsEnabled ?? user.IsEnabled;
-            if(request.Role is not null)
+            if (request.Role is not null)
             {
                 if (!context.Roles.Any(r => r.Id == request.Role.Id))
                     throw new StowawayNotFoundException($"Role doesn't exist -> RoleId {request.Role.Id}");

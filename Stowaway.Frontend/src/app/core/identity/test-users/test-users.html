@@ -1,5 +1,5 @@
 <p>test-users works!</p>
-<br>
+
 <form [formGroup]="userForm" class="flex flex-col ">
     <mat-form-field>
         <mat-label>Id</mat-label>
@@ -21,17 +21,18 @@
         <mat-label>Last Name</mat-label>
         <input matInput [formControl]="userForm.controls.lastName" placeholder="Enter last name">
     </mat-form-field>
-    <!-- <mat-form-field>
-        <mat-label>Role</mat-label>
-        <input matInput [formControl]="userForm.controls.role" placeholder="Enter role" [disabled]="true">
-    </mat-form-field> -->
-    
-        <mat-checkbox matInput formControlName="isEnabled">Enabled</mat-checkbox>
+    <app-autocomplete-component 
+        formControlName="role"
+        [options]="this.roles" 
+        [optionInfo]="this.rolesDisplayInfo">
+    </app-autocomplete-component>
+    <mat-checkbox formControlName="isEnabled">Enabled</mat-checkbox>
     
 </form>
 <button mat-raised-button color="primary" (click)="createUser()">Create User</button>
 <button mat-raised-button color="accent" (click)="updateUser()">Update User</button>
 <button mat-raised-button color="warn" (click)="deleteUser()">Delete User</button>
+
 
 
 <app-list-users #listUsersTable></app-list-users>

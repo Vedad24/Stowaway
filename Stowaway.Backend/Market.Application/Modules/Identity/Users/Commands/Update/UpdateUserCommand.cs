@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stowaway.Application.Modules.Identity.Commands.Update
+namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
 {
     public class UpdateUserCommand : IRequest<UpdateUserCommandDto>
     {

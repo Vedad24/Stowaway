@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stowaway.Application.Modules.Identity.Commands.Create
+namespace Stowaway.Application.Modules.Identity.Users.Commands.Create
 {
     public class CreateUserCommandHandler(IAppDbContext dbContext) : IRequestHandler<CreateUserCommand, int>
     {

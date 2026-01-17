@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
-using Stowaway.Application.Modules.Identity.Commands.Create;
-using Stowaway.Application.Modules.Identity.Commands.Delete;
-using Stowaway.Application.Modules.Identity.Commands.Update;
-using Stowaway.Application.Modules.Identity.Queries.GetById;
-using Stowaway.Application.Modules.Identity.Queries.List;
+using Stowaway.Application.Modules.Identity.Users.Commands.Create;
+using Stowaway.Application.Modules.Identity.Users.Commands.Delete;
+using Stowaway.Application.Modules.Identity.Users.Commands.Update;
+using Stowaway.Application.Modules.Identity.Users.Queries.GetById;
+using Stowaway.Application.Modules.Identity.Users.Queries.List;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Stowaway.API.Controllers

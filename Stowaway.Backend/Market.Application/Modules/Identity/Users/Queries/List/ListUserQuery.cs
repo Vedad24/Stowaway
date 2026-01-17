@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stowaway.Application.Modules.Identity.Queries.List
+namespace Stowaway.Application.Modules.Identity.Users.Queries.List
 {
-    public class ListUserQuery : BasePagedQuery <ListUserQueryDto>
+    public class ListUserQuery : BasePagedQuery<ListUserQueryDto>
     {
 
         public string? Search { get; init; }

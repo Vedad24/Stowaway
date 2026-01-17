@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Stowaway.Application.Modules.Identity.Commands.Create;
-using Stowaway.Application.Modules.Identity.Commands.Update;
-using Stowaway.Application.Modules.Sales.Order.Commands.Create;
+﻿using Stowaway.Application.Modules.Sales.Order.Commands.Create;
 using Stowaway.Application.Modules.Sales.Order.Commands.Update;
 using Stowaway.Application.Modules.Sales.Order.Queries.GetById;
 using Stowaway.Application.Modules.Sales.Order.Queries.List;
-using Stowaway.Application.Modules.Storage.Items.Queries.List;
 
 namespace Stowaway.API.Controllers
 {

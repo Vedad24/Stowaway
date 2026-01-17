@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Stowaway.Application.Modules.Identity.Queries.GetById
+namespace Stowaway.Application.Modules.Identity.Users.Queries.GetById
 {
     public class GetByIdQueryHandler(IAppDbContext context) : IRequestHandler<GetByIdQuery, GetByIdQueryDto>
     {
