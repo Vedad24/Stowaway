@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core';
 import { CreateUserCommand, GetUserById, GetUserByIdDto, ListUserQuery, ListUserQueryResponse, UpdateUserCommand } from './user-service.models';
 import { environment } from '../../../../enviroments/enivroment';
 import { Observable } from 'rxjs';
-import { ListItemQueryResponse } from '../../storage/item/item.model';
 import { buildHttpParams } from '../../../models/build-http-params';
 
 @Injectable({
