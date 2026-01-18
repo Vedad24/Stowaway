@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Stowaway.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260112223108_addDescriptionToSupplier")]
-    partial class addDescriptionToSupplier
+    [Migration("20260116000210_StatusNoIdentty")]
+    partial class StatusNoIdentty
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,7 +174,13 @@ namespace Stowaway.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("OrderStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderStatusId1")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Subtotal")
@@ -190,7 +196,7 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderStatusId");
+                    b.HasIndex("OrderStatusId1");
 
                     b.ToTable("Order", "Sales");
                 });
@@ -240,10 +246,7 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderStatusEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -605,9 +608,7 @@ namespace Stowaway.Infrastructure.Migrations
                 {
                     b.HasOne("Stowaway.Domain.Entities.Sales.OrderStatusEntity", "OrderStatus")
                         .WithMany()
-                        .HasForeignKey("OrderStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrderStatusId1");
 
                     b.Navigation("OrderStatus");
                 });

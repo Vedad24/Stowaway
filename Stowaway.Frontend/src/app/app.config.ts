@@ -13,3 +13,5 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch())
   ]
 };
+
+export const backendUrl = 'https://localhost:7260';

@@ -16,5 +16,10 @@ namespace Stowaway.Domain.Entities.Storage
         public int MaxContainers { get; set; }
         public decimal Price { get; set; }
 
+
+        public override string ToString()
+        {
+            return $"i{MaxItems} - c{MaxContainers}";
+        }
     }
 }

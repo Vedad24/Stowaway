@@ -16,7 +16,7 @@ public partial class DatabaseContext : DbContext, IAppDbContext
     public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
 
     //Sales
-    public DbSet<OrderEntity> OrderEntities => Set<OrderEntity>();
+    public DbSet<OrderEntity> Orders => Set<OrderEntity>();
     public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
     public DbSet<OrderStatusEntity> OrderStatuses => Set<OrderStatusEntity>();
 

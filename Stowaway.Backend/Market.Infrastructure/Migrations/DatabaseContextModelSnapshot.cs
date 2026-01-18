@@ -171,6 +171,9 @@ namespace Stowaway.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("OrderStatusId")
                         .HasColumnType("int");
 
@@ -188,6 +191,8 @@ namespace Stowaway.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderStatusId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Order", "Sales");
                 });
@@ -237,10 +242,7 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderStatusEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -618,7 +620,15 @@ namespace Stowaway.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Market.Domain.Entities.Identity.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("OrderStatus");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderItemEntity", b =>
@@ -630,7 +640,7 @@ namespace Stowaway.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Stowaway.Domain.Entities.Sales.OrderEntity", "Order")
-                        .WithMany()
+                        .WithMany("orderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -798,6 +808,11 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Market.Domain.Entities.Identity.UserEntity", b =>
                 {
                     b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderEntity", b =>
+                {
+                    b.Navigation("orderItems");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ContainerEntity", b =>

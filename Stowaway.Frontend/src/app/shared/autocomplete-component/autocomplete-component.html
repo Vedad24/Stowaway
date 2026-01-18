@@ -1,0 +1,20 @@
+<mat-form-field class="example-full-width">
+<mat-label>Pick:</mat-label>
+<input 
+    matInput
+    type="text"
+    placeholder="Pick one"
+    [matAutocomplete]="auto"
+    [value]="displayFn(value())"
+    (input)="onInput($event.target.value)"
+    (blur)="onTouched()">
+<mat-autocomplete 
+requireSelection 
+#auto="matAutocomplete"
+[displayWith]="displayFn"
+(optionSelected)="onSelect($event.option.value)">
+    @for (option of filteredOptions(); track option) {
+    <mat-option [value]="option">{{option[optionInfo().displayName]}}</mat-option>
+    }
+</mat-autocomplete>
+</mat-form-field>
