@@ -8,6 +8,7 @@ import { TestUsers } from './core/identity/test-users/test-users';
 import { TestSales } from './core/sales/test-sales/test-sales';
 import { CreateItem } from './core/item/create/create';
 import { CreateSupplier } from './core/supplier/create/create';
+import { CreateWarehouse } from './core/warehouse/warehouse/create/create';
 
 export const routes: Routes = [
     {
@@ -25,6 +26,10 @@ export const routes: Routes = [
     {
         path: 'item',
         component: Item
+    },
+    {
+        path: 'warehouse/create',
+        component: CreateWarehouse
     },
     {
         path: 'item/create',
