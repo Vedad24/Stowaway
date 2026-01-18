@@ -38,6 +38,8 @@ private fb = inject(FormBuilder);
   selectedImageFile: File | null = null;
 
   ngOnInit(): void {
+    this.loadSuppliers();
+    this.loadContainers();
     this.form = this.fb.group({
       name: ['', Validators.required],
       description: [''],
@@ -46,9 +48,6 @@ private fb = inject(FormBuilder);
       supplierId: [null, Validators.required],
       containerId: [null, Validators.required],
     });
-
-    this.loadSuppliers();
-    this.loadContainers();
   }
 
   loadSuppliers() {

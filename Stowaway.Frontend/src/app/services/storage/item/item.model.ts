@@ -11,6 +11,7 @@ export interface SharedSupplierDto{
 }
 
 export interface SharedContainerDto{
+    id: number,
     name: string;
 }
 

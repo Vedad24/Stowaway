@@ -48,12 +48,14 @@ export class EditItem
   loadSuppliers() {
     this.supplierService.list().subscribe(res => {
       this.suppliers = res.items;
+      this.tryPatchForm();
     });
   }
 
   loadContainers() {
     this.containerService.list().subscribe(res => {
       this.containers = res.items;
+      this.tryPatchForm();
     });
   }
 
@@ -63,7 +65,7 @@ export class EditItem
     this.api.getById(this.itemId).subscribe({
       next: (response) => {
         this.itemDto = response;
-        this.editForm.patchValue(response);
+        this.tryPatchForm();
         this.stopLoading();
       },
       error: (err) => {
@@ -72,6 +74,22 @@ export class EditItem
       }
     })
   }
+
+  private tryPatchForm() {
+    if (!this.itemDto) return;
+    if (this.suppliers.length === 0) return;
+    if (this.containers.length === 0) return;
+
+    this.editForm.patchValue({
+      name: this.itemDto.name,
+      description: this.itemDto.description,
+      byteImage: this.itemDto.byteImage,
+      quantity: this.itemDto.quantity,
+      supplierId: this.itemDto.supplier.id,
+      containerId: this.itemDto.container.id
+    });
+  }
+
   protected override save(): void {
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
