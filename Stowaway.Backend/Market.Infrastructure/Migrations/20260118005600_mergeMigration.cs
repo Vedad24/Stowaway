@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Stowaway.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class StatusNoIdentty : Migration
+    public partial class mergeMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -156,36 +156,16 @@ namespace Stowaway.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    isEnabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Warehouse", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Order",
-                schema: "Sales",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrderStatusId = table.Column<int>(type: "int", nullable: false),
-                    OrderStatusId1 = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Order", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Order_OrderStatus_OrderStatusId1",
-                        column: x => x.OrderStatusId1,
-                        principalSchema: "Sales",
-                        principalTable: "OrderStatus",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -271,36 +251,13 @@ namespace Stowaway.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Item",
-                schema: "Storage",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ByteImage = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    SupplierId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Item", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Item_Supplier_SupplierId",
-                        column: x => x.SupplierId,
-                        principalSchema: "Storage",
-                        principalTable: "Supplier",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Container",
                 schema: "Storage",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ContainerTypeId = table.Column<int>(type: "int", nullable: false),
                     ParentContainerId = table.Column<int>(type: "int", nullable: true),
                     WarehouseId = table.Column<int>(type: "int", nullable: false)
@@ -360,35 +317,32 @@ namespace Stowaway.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderItem",
+                name: "Order",
                 schema: "Sales",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderId = table.Column<int>(type: "int", nullable: false),
-                    ContainerTypeId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     Subtotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Total = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Discount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrderStatusId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderItem", x => x.Id);
+                    table.PrimaryKey("PK_Order", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderItem_ContainerType_ContainerTypeId",
-                        column: x => x.ContainerTypeId,
-                        principalSchema: "Storage",
-                        principalTable: "ContainerType",
+                        name: "FK_Order_OrderStatus_OrderStatusId",
+                        column: x => x.OrderStatusId,
+                        principalSchema: "Sales",
+                        principalTable: "OrderStatus",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItem_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalSchema: "Sales",
-                        principalTable: "Order",
+                        name: "FK_Order_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -455,61 +409,6 @@ namespace Stowaway.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Item_Tag",
-                schema: "Storage",
-                columns: table => new
-                {
-                    ItemId = table.Column<int>(type: "int", nullable: false),
-                    TagId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Item_Tag", x => new { x.ItemId, x.TagId });
-                    table.ForeignKey(
-                        name: "FK_Item_Tag_Item_ItemId",
-                        column: x => x.ItemId,
-                        principalSchema: "Storage",
-                        principalTable: "Item",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Item_Tag_Tag_TagId",
-                        column: x => x.TagId,
-                        principalSchema: "Storage",
-                        principalTable: "Tag",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Container_Item",
-                schema: "Storage",
-                columns: table => new
-                {
-                    ContainerId = table.Column<int>(type: "int", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Container_Item", x => new { x.ItemId, x.ContainerId });
-                    table.ForeignKey(
-                        name: "FK_Container_Item_Container_ContainerId",
-                        column: x => x.ContainerId,
-                        principalSchema: "Storage",
-                        principalTable: "Container",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Container_Item_Item_ItemId",
-                        column: x => x.ItemId,
-                        principalSchema: "Storage",
-                        principalTable: "Item",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ContainerStatusHistory",
                 schema: "Storage",
                 columns: table => new
@@ -546,6 +445,100 @@ namespace Stowaway.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Item",
+                schema: "Storage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ByteImage = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    SupplierId = table.Column<int>(type: "int", nullable: false),
+                    ContainerId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Item", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Item_Container_ContainerId",
+                        column: x => x.ContainerId,
+                        principalSchema: "Storage",
+                        principalTable: "Container",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Item_Supplier_SupplierId",
+                        column: x => x.SupplierId,
+                        principalSchema: "Storage",
+                        principalTable: "Supplier",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderItem",
+                schema: "Sales",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    ContainerTypeId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderItem_ContainerType_ContainerTypeId",
+                        column: x => x.ContainerTypeId,
+                        principalSchema: "Storage",
+                        principalTable: "ContainerType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderItem_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalSchema: "Sales",
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Item_Tag",
+                schema: "Storage",
+                columns: table => new
+                {
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    TagId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Item_Tag", x => new { x.ItemId, x.TagId });
+                    table.ForeignKey(
+                        name: "FK_Item_Tag_Item_ItemId",
+                        column: x => x.ItemId,
+                        principalSchema: "Storage",
+                        principalTable: "Item",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Item_Tag_Tag_TagId",
+                        column: x => x.TagId,
+                        principalSchema: "Storage",
+                        principalTable: "Tag",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Container_ContainerTypeId",
                 schema: "Storage",
@@ -563,12 +556,6 @@ namespace Stowaway.Infrastructure.Migrations
                 schema: "Storage",
                 table: "Container",
                 column: "WarehouseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Container_Item_ContainerId",
-                schema: "Storage",
-                table: "Container_Item",
-                column: "ContainerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ContainerStatusHistory_ContainerId",
@@ -589,6 +576,12 @@ namespace Stowaway.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Item_ContainerId",
+                schema: "Storage",
+                table: "Item",
+                column: "ContainerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Item_SupplierId",
                 schema: "Storage",
                 table: "Item",
@@ -601,10 +594,16 @@ namespace Stowaway.Infrastructure.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Order_OrderStatusId1",
+                name: "IX_Order_OrderStatusId",
                 schema: "Sales",
                 table: "Order",
-                column: "OrderStatusId1");
+                column: "OrderStatusId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_UserId",
+                schema: "Sales",
+                table: "Order",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_ContainerTypeId",
@@ -670,10 +669,6 @@ namespace Stowaway.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Container_Item",
-                schema: "Storage");
-
-            migrationBuilder.DropTable(
                 name: "ContainerStatusHistory",
                 schema: "Storage");
 
@@ -709,10 +704,6 @@ namespace Stowaway.Infrastructure.Migrations
                 schema: "Storage");
 
             migrationBuilder.DropTable(
-                name: "Container",
-                schema: "Storage");
-
-            migrationBuilder.DropTable(
                 name: "Item",
                 schema: "Storage");
 
@@ -737,14 +728,7 @@ namespace Stowaway.Infrastructure.Migrations
                 schema: "StorageIdentity");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "ContainerType",
-                schema: "Storage");
-
-            migrationBuilder.DropTable(
-                name: "Warehouse",
+                name: "Container",
                 schema: "Storage");
 
             migrationBuilder.DropTable(
@@ -754,6 +738,17 @@ namespace Stowaway.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "OrderStatus",
                 schema: "Sales");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "ContainerType",
+                schema: "Storage");
+
+            migrationBuilder.DropTable(
+                name: "Warehouse",
+                schema: "Storage");
 
             migrationBuilder.DropTable(
                 name: "Role",

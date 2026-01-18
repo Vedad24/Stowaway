@@ -5,26 +5,27 @@
 namespace Stowaway.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class fixAddress : Migration
+    public partial class addAddressToSupplier : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "Adress",
+            migrationBuilder.AddColumn<string>(
+                name: "Address",
                 schema: "Storage",
-                table: "Warehouse",
-                newName: "Address");
+                table: "Supplier",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
+            migrationBuilder.DropColumn(
                 name: "Address",
                 schema: "Storage",
-                table: "Warehouse",
-                newName: "Adress");
+                table: "Supplier");
         }
     }
 }

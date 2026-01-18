@@ -21,6 +21,10 @@ public static class DynamicDataSeeder
         await SeedOrderStatusAsync(context);
         await SeedRolesAsync(context);
         await SeedUsersAsync(context);
+        await SeedSupplierAsync(context);
+        await SeedWarehouseAsync(context);
+        await SeedContainersAsync(context);
+        await SeedItemsAsync(context);
     }
 
     private static async Task SeedOrderStatusAsync(DatabaseContext context)
@@ -71,7 +75,125 @@ public static class DynamicDataSeeder
         Console.WriteLine("✅ Dynamic seed: demo container types added.");
     }
 
-    
+    private static async Task SeedSupplierAsync(DatabaseContext context)
+    {
+        if(await context.Suppliers.AnyAsync()){
+            return;  
+        }
+        var CocktaSupplier = new SupplierEntity
+        {
+            Name = "Cockta",
+            Description = "Soda company",
+            Address = "Ulica Kralja Tomislava, Mostar",
+            TotalDeliveries = 10,
+            FailedDeliveries = 0,
+        };
+        var OazaSupplier = new SupplierEntity
+        {
+            Name = "Oaza",
+            Address = "Karadaglije bb, Tešanj",
+            Description = "Water company",
+            TotalDeliveries = 50,
+            FailedDeliveries = 3,
+        };
+
+        context.Suppliers.AddRange(CocktaSupplier, OazaSupplier);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo suppliers added.");
+    }
+
+    private static async Task SeedWarehouseAsync(DatabaseContext context)
+    {
+        if (await context.Warehouses.AnyAsync())
+        {
+            return;
+        }
+
+        var MainStorage = new WarehouseEntity
+        {
+            Name = "Main storage room",
+            Description = "Big containers only.",
+            City = "Mostar",
+            Address = "Brace Fejica 30",
+            Capacity = 40,
+            isEnabled = true,
+        };
+
+        var SmallRoom = new WarehouseEntity
+        {
+            Name = "Small room",
+            Description = "Water only",
+            City = "Mostar",
+            Address = "Brace Fejica 30",
+            Capacity = 5,
+            isEnabled = true,
+        };
+
+        context.Warehouses.AddRange(MainStorage, SmallRoom);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo warehouses added.");
+    }
+
+    private static async Task SeedContainersAsync(DatabaseContext context)
+    {
+        if (await context.Containers.AnyAsync())
+        {
+            return;
+        }
+
+        var CardboardBox = new ContainerEntity
+        {
+            Name = "Cardboard box",
+            ContainerTypeId = 1,
+            ParentContainerId = null,
+            WarehouseId = 2
+        };
+
+        var WoodenPallet = new ContainerEntity
+        {
+            Name = "Wooden pallet",
+            ContainerTypeId = 2,
+            ParentContainerId = null,
+            WarehouseId = 1
+        };
+
+        context.Containers.AddRange(CardboardBox, WoodenPallet);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo containers added.");
+    }
+
+    private static async Task SeedItemsAsync(DatabaseContext context)
+    {
+        if (await context.Item.AnyAsync())
+        {
+            return;
+        }
+
+        var WaterBottle = new ItemEntity
+        {
+            Name = "Natural water",
+            Description = "0,5l plastic bottle",
+            Quantity = 50,
+            ContainerId = 1,
+            SupplierId = 2,
+            ByteImage = null,
+        };
+
+        var CocktaBottle = new ItemEntity
+        {
+            Name = "Cockta soda",
+            Description = "0,5l plastic bottle",
+            Quantity = 85,
+            ContainerId = 2,
+            SupplierId = 1,
+            ByteImage = null,
+        };
+
+        context.Item.AddRange(WaterBottle, CocktaBottle);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo items added.");
+    }
+
 
     /// <summary>
     /// Kreira demo korisnike ako ih još nema u bazi.

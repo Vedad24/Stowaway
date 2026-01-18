@@ -28,10 +28,15 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
                     Id = x.Supplier.Id,
                     Name = x.Supplier.Name,
                     Description = x.Supplier.Description,
+                    Address = x.Supplier.Address,
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 },
-                Container = new SharedContainerDto { Name = x.Container.Name}
+                Container = new SharedContainerDto 
+                {    
+                    Id = x.Id,
+                    Name = x.Container.Name
+                }
             }).FirstOrDefaultAsync(cancellationToken);
 
             if (item == null)

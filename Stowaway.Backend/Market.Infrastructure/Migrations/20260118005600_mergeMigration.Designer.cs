@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Stowaway.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260113155216_fixMigration")]
-    partial class fixMigration
+    [Migration("20260118005600_mergeMigration")]
+    partial class mergeMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,6 +174,9 @@ namespace Stowaway.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("OrderStatusId")
                         .HasColumnType("int");
 
@@ -191,6 +194,8 @@ namespace Stowaway.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderStatusId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Order", "Sales");
                 });
@@ -240,10 +245,7 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderStatusEntity", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -264,6 +266,10 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.Property<int>("ContainerTypeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ParentContainerId")
                         .HasColumnType("int");
@@ -522,9 +528,27 @@ namespace Stowaway.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isEnabled")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -599,7 +623,15 @@ namespace Stowaway.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Market.Domain.Entities.Identity.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("OrderStatus");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderItemEntity", b =>
@@ -611,7 +643,7 @@ namespace Stowaway.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Stowaway.Domain.Entities.Sales.OrderEntity", "Order")
-                        .WithMany()
+                        .WithMany("orderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -779,6 +811,11 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Market.Domain.Entities.Identity.UserEntity", b =>
                 {
                     b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderEntity", b =>
+                {
+                    b.Navigation("orderItems");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ContainerEntity", b =>

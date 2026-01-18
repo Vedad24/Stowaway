@@ -30,6 +30,7 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Commands.Create
             {
                 Name = normalized,
                 Description = request.Description,
+                Address = request.Address,
                 TotalDeliveries = request.TotalDeliveries,
                 FailedDeliveries = request.FailedDeliveries,
             };

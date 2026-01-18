@@ -6,6 +6,7 @@ import { CreateItemCommand, GetItemByIdDto } from '../../../services/storage/ite
 import { ItemApiService } from '../../../services/storage/item/item';
 import { BaseFormComponent } from '../../base-classes/base-form-component';
 import { Router } from '@angular/router';
+import { ContainerApiService } from '../../../services/storage/container/container';
 
 
 @Component({
@@ -27,9 +28,9 @@ export class CreateItem
 
 private fb = inject(FormBuilder);
   private supplierService = inject(SupplierApiService);
+  private containerService = inject(ContainerApiService);
   private api = inject(ItemApiService);
   router = inject(Router);
-  //private containerService = inject(ContainerApiService);
 
   suppliers: any[] = [];
   containers: any[] = [];
@@ -43,11 +44,11 @@ private fb = inject(FormBuilder);
       image: [null],
       quantity: [1, Validators.required],
       supplierId: [null, Validators.required],
-      containerId: 4,
+      containerId: [null, Validators.required],
     });
 
     this.loadSuppliers();
-    //this.loadContainers();
+    this.loadContainers();
   }
 
   loadSuppliers() {
@@ -56,13 +57,12 @@ private fb = inject(FormBuilder);
     });
   }
 
-
-
-  /* loadContainers() {
-    this.containerService.list({}).subscribe(res => {
+  loadContainers() {
+    this.containerService.list().subscribe(res => {
       this.containers = res.items;
     });
-  } */
+    console.log(this.containers);
+  }
 
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -108,8 +108,7 @@ private fb = inject(FormBuilder);
     formData.append('description', this.form.value.description ?? '');
     formData.append('quantity', this.form.value.quantity);
     formData.append('supplierId', this.form.value.supplierId);
-    //formData.append('containerId', this.form.value.containerId);
-    formData.append('containerId', '4');
+    formData.append('containerId', this.form.value.containerId);
 
     if (this.selectedImageFile) {
       formData.append('image', "null");

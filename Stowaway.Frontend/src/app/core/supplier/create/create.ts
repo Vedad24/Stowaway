@@ -28,6 +28,7 @@ export class CreateSupplier
     this.form = this.fb.group({
       name: ['', Validators.required],
       description: [''],
+      address: [''],
       totalDeliveries: [0, Validators.required],
       failedDeliveries: [0, Validators.required]
     });
@@ -39,6 +40,7 @@ export class CreateSupplier
     const command: CreateSupplierCommand = {
       name: this.form.value.name,
       description: this.form.value.description,
+      address: this.form.value.address,
       totalDeliveries: this.form.value.totalDeliveries,
       failedDeliveries: this.form.value.failedDeliveries
     }
@@ -64,6 +66,7 @@ export class CreateSupplier
     const formData = new FormData();
     formData.append('name', this.form.value.name);
     formData.append('description', this.form.value.description ?? '');
+    formData.append('address', this.form.value.address ?? '');
     formData.append('totalDeliveries', this.form.value.totalDeliveries);
     formData.append('failedDeliveries', this.form.value.failedDeliveries);
 

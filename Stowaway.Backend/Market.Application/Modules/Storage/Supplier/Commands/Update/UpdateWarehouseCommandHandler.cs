@@ -25,6 +25,7 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Commands.Update
 
             supplier.Name = request.Name.Trim();
             supplier.Description = request.Description.Trim();
+            supplier.Address = request.Address.Trim();
             supplier.TotalDeliveries = request.TotalDeliveries;
             supplier.FailedDeliveries = request.FailedDeliveries;
 

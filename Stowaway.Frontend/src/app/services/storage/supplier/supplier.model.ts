@@ -8,7 +8,8 @@ export class ListSupplierQuery extends BasePagedQuery{
 export interface ListSupplierQueryDto{
     id: number,
     name: string,
-    description: string
+    description: string,
+    address: string,
     totalDeliveries: number,
     failedDeliveries: number
 }
@@ -18,21 +19,24 @@ export interface ListSupplierQueryResponse extends PageResult<ListSupplierQueryD
 export interface GetSupplierByIdDto{
     id: number,
     name: string,
-    description: string
+    description: string,
+    address: string,
     totalDeliveries: number,
     failedDeliveries: number
 }
 
 export interface CreateSupplierCommand{
     name: string,
-    description: string
+    description: string,
+    address: string,
     totalDeliveries: number,
     failedDeliveries: number
 }
 
 export interface UpdateSupplierCommand {
     name: string,
-    description: string
+    description: string,
+    address: string,
     totalDeliveries: number,
     failedDeliveries: number
 }

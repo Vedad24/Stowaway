@@ -18,6 +18,7 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Queries.GetById
                     Id = request.Id,
                     Name = x.Name,
                     Description = x.Description,
+                    Address = x.Address,
                     TotalDeliveries = x.TotalDeliveries,
                     FailedDeliveries = x.FailedDeliveries,
                 })

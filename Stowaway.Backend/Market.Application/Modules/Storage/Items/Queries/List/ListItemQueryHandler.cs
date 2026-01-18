@@ -35,10 +35,15 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     Id = x.Supplier.Id,
                     Name = x.Supplier.Name,
                     Description = x.Supplier.Description,
+                    Address = x.Supplier.Address,
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 },
-                Container = new SharedContainerDto { Name  = x.Container.Name}
+                Container = new SharedContainerDto 
+                {
+                    Id = x.Id,
+                    Name = x.Container.Name
+                }
             });
 
             return await PageResult<ListItemQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);
