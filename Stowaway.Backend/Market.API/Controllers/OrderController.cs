@@ -1,4 +1,5 @@
 ﻿using Stowaway.Application.Modules.Sales.Order.Commands.Create;
+using Stowaway.Application.Modules.Sales.Order.Commands.Delete;
 using Stowaway.Application.Modules.Sales.Order.Commands.Update;
 using Stowaway.Application.Modules.Sales.Order.Queries.GetById;
 using Stowaway.Application.Modules.Sales.Order.Queries.List;
@@ -31,6 +32,12 @@ namespace Stowaway.API.Controllers
         public async Task<bool> UpdateUser([FromBody] UpdateOrderCommand command, CancellationToken ct)
         {
             return await sender.Send(command, ct);
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<bool> DeleteUser(int id, CancellationToken ct)
+        {
+            return await sender.Send(new DeleteOrderCommand { Id=id}, ct);
         }
     }
 }

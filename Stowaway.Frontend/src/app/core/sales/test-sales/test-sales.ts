@@ -7,6 +7,7 @@ import { validateHeaderName } from 'http';
 import {CreateOrderCommand, SharedOrderCommandContainerType, UpdateOrderCommand} from '../../../services/sales/order/order-service.models'
 import { catchError, tap } from 'rxjs';
 import { ListSales } from "../list-sales/list-sales";
+import { httpResource } from '@angular/common/http';
 @Component({
   selector: 'app-test-sales',
   imports: [ɵInternalFormsSharedModule, ReactiveFormsModule, MatFormField, MatInput, MatAnchor, MatLabel, ListSales],
@@ -57,7 +58,12 @@ export class TestSales {
   }
 
   deleteOrder() {
-  //throw new Error('Method not implemented.');
+    const id = this.orderForm.get('orderId')?.value!;
+    this.orderService.delete(id).pipe(
+      tap(() => {
+        this.listSales.refreshOrders();
+      })
+    ).subscribe();
   }
   updateOrder() {
     const payload : UpdateOrderCommand = 

@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, FormBuilder} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule, MatFormField } from '@angular/material/input';
@@ -22,25 +22,42 @@ export class TestUsers {
 
   htpp = inject(HttpClient);
   userService = inject(UserService);
+  //last resort for NG0100
+  cd = inject(ChangeDetectorRef);
 
   @ViewChild(ListUsers) listUsersComponent !: ListUsers;
 
 
   roles: any[] = [];  
   rolesDisplayInfo : IOptionsInfo = {displayName : "roleName"};
-  ngOnInit()
+
+  ngAfterViewInit()
   {
     this.htpp.get<any[]>(`${environment.apiUrl}/Roles`, {})
-    .pipe(
-      tap((response) => 
-      {
-        delay(0);
+    .subscribe({next :(response) =>
+    {
+      setTimeout(() => { 
         this.roles = response;
-      })
-    )
-    .subscribe();
-    
+        this.cd.detectChanges();
+      });
+    },
+    error: err => console.log("Error loading roles?")
+  });
   }
+
+  // ngOnInit()
+  // {
+  //   this.htpp.get<any[]>(`${environment.apiUrl}/Roles`, {})
+  //   .pipe(
+  //     tap((response) => 
+  //     {
+  //       delay(0);
+  //       this.roles = response;
+  //     })
+  //   )
+  //   .subscribe();
+    
+  // }
   
   deleteUser() {
     console.log("Deleting user with ID: " + this.userForm.controls.id.value);
