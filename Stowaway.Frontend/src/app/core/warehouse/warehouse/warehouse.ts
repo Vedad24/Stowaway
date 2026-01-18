@@ -5,6 +5,7 @@ import {
 } from '../../../services/storage/warehouse/warehouse.model';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-warehouse',
@@ -18,6 +19,7 @@ export class Warehouse
 {
   private warehouseApiService = inject(WarehouseApiService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
   searchTerm = "";
   
   constructor() {
@@ -57,10 +59,14 @@ export class Warehouse
       }
     })
   }
-
+  
   searchData() {
     this.request.search = this.searchTerm;
     this.request.paging.page = 1;
     this.loadPagedData();
+  }
+
+  routeToAdd() {
+    this.router.navigate(['/warehouse/create']);
   }
 }

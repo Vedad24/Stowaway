@@ -6,6 +6,7 @@ import { Item } from './core/item/item';
 import { Supplier } from './core/supplier/supplier';
 import { CreateItem } from './core/item/create/create';
 import { CreateSupplier } from './core/supplier/create/create';
+import { CreateWarehouse } from './core/warehouse/warehouse/create/create';
 
 export const routes: Routes = [
     {
@@ -23,6 +24,10 @@ export const routes: Routes = [
     {
         path: 'item',
         component: Item
+    },
+    {
+        path: 'warehouse/create',
+        component: CreateWarehouse
     },
     {
         path: 'item/create',
