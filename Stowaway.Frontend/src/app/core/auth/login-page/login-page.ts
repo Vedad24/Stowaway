@@ -51,7 +51,7 @@ export class LoginPage {
 
         tap((success) => {
           if(success){
-            this.router.navigate(['']); 
+            this.router.navigate(['main']); 
           }
         })
       ).subscribe();

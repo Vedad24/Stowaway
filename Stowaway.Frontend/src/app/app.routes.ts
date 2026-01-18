@@ -13,11 +13,16 @@ import { CreateWarehouse } from './core/warehouse/warehouse/create/create';
 import { EditItem } from './core/item/edit/edit';
 import { EditSupplier } from './core/supplier/edit/edit';
 import { EditWarehouse } from './core/warehouse/warehouse/edit/edit';
+import { Layout } from './core/layout/layout';
 
 export const routes: Routes = [
     {
         path: '',
         component: LandingPage
+    },
+    {
+        path: 'main',
+        component: Layout
     },
     {
         path: 'login',

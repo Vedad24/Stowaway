@@ -2,10 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 import { ListWarehouseQuery, ListWarehouseQueryDto, ListWarehouseQueryResponse } from '../../../services/storage/warehouse/warehouse.model';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
+import { RouterLink } from "@angular/router";
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-main-section',
-  imports: [],
+  imports: [RouterLink, MatButtonModule],
   templateUrl: './main-section.html',
   styleUrl: './main-section.css',
 })
