@@ -2,13 +2,14 @@ import { Component, inject, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { UserService } from '../../../services/identity/user/user-service';
-import { catchError, observable, Observable, of, ReplaySubject, tap } from 'rxjs';
+import { catchError, delay, observable, Observable, of, ReplaySubject, tap } from 'rxjs';
 import { PageRequest } from '../../../models/paging/page-request';
 import { ListUserQueryDto, ListUserQueryResponse } from '../../../services/identity/user/user-service.models';
 import { observeNotification } from 'rxjs/internal/Notification';
 import { DataSource } from '@angular/cdk/table';
 import { CollectionViewer } from '@angular/cdk/collections';
 import { PaginationTable } from "../../../shared/pagination-table/pagination-table";
+import { error } from 'console';
 @Component({
   selector: 'app-list-users',
   imports: [MatTableModule, MatPaginatorModule],
@@ -50,7 +51,7 @@ export class ListUsers {
 
   ngAfterViewInit() {
     this.users.paginator = this.paginator;
-    this.refreshUsers();
+    
   }
 
   refreshUsers()
@@ -59,15 +60,12 @@ export class ListUsers {
     this.userService.list({search:null, roleId:null, paging: new PageRequest()})
       .pipe(
         tap( (response : ListUserQueryResponse) => {
+          delay(0);
         this.users.data = response.items;
         }),
-        catchError( err => { 
-          throw new Error('Failed to load users: ' + err.message);
-        })
       )
-      .subscribe();
+      .subscribe({next: (response) => {},error: error=> console.log('error?')});
   }
-
 
 }
 

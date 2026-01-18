@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.PortableExecutable;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,8 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
             
             if (request.allContainerTypes.Count <= 0)
                 throw new StowawayBusinessRuleException("O1","Orders must have items in them");
+            order.Subtotal = 0;
+            order.Total = 0;
             var newItems = request.allContainerTypes.Select(item =>
             {
 
@@ -36,6 +39,9 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
                 decimal discount = 0.05m; //har coded for now 
                 decimal sub = item.Quantity * type.Price;
                 decimal total = sub * (1-discount);
+                order.Subtotal += sub;
+                order.Total += total;
+
                 return new OrderItemEntity
                 {
                     Order = order,
@@ -48,7 +54,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
                 };
 
             }).ToList();
-
+            
             order.orderItems = newItems;
             await db.SaveChangesAsync(cancellationToken);
             return true;

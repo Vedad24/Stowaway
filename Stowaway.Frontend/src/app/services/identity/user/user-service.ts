@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core';
 import { CreateUserCommand, GetUserById, GetUserByIdDto, ListUserQuery, ListUserQueryResponse, UpdateUserCommand } from './user-service.models';
 import { environment } from '../../../../enviroments/enivroment';
 import { Observable } from 'rxjs';
-import { ListItemQueryResponse } from '../../storage/item/item.model';
 import { buildHttpParams } from '../../../models/build-http-params';
 
 @Injectable({
@@ -35,4 +34,19 @@ export class UserService {
     return this.http.delete<boolean>(`${this.userURL}/${id}`);
   }
 
+  signUpData : {
+    email? : string,
+    password? : string 
+  } = {};
+
+  setData(data : {email:string; password : string})
+  {
+
+    this.signUpData = data;
+    console.log("data is set", this.signUpData);
+  }
+  clearData()
+  {
+    this.signUpData = {};
+  }
 }

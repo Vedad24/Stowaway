@@ -10,7 +10,7 @@ import {MatButtonModule} from '@angular/material/button'
 })
 export class LandingPage {
   goToSignUp() {
-    this.router.navigate(['/signup'])
+    this.router.navigate(['/sign-up'])
   }
   router = inject(Router)
   goToLogin()

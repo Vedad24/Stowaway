@@ -1,15 +1,19 @@
 <div class="flex items-center justify-center w-full">
     <form [formGroup]="loginForm" class="flex flex-col items-center justify-center w-2xl">
         <mat-form-field>
-            <mat-label>email</mat-label>
+            <mat-label>Email</mat-label>
             <input matInput
             formControlName="email">
         </mat-form-field>
         <mat-form-field>
-            <mat-label>password</mat-label>
+            <mat-label>Password</mat-label>
             <input
             matInput
+            [type]="hidePassword ? 'password' : 'text'"
             formControlName="password">
+            <button matSuffix matIconButton (click)="hidePassword = !hidePassword">
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
         </mat-form-field>
         <button matButton="outlined" type="submit" (click)="tryLogin()" [disabled]="!loginForm.valid">Log in</button>
         <button matButton="outlined" type="submit" (click)="tryLogin()">Log in -- force</button>
