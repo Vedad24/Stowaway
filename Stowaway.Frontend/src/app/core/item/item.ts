@@ -15,6 +15,7 @@ export class Item
   extends BaseListPagedComponent<ListItemQueryDto, ListItemQuery>
   implements OnInit
 {
+
   private itemApiService = inject(ItemApiService);
   private cdr = inject(ChangeDetectorRef);
   searchTerm = "";
@@ -70,5 +71,9 @@ export class Item
         console.log(err.message);
       }
     });
+  }
+
+  editItem(id: number) {
+    this.router.navigate(['/item/edit'])
   }
 }

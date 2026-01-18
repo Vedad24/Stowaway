@@ -9,6 +9,9 @@ import { TestSales } from './core/sales/test-sales/test-sales';
 import { CreateItem } from './core/item/create/create';
 import { CreateSupplier } from './core/supplier/create/create';
 import { CreateWarehouse } from './core/warehouse/warehouse/create/create';
+import { EditItem } from './core/item/edit/edit';
+import { EditSupplier } from './core/supplier/edit/edit';
+import { EditWarehouse } from './core/warehouse/warehouse/edit/edit';
 
 export const routes: Routes = [
     {
@@ -24,20 +27,36 @@ export const routes: Routes = [
         component: Warehouse
     },
     {
-        path: 'item',
-        component: Item
-    },
-    {
         path: 'warehouse/create',
         component: CreateWarehouse
+    },
+    {
+        path: 'warehouse/edit/:abc',
+        component: EditWarehouse
+    },
+    {
+        path: 'item',
+        component: Item
     },
     {
         path: 'item/create',
         component: CreateItem
     },
     {
+        path: 'item/edit',
+        component: EditItem
+    },
+    {
         path: 'supplier',
         component: Supplier
+    },
+    {
+        path: 'supplier/create',
+        component: CreateSupplier
+    },
+    {
+        path: 'supplier/edit',
+        component: EditSupplier
     },
     {
         path: 'test-users',
@@ -46,9 +65,5 @@ export const routes: Routes = [
     {
         path: 'orders-test',
         component: TestSales
-    },
-    {
-        path: 'supplier/create',
-        component: CreateSupplier
     },
 ];

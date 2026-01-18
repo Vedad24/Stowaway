@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
   styleUrl: './supplier.css',
 })
 export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListSupplierQuery> {
+
   private supplierApiService = inject(SupplierApiService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -67,5 +68,9 @@ export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListS
 
    routeToAdd() {
     this.router.navigate(['/supplier/create']);
+  }
+
+  editItem(id: number) {
+    this.router.navigate(['/supplier/edit'])
   }
 }

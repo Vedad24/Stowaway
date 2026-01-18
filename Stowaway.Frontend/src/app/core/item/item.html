@@ -1,5 +1,6 @@
 <div class="space-y-4">
 
+  <!-- Search -->
   <div class="flex gap-2">
     <input
       [(ngModel)]="searchTerm"
@@ -7,7 +8,6 @@
       class="w-full max-w-sm rounded-lg border border-gray-300 px-4 py-2
              focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
     />
-
     <button
       (click)="searchData()"
       class="rounded-lg bg-blue-600 px-5 py-2 text-white font-medium
@@ -17,6 +17,7 @@
     </button>
   </div>
 
+  <!-- Add Button -->
   <button
     (click)="routeToAdd()"
     class="rounded-lg bg-blue-600 px-5 py-2 text-white font-medium
@@ -25,75 +26,73 @@
     Add
   </button>
 
+  <!-- No Data -->
   @if (this.totalItems === 0 && !isLoading) {
-    <p class="text-sm text-gray-500 italic">
-      No data found
-    </p>
+    <p class="text-sm text-gray-500 italic">No data found</p>
   }
 
+  <!-- Loading -->
   @if (isLoading) {
-    <p class="text-sm text-blue-600 animate-pulse">
-      Loading...
-    </p>
+    <p class="text-sm text-blue-600 animate-pulse">Loading...</p>
   }
 
+  <!-- Table -->
   @if (totalItems !== 0) {
     <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-      <table class="w-full border-collapse text-sm">
+      <table class="w-full border-collapse text-sm text-gray-700">
         <thead class="bg-gray-100">
-          <tr class="text-left text-gray-600">
-            <th class="px-4 py-3 font-semibold">Id</th>
-            <th class="px-4 py-3 font-semibold">Name</th>
-            <th class="px-4 py-3 font-semibold">Image</th>
-            <th class="px-4 py-3 font-semibold">Description</th>
-            <th class="px-4 py-3 font-semibold">Quantity</th>
-            <th class="px-4 py-3 font-semibold">Supplier</th>
-            <th class="px-4 py-3 font-semibold">Container</th>
-            <th class="px-4 py-3 font-semibold">Delete</th>
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold">Id</th>
+            <th class="px-4 py-3 text-left font-semibold">Name</th>
+            <th class="px-4 py-3 text-center font-semibold">Image</th>
+            <th class="px-4 py-3 text-left font-semibold">Description</th>
+            <th class="px-4 py-3 text-right font-semibold">Quantity</th>
+            <th class="px-4 py-3 text-left font-semibold">Supplier</th>
+            <th class="px-4 py-3 text-left font-semibold">Container</th>
+            <th class="px-4 py-3 text-center font-semibold">Edit</th>
+            <th class="px-4 py-3 text-center font-semibold">Delete</th>
           </tr>
         </thead>
 
         <tbody class="divide-y divide-gray-200">
           @for (item of items; track item.id) {
             <tr class="hover:bg-gray-50 transition">
-              <td class="px-4 py-3 text-gray-700">
-                {{ item.id }}
-              </td>
-
-              <td class="px-4 py-3 font-medium text-gray-900">
-                {{ item.name }}
-              </td>
-
-              <td class="px-4 py-3">
+              <td class="px-4 py-3">{{ item.id }}</td>
+              <td class="px-4 py-3 font-medium text-gray-900">{{ item.name }}</td>
+              
+              <!-- Image -->
+              <td class="px-4 py-3 text-center">
                 @if(item.byteImage){
                   <img
                       [src]="getImageSrc(item)"
-                      class="h-20 w-20 object-cover rounded"
+                      class="h-16 w-16 object-cover rounded mx-auto"
                       alt="{{item.name}}" />
                 }
               </td>
 
-              <td class="px-4 py-3 text-gray-600">
-                {{ item.description }}
+              <td class="px-4 py-3 text-gray-600">{{ item.description }}</td>
+              <td class="px-4 py-3 text-right font-semibold">{{ item.quantity }}</td>
+              <td class="px-4 py-3">{{ item.supplier.name }}</td>
+              <td class="px-4 py-3">{{ item.container.name }}</td>
+
+              <td class="px-4 py-3 text-center">
+                <button
+                  (click)="editItem(item.id)"
+                  class="inline-block rounded-md bg-blue-600 px-3 py-1.5 text-white text-xs font-medium
+                         hover:bg-blue-700 transition"
+                >
+                  Edit
+                </button>
               </td>
 
-              <td class="px-4 py-3 text-gray-900 font-semibold">
-                {{ item.quantity }}
-              </td>
-
-              <td class="px-4 py-3 text-gray-700">
-                {{ item.supplier.name }}
-              </td>
-
-              <td class="px-4 py-3 text-gray-700">
-                {{ item.container.name }}
-              </td>
-
-              <td class="px-4 py-3 text-gray-700">
-                <Button (click)="deleteItem(item.id)"
-                class="rounded-lg bg-red-600 px-5 py-2 text-white font-medium hover:bg-red-700 transition">
-                    Delete
-                </Button>
+              <td class="px-4 py-3 text-center">
+                <button
+                  (click)="deleteItem(item.id)"
+                  class="inline-block rounded-md bg-red-600 px-3 py-1.5 text-white text-xs font-medium
+                         hover:bg-red-700 transition"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           }
@@ -101,4 +100,5 @@
       </table>
     </div>
   }
+
 </div>

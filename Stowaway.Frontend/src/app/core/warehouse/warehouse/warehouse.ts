@@ -17,6 +17,7 @@ export class Warehouse
   extends BaseListPagedComponent<ListWarehouseQueryDto, ListWarehouseQuery>
   implements OnInit
 {
+
   private warehouseApiService = inject(WarehouseApiService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -68,5 +69,9 @@ export class Warehouse
 
   routeToAdd() {
     this.router.navigate(['/warehouse/create']);
+  }
+
+  editItem(id: number) {
+    this.router.navigate(['warehouse/edit', id])
   }
 }
