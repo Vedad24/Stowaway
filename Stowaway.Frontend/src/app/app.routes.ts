@@ -43,7 +43,7 @@ export const routes: Routes = [
         component: CreateItem
     },
     {
-        path: 'item/edit',
+        path: 'item/edit/:id',
         component: EditItem
     },
     {
@@ -55,7 +55,7 @@ export const routes: Routes = [
         component: CreateSupplier
     },
     {
-        path: 'supplier/edit',
+        path: 'supplier/edit/:id',
         component: EditSupplier
     },
     {

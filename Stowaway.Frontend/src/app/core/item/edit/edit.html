@@ -1,1 +1,94 @@
-<p>edit works!</p>
+<div class="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
+
+  <h2 class="text-xl font-bold text-gray-800">Edit Item</h2>
+
+  <form [formGroup]="editForm" (ngSubmit)="save()" class="space-y-4">
+
+    <!-- Name -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Name</label>
+      <input
+        type="text"
+        formControlName="name"
+        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
+               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+      />
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Description</label>
+      <textarea
+        formControlName="description"
+        rows="3"
+        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
+               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+      ></textarea>
+    </div>
+
+    <!-- Image -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Image</label>
+      <input
+        type="file"
+        (change)="onFileSelected($event)"
+        class="mt-1 block w-full text-gray-700 rounded-lg border border-gray-300
+               px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+      />
+    </div>
+
+    <!-- Quantity -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Quantity</label>
+      <input
+        type="number"
+        formControlName="quantity"
+        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
+               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+      />
+    </div>
+
+    <!-- Container -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Container</label>
+      <select
+        formControlName="containerId"
+        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
+               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+      >
+      @for(container of containers; track container.id) {
+          <option [value]="container.id">
+            {{container.name}}
+          </option>
+      }
+      </select>
+    </div>
+
+    <!-- Supplier -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Supplier</label>
+      <select
+        formControlName="supplierId"
+        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
+               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+      >
+      @for (supplier of suppliers; track supplier.id) {
+          <option [value]="supplier.id">
+            {{ supplier.name }}
+          </option>
+      }
+      </select>
+    </div>
+
+    <!-- Submit -->
+    <button
+      type="submit"
+      class="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg
+             hover:bg-blue-700 transition"
+      [disabled]="editForm.invalid"
+    >
+      Save Changes
+    </button>
+
+  </form>
+</div>

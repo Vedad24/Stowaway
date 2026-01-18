@@ -71,6 +71,6 @@ export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListS
   }
 
   editItem(id: number) {
-    this.router.navigate(['/supplier/edit'])
+    this.router.navigate(['/supplier/edit', id],)
   }
 }

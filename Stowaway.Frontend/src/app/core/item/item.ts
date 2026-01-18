@@ -74,6 +74,6 @@ export class Item
   }
 
   editItem(id: number) {
-    this.router.navigate(['/item/edit'])
+    this.router.navigate(['/item/edit',id])
   }
 }

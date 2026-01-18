@@ -5,7 +5,6 @@ import { WarehouseApiService } from '../../../../services/storage/warehouse/ware
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { response } from 'express';
 
 @Component({
   selector: 'app-edit',

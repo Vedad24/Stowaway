@@ -1,11 +1,92 @@
-import { Component } from '@angular/core';
+import { Component, inject, numberAttribute } from '@angular/core';
+import { BaseFormComponent } from '../../base-classes/base-form-component';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { GetSupplierByIdDto } from '../../../services/storage/supplier/supplier.model';
+import { SupplierApiService } from '../../../services/storage/supplier/supplier';
+import { GetItemByIdDto } from '../../../services/storage/item/item.model';
+import { ItemApiService } from '../../../services/storage/item/item';
+import { ContainerApiService } from '../../../services/storage/container/container';
 
 @Component({
   selector: 'app-edit',
-  imports: [],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './edit.html',
   styleUrl: './edit.css',
 })
-export class EditItem {
+export class EditItem
+  extends BaseFormComponent<GetItemByIdDto> {
+  private api = inject(ItemApiService)
+  private supplierService = inject(SupplierApiService);
+  private containerService = inject(ContainerApiService)
+  private router = inject(Router)
+  private route = inject(ActivatedRoute);
+  private itemDto: GetItemByIdDto | null = null;
+  private formBuilder = inject(FormBuilder)
+  editForm: FormGroup = this.formBuilder.group({
+    name: ['', Validators.required],
+    description: [''],
+    byteImage: [null],
+    quantity: [1, [Validators.required, Validators.min(0)]],
+    supplierId: [null],
+    containerId: [null]
+  });
+  itemId!: number;
+  suppliers: any[] = [];
+  containers: any[] = [];
 
+  ngOnInit() {
+    this.itemId = +this.route.snapshot.params['id'];
+    this.loadContainers();
+    this.loadSuppliers();
+    this.loadData();
+  }
+
+  loadSuppliers() {
+    this.supplierService.list().subscribe(res => {
+      this.suppliers = res.items;
+    });
+  }
+
+  loadContainers() {
+    this.containerService.list().subscribe(res => {
+      this.containers = res.items;
+    });
+  }
+
+  protected override loadData(): void {
+    this.startLoading();
+
+    this.api.getById(this.itemId).subscribe({
+      next: (response) => {
+        this.itemDto = response;
+        this.editForm.patchValue(response);
+        this.stopLoading();
+      },
+      error: (err) => {
+        console.log(err.message);
+        this.stopLoading();
+      }
+    })
+  }
+  protected override save(): void {
+    if (this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
+
+    const payload = this.editForm.getRawValue();
+    this.api.update(this.itemId, payload).subscribe({
+      next: (response) => {
+        this.router.navigate(['/item']);
+      },
+      error: (err) => {
+        console.log(err.message);
+      }
+    })
+  }
+  onFileSelected($event: Event) {
+    throw new Error('Method not implemented.');
+  }
 }
