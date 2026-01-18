@@ -27,7 +27,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
             //    throw new Exception($"Item with {normalizedName} already exists");            
             //}
 
-
             var supplier = await ctx.Suppliers.Where(x => x.Id == request.SupplierId).FirstOrDefaultAsync(cancellationToken);
 
             if (supplier == null)

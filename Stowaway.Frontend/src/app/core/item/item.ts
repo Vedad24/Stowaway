@@ -50,6 +50,11 @@ export class Item
     });
   }
 
+  getImageSrc(item: ListItemQueryDto): string | null {
+    if (!item.byteImage) return null;
+    return `data:image/jpeg;base64,${item.byteImage}`;
+  }
+  
   searchData() {
     this.request.search = this.searchTerm;
     this.request.paging.page = 1;

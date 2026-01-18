@@ -68,7 +68,16 @@ private fb = inject(FormBuilder);
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedImageFile = input.files[0];
-      this.form.patchValue({ image: this.selectedImageFile });
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const base64 = (reader.result as string).split(',')[1];
+        this.form.patchValue({ image: base64 });
+      }
+
+      reader.readAsDataURL(this.selectedImageFile);
+      //this.form.patchValue({ image: this.selectedImageFile });
+      //console.log(this.selectedImageFile);
     }
   }
 
@@ -103,16 +112,15 @@ private fb = inject(FormBuilder);
       return;
     }
 
-    const formData = new FormData();
+    /* const formData = new FormData();
     formData.append('name', this.form.value.name);
     formData.append('description', this.form.value.description ?? '');
     formData.append('quantity', this.form.value.quantity);
     formData.append('supplierId', this.form.value.supplierId);
     formData.append('containerId', this.form.value.containerId);
-
     if (this.selectedImageFile) {
-      formData.append('image', "null");
-    }
+      formData.append('image', this.form.value.image);
+    } */
 
     console.log('Submitting item:', this.form.value);
     this.createItem();

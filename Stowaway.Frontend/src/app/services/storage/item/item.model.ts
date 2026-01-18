@@ -18,7 +18,7 @@ export interface ListItemQueryDto {
     id: number,
     name: string,
     description: string,
-    byteImage?: Blob,
+    byteImage?: string,
     quantity: number,
     supplier: SharedSupplierDto,
     container: SharedContainerDto
@@ -30,7 +30,7 @@ export interface GetItemByIdDto{
     id: number,
     name: string,
     description: string,
-    byteImage?: Blob,
+    byteImage?: string,
     quantity: number,
     supplier: SharedSupplierDto,
     container: SharedContainerDto
@@ -39,7 +39,7 @@ export interface GetItemByIdDto{
 export interface CreateItemCommand{
     name: string,
     description: string,
-    byteImage?: Blob,
+    byteImage?: string,
     quantity: number,
     supplierId: number,
     containerId: number
@@ -48,7 +48,7 @@ export interface CreateItemCommand{
 export interface UpdateItemCommand{
     name: string,
     description: string,
-    byteImage?: Blob,
+    byteImage?: string,
     quantity: number,
     supplierId: number,
     containerId: number
