@@ -48,22 +48,6 @@
       />
     </div>
 
-    <!-- Container -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Container</label>
-      <select
-        formControlName="containerId"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
-               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-      >
-      @for(container of containers; track container.id) {
-          <option [value]="container.id">
-            {{container.name}}
-          </option>
-      }
-      </select>
-    </div>
-
     <!-- Supplier -->
     <div>
       <label class="block text-sm font-medium text-gray-700">Supplier</label>
@@ -75,6 +59,22 @@
       @for (supplier of suppliers; track supplier.id) {
           <option [value]="supplier.id">
             {{ supplier.name }}
+          </option>
+      }
+      </select>
+    </div>
+
+      <!-- Container -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Container</label>
+      <select
+        formControlName="containerId"
+        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
+               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+      >
+      @for(container of containers; track container.id) {
+          <option [value]="container.id">
+            {{container.name}}
           </option>
       }
       </select>

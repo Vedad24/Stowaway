@@ -32,9 +32,11 @@ export class EditItem
     supplierId: [null],
     containerId: [null]
   });
+
   itemId!: number;
   suppliers: any[] = [];
   containers: any[] = [];
+  selectedImageFile: File | null = null;
 
   ngOnInit() {
     this.itemId = +this.route.snapshot.params['id'];
@@ -86,7 +88,20 @@ export class EditItem
       }
     })
   }
-  onFileSelected($event: Event) {
-    throw new Error('Method not implemented.');
+
+  onFileSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    this.selectedImageFile = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      this.editForm.patchValue({ byteImage: base64 });
+    }
+
+    reader.readAsDataURL(this.selectedImageFile);
   }
+}
+
 }
