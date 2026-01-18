@@ -41,7 +41,7 @@ export const routes: Routes = [
     {
         path: 'orders-test',
         component: TestSales
-    }
+    },
     {
         path: 'supplier/create',
         component: CreateSupplier
