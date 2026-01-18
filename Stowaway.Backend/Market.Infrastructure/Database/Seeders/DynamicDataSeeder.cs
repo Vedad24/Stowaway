@@ -1,6 +1,7 @@
 ﻿using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
+using System.Numerics;
 
 namespace Market.Infrastructure.Database.Seeders;
 
@@ -25,6 +26,44 @@ public static class DynamicDataSeeder
         await SeedWarehouseAsync(context);
         await SeedContainersAsync(context);
         await SeedItemsAsync(context);
+        await SeedOrdersAsync(context);
+
+    }
+
+    private static async Task SeedOrdersAsync(DatabaseContext context)
+    {
+        if (await context.Orders.AnyAsync())
+            return;
+        var order = new OrderEntity
+        {
+            OrderDate = DateTime.Now,
+            Subtotal = 0,
+            Total = 0,
+            OrderStatusId = OrderStatus.Draft,
+            User = context.Users.FirstOrDefault(),
+        };
+        context.Orders.Add(order);
+
+        ContainerTypeEntity? containerTypeEntity = context.ContainerTypes.FirstOrDefault();
+        var orderItems = new List<OrderItemEntity>
+            {
+                new OrderItemEntity
+                {
+                    Order = order,
+                    ContainerType = containerTypeEntity,
+                    Discount = 0.05m,
+                    Subtotal = containerTypeEntity.Price * 10,
+                    Total = containerTypeEntity.Price * (1m-0.05m) * 10,
+                    Quantity = 10,
+                    UnitPrice = containerTypeEntity.Price,
+                }
+            };
+        order.Subtotal = orderItems.Sum(oi => oi.Subtotal);
+        order.Total = orderItems.Sum(oi => oi.Total);
+        order.orderItems = orderItems;
+        context.SaveChanges();
+        Console.WriteLine("✅ Dynamic seed: demo orders added.");
+
     }
 
     private static async Task SeedOrderStatusAsync(DatabaseContext context)
