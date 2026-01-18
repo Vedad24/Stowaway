@@ -1,6 +1,12 @@
 import { BasePagedQuery } from "../../../models/paging/base-paged-query"
 import { PageResult } from "../../../models/paging/page-result"
 
+export enum RoleName
+{
+    User = 0,
+    Admin
+}
+
 export interface Role 
 {
     id: number,

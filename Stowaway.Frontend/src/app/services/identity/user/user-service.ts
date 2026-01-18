@@ -34,4 +34,19 @@ export class UserService {
     return this.http.delete<boolean>(`${this.userURL}/${id}`);
   }
 
+  signUpData : {
+    email? : string,
+    password? : string 
+  } = {};
+
+  setData(data : {email:string; password : string})
+  {
+
+    this.signUpData = data;
+    console.log("data is set", this.signUpData);
+  }
+  clearData()
+  {
+    this.signUpData = {};
+  }
 }

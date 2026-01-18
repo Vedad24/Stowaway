@@ -7,9 +7,11 @@ import { CurrentUserService } from '../services/current-user-service';
 import { catchError, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { fileURLToPath } from 'url';
+import { UserService } from '../../../services/identity/user/user-service';
+import { MatIcon } from "@angular/material/icon";
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, MatInputModule, MatAnchor, MatButtonModule],
+  imports: [ReactiveFormsModule, MatInputModule, MatAnchor, MatButtonModule, MatIcon],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })
@@ -18,7 +20,24 @@ export class LoginPage {
   authService = inject(AuthService);
   currentUserService = inject(CurrentUserService);
   router = inject(Router);
-  
+  userService = inject(UserService);
+
+  hidePassword = true;
+  ngOnInit()
+  {
+    const data = this.userService.signUpData;
+    if(data)
+    {
+      console.log("Gotten data", data);
+      this.loginForm.patchValue(
+        {
+          email: data.email,
+          password : data.password
+        }
+      )
+      this.userService.clearData();
+    }
+  }
   tryLogin() {
 
     try{
@@ -44,7 +63,7 @@ export class LoginPage {
   
   loginForm = new FormGroup(
     {
-      email : new FormControl('admin@market.local',Validators.email),
+      email : new FormControl('admin@market.local',[Validators.email, Validators.required]),
       password : new FormControl('Admin123!', Validators.required)
     }
   )
