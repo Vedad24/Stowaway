@@ -2,12 +2,12 @@ import { Component, inject } from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
 import {MatInputModule} from '@angular/material/input'
 import { MatAnchor, MatButtonModule } from "@angular/material/button";
-import { AuthService } from '../services/auth-service';
-import { CurrentUserService } from '../services/current-user-service';
+import { AuthService } from '../../services/identity/auth/auth-service'; 
+import { CurrentUserService } from '../../services/identity/auth/current-user-service'; 
 import { catchError, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { fileURLToPath } from 'url';
-import { UserService } from '../../../services/identity/user/user-service';
+import { UserService } from '../../services/identity/user/user-service'; 
 import { MatIcon } from "@angular/material/icon";
 @Component({
   selector: 'app-login-page',
@@ -51,7 +51,7 @@ export class LoginPage {
 
         tap((success) => {
           if(success){
-            this.router.navigate(['']); 
+            this.router.navigate(['main']); 
           }
         })
       ).subscribe();

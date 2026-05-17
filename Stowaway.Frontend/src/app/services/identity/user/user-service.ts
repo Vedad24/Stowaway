@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CreateUserCommand, GetUserById, GetUserByIdDto, ListUserQuery, ListUserQueryResponse, UpdateUserCommand } from './user-service.models';
+import { CreateUserCommand, GetUserById, GetUserByIdOrMailDto, ListUserQuery, ListUserQueryResponse, UpdateUserCommand } from './user-service.models';
 import { environment } from '../../../../enviroments/enivroment';
 import { Observable } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
@@ -12,10 +12,13 @@ export class UserService {
   http = inject(HttpClient);
   userURL = `${environment.apiUrl}/User`;
   
-  public get( id: number) : Observable<GetUserByIdDto>{
-    return this.http.get<GetUserByIdDto>(`${this.userURL}/${id}`);
+  public get( id: number) : Observable<GetUserByIdOrMailDto>{
+    return this.http.get<GetUserByIdOrMailDto>(`${this.userURL}/${id}`);
   }
-
+  public getByMail( email: string) : Observable<GetUserByIdOrMailDto>{
+    return this.http.get<GetUserByIdOrMailDto>(`${this.userURL}/mail/${email}`);
+  }
+  
   public list(payload : ListUserQuery | null) : Observable<ListUserQueryResponse>{
     
     const params = payload ? buildHttpParams(payload as any) : undefined;

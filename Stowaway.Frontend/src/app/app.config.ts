@@ -11,4 +11,4 @@ export const appConfig: ApplicationConfig = {
   ]
 };
 
-export const backendUrl = 'https://localhost:7260';
+

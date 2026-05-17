@@ -4,6 +4,7 @@ using Stowaway.Application.Modules.Identity.Users.Commands.Create;
 using Stowaway.Application.Modules.Identity.Users.Commands.Delete;
 using Stowaway.Application.Modules.Identity.Users.Commands.Update;
 using Stowaway.Application.Modules.Identity.Users.Queries.GetById;
+using Stowaway.Application.Modules.Identity.Users.Queries.GetByMail;
 using Stowaway.Application.Modules.Identity.Users.Queries.List;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -22,9 +23,9 @@ namespace Stowaway.API.Controllers
             return id;
         }
         [HttpGet("{id:int}")]
-        public async Task<GetByIdQueryDto> GetById(int id, CancellationToken ct)
+        public async Task<GetByIdQueryDto> GetById(int mail, CancellationToken ct)
         {
-            return await sender.Send( new GetByIdQuery {Id = id }, ct);
+            return await sender.Send( new GetByIdQuery {Id = mail }, ct);
         }
         [HttpPut]
         public async Task<UpdateUserCommandDto> UpdateUser([FromBody] UpdateUserCommand command, CancellationToken ct)
@@ -41,6 +42,13 @@ namespace Stowaway.API.Controllers
         public async Task DeleteUser(int id, CancellationToken ct)
         {
             await sender.Send(new DeleteUserCommand { Id = id }, ct);
+        }
+
+        //userByMail
+        [HttpGet("mail/{mail}")]
+        public async Task<GetByMailQueryDto> GetByMail(string mail, CancellationToken ct)
+        {
+            return await sender.Send(new GetByMailQuery { Mail = mail }, ct);
         }
     }
 }

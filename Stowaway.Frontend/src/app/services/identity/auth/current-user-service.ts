@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { CurrentUserDto, LoginCommandDto } from '../models/login-model';
+import { CurrentUserDto, LoginCommandDto } from './auth-service.models';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class CurrentUserService {
-  _currentUser : CurrentUserDto | null = null;
-  
+  private _currentUser : CurrentUserDto | null = null;
+  public get currentUser() : CurrentUserDto | null {  this.getUserFromStorage(); return this._currentUser; }
   get user (): CurrentUserDto | null {
     return this._currentUser;
   }

@@ -1,0 +1,99 @@
+.user-settings-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  min-height: calc(100vh - 80px);
+  background: #f5f7fb;
+}
+
+.user-settings-card {
+  width: min(540px, 100%);
+  padding: 32px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.user-settings-card h1 {
+  margin: 0 0 8px;
+  font-size: 1.9rem;
+  color: #111827;
+}
+
+.subtitle {
+  margin: 0 0 24px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.user-settings-form {
+  display: grid;
+  gap: 16px;
+}
+
+.user-settings-form label {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.user-settings-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #f9fafb;
+  color: #111827;
+}
+
+.user-settings-form input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.primary-button,
+.secondary-button {
+  min-width: 120px;
+  padding: 12px 18px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primary-button {
+  color: #ffffff;
+  background: #2563eb;
+}
+
+.primary-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  color: #374151;
+  background: #e5e7eb;
+}
+
+.message {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.message.success {
+  color: #16a34a;
+}
+
+.message.error {
+  color: #dc2626;
+}
