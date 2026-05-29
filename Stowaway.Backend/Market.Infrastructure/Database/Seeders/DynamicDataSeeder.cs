@@ -1,4 +1,5 @@
-﻿using Stowaway.Domain.Entities.Identity;
+﻿using Market.Shared.Constants;
+using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
 
@@ -19,8 +20,32 @@ public static class DynamicDataSeeder
         //await SeedProductCategoriesAsync(context);
         await SeedContainerTypesAsync(context);
         await SeedOrderStatusAsync(context);
+        await SeedPermissionsAsync(context);
         await SeedRolesAsync(context);
         await SeedUsersAsync(context);
+        await SeedRolePermissionsAsync(context);
+    }
+
+    private static async Task SeedPermissionsAsync(DatabaseContext context)
+    {
+        if (await context.Permissions.AnyAsync())
+            return;
+
+        var permissions = new List<PermissionEntity>
+        {
+            new() { Id = 1, Description = Permissions.UsersRead },
+            new() { Id = 2, Description = Permissions.UsersCreate },
+            new() { Id = 3, Description = Permissions.UsersUpdate },
+            new() { Id = 4, Description = Permissions.UsersDelete },
+            new() { Id = 5, Description = Permissions.RolesRead },
+            new() { Id = 6, Description = Permissions.RolesCreate },
+            new() { Id = 7, Description = Permissions.RolesUpdate },
+            new() { Id = 8, Description = Permissions.RolesDelete }
+        };
+
+        context.Permissions.AddRange(permissions);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: permissions added.");
     }
 
     private static async Task SeedOrderStatusAsync(DatabaseContext context)
@@ -106,6 +131,7 @@ public static class DynamicDataSeeder
         {
             Email = "admin@market.local",
             PasswordHash = hasher.HashPassword(null!, "Admin123!"),
+            RoleId = Role.Admin,
             IsEnabled = true,
         };
 
@@ -113,7 +139,7 @@ public static class DynamicDataSeeder
         {
             Email = "manager@market.local",
             PasswordHash = hasher.HashPassword(null!, "User123!"),
-            
+            RoleId = Role.User,
             IsEnabled = true,
         };
 
@@ -121,19 +147,50 @@ public static class DynamicDataSeeder
         {
             Email = "string",
             PasswordHash = hasher.HashPassword(null!, "string"),
-            
+            RoleId = Role.User,
             IsEnabled = true,
         };
         var dummyForTests = new UserEntity
         {
             Email = "test",
             PasswordHash = hasher.HashPassword(null!, "test123"),
-            
+            RoleId = Role.User,
             IsEnabled = true,
         };
         context.Users.AddRange(admin, user, dummyForSwagger, dummyForTests);
         await context.SaveChangesAsync();
 
         Console.WriteLine("✅ Dynamic seed: demo users added.");
+    }
+
+    private static async Task SeedRolePermissionsAsync(DatabaseContext context)
+    {
+        if (await context.PermissionRoles.AnyAsync())
+            return;
+
+        if (!await context.Permissions.AnyAsync())
+            return;
+
+        var permissionMap = await context.Permissions
+            .ToDictionaryAsync(p => p.Description, p => p.Id);
+
+        var permissionRoleAssignments = new List<Permission_RoleEntity>
+        {
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersRead] },
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersCreate] },
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersUpdate] },
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersDelete] },
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesRead] },
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesCreate] },
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesUpdate] },
+            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesDelete] },
+
+            new() { RoleId = Role.User, PermissionId = permissionMap[Permissions.UsersRead] }
+        };
+
+        context.PermissionRoles.AddRange(permissionRoleAssignments);
+        await context.SaveChangesAsync();
+
+        Console.WriteLine("✅ Dynamic seed: role permissions added.");
     }
 }

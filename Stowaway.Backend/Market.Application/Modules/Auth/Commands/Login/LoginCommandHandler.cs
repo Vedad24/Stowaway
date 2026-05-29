@@ -18,7 +18,15 @@ public sealed class LoginCommandHandler(
         if (verify == PasswordVerificationResult.Failed)
             throw new StowawayConflictException("Pogrešni kredencijali.");
 
-        var tokens = jwt.IssueTokens(user);
+        var permissions = user.RoleId is not null
+            ? await ctx.PermissionRoles
+                .Where(x => x.RoleId == user.RoleId)
+                .Select(x => x.Permission.Description)
+                .Distinct()
+                .ToListAsync(ct)
+            : new List<string>();
+
+        var tokens = jwt.IssueTokens(user, permissions);
 
         ctx.RefreshTokens.Add(new RefreshTokenEntity
         {

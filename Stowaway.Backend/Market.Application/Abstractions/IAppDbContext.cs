@@ -17,6 +17,8 @@ public interface IAppDbContext
     //Identity
     DbSet<UserEntity> Users { get; }
     DbSet<RoleEntity> Roles { get; }
+    DbSet<PermissionEntity> Permissions { get; }
+    DbSet<Permission_RoleEntity> PermissionRoles { get; }
     DbSet<RefreshTokenEntity> RefreshTokens { get; }
 
     //Sales

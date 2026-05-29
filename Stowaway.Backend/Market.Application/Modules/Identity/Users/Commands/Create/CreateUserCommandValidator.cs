@@ -29,7 +29,7 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .NotEmpty().WithMessage("LastName is required.");
 
         RuleFor(x => x.Role)
-            .Must(role => role == null || role.Id > 0)
+            .Must(role => role == null || role.Id >= 0)
             .WithMessage("Role is not valid.")
             .When(x => x.Role is not null);
     }

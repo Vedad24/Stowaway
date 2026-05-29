@@ -1,4 +1,7 @@
-﻿namespace Market.Infrastructure.Database.Seeders;
+﻿using Market.Shared.Constants;
+using Stowaway.Domain.Entities.Identity;
+
+namespace Market.Infrastructure.Database.Seeders;
 
 public partial class StaticDataSeeder
 {

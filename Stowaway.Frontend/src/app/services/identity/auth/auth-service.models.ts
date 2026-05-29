@@ -26,6 +26,7 @@ export interface JwtUserPayload
     sub: string;
     nameid: string;
     email: string;
+    permission: string[];
     ver: string;
     iat: number;
     jti: string;

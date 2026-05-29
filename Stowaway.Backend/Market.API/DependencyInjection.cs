@@ -1,4 +1,5 @@
-﻿using Market.Infrastructure.Common;
+﻿using Market.API.Authorization;
+using Market.Infrastructure.Common;
 using Market.Shared.Dtos;
 using Market.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -69,6 +70,9 @@ public static class DependencyInjection
                 .RequireAuthenticatedUser()
                 .Build();
         });
+
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
         // Swagger with Bearer auth
         services.AddEndpointsApiExplorer();
