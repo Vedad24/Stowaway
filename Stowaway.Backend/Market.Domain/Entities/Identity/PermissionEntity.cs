@@ -7,23 +7,12 @@ using System.Threading.Tasks;
 
 namespace Stowaway.Domain.Entities.Identity
 {
-    public enum Permission
-    {
-        CreateAccount = 1,
-        DeleteOwnAccount,
-        DeleteAccount,
-        CreateWarehouse,
-        DeleteOwnWarehouse,
-        DeleteWarehouse,
-        ChangeWarehouseConfiguration,
-        ChageWarehousePriviledges,
-        //Add More
-    }
+   
     [Table("Permission", Schema = "Identity")]
 
     public class PermissionEntity
     {
-        public Permission Id { get; set; }
-        public string Description { get; set; }
+        public int Id { get; set; }
+        public required string Description { get; set; }
     }
 }

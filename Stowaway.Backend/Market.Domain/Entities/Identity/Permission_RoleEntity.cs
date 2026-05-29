@@ -18,7 +18,7 @@ namespace Stowaway.Domain.Entities.Identity
         public Role RoleId { get; set; }
         public RoleEntity Role { get; set; }
         [ForeignKey(nameof(Permission))]
-        public Permission PermissionId { get; set; }
+        public int PermissionId { get; set; }
         public PermissionEntity Permission { get; set; }
 
     }

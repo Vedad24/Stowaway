@@ -1,4 +1,6 @@
-﻿namespace Market.Application.Abstractions;
+﻿using Stowaway.Domain.Entities.Identity;
+
+namespace Market.Application.Abstractions;
 
 /// <summary>
 /// Represents the currently logged-in user in the system.
@@ -14,6 +16,7 @@ public interface IAppCurrentUser
     /// User Email. (optional)
     /// </summary>
     string? Email { get; }
+    
 
     /// <summary>
     /// Indicates whether the user is logged in.

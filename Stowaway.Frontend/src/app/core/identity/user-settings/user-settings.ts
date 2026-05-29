@@ -33,13 +33,13 @@ export class UserSettings implements OnInit {
   errorMessage = '';
 
   ngOnInit(): void {
-    const currentUser = this.currentUserService.currentUser;
-    if (!currentUser?.email) {
+    
+    if (!this.currentUserService.userEmail) {
       this.errorMessage = 'Unable to load current user information.';
       return;
     }
 
-    this.userService.getByMail(currentUser.email).subscribe({
+    this.userService.getByMail(this.currentUserService.userEmail).subscribe({
       next: (response) => {
         this.user = response;
         this.form.patchValue({

@@ -26,7 +26,8 @@ export class LoginPage {
   ngOnInit()
   {
     const data = this.userService.signUpData;
-    if(data)
+    //console.log("Data:", data);
+    if(data.email != null && data.password != null)
     {
       console.log("Gotten data", data);
       this.loginForm.patchValue(

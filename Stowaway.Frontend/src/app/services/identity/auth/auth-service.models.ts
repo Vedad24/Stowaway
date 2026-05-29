@@ -17,7 +17,17 @@ export interface LoginCommandDto
 
 export interface CurrentUserDto
 {
-    email: string;
     roleId : number;
     accessToken : string;
+}
+
+export interface JwtUserPayload
+{
+    sub: string;
+    nameid: string;
+    email: string;
+    ver: string;
+    iat: number;
+    jti: string;
+    aud: string;
 }

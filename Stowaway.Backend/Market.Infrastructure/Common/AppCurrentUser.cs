@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Market.Application.Abstractions;
+using Stowaway.Domain.Entities.Identity;
 
 namespace Market.Infrastructure.Common;
 
@@ -31,4 +32,5 @@ public sealed class AppCurrentUser(IHttpContextAccessor httpContextAccessor)
 
     public bool IsEmployee =>
         _user?.FindFirstValue("is_employee")?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
+
 }
