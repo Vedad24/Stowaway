@@ -11,9 +11,6 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Create
     {
         public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            if (!isValid(request))
-                throw new StowawayConflictException("Request not valid");
-
             var hasher = new PasswordHasher<UserEntity>();
             UserEntity user = new()
             {
@@ -28,13 +25,6 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Create
             await dbContext.Users.AddAsync(user, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
             return user.Id;
-
-        }
-
-        private bool isValid(CreateUserCommand request)
-        {
-            bool noName = string.IsNullOrWhiteSpace(request.FirstName) || string.IsNullOrWhiteSpace(request.LastName);
-            return !dbContext.Users.Any(u => u.Email == request.Email) && !noName;
         }
     }
 }

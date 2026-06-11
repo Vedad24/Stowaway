@@ -1,4 +1,5 @@
 ﻿using Market.Application.Abstractions;
+using Market.Shared.Constants;
 using Market.Shared.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -20,7 +21,7 @@ public sealed class JwtTokenService : IJwtTokenService
         _time = time ?? throw new ArgumentNullException(nameof(time));
     }
 
-    public JwtTokenPair IssueTokens(UserEntity user)
+    public JwtTokenPair IssueTokens(UserEntity user, IEnumerable<string>? permissions = null)
     {
         // Now from TimeProvider (consistent with the rest of the app)
         var nowInstant = _time.GetUtcNow();
@@ -34,14 +35,21 @@ public sealed class JwtTokenService : IJwtTokenService
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(ClaimTypes.NameIdentifier,   user.Id.ToString()),
             new(ClaimTypes.Email,            user.Email),
-            //new("is_admin",    user.IsAdmin.ToString().ToLowerInvariant()),
-            //new("is_manager",  user.IsManager.ToString().ToLowerInvariant()),
-            //new("is_employee", user.IsEmployee.ToString().ToLowerInvariant()),
             new("ver",         user.TokenVersion.ToString()),
             new(JwtRegisteredClaimNames.Iat, ToUnixTimeSeconds(nowInstant).ToString(), ClaimValueTypes.Integer64),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
             new(JwtRegisteredClaimNames.Aud, _jwt.Audience)
         };
+
+        if (user.RoleId is not null)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, user.RoleId.ToString()));
+        }
+
+        if (permissions is not null)
+        {
+            claims.AddRange(permissions.Distinct().Select(permission => new Claim(Permissions.ClaimType, permission)));
+        }
 
         // --- Signature ---
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));

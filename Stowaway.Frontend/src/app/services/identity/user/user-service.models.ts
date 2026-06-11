@@ -43,7 +43,7 @@ export interface DeleteUserCommand{
 export interface GetUserById{
     id: number,
 }
-export interface GetUserByIdDto{
+export interface GetUserByIdOrMailDto{
     id: number,
     email: string,
     firstName: string,
@@ -51,6 +51,7 @@ export interface GetUserByIdDto{
     role: Role,
     isEnabled: boolean
 }
+
 
 export interface ListUserQuery extends BasePagedQuery{
     search: string | null,

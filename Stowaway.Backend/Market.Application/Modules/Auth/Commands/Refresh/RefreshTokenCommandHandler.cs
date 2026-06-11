@@ -36,12 +36,20 @@ public sealed class RefreshTokenCommandHandler(
         if (user is null || !user.IsEnabled || user.IsDeleted)
             throw new StowawayConflictException("Korisnički nalog je nevažeći.");
 
+        var permissions = user.RoleId is not null
+            ? await ctx.PermissionRoles
+                .Where(x => x.RoleId == user.RoleId)
+                .Select(x => x.Permission.Description)
+                .Distinct()
+                .ToListAsync(ct)
+            : new List<string>();
+
         // 3) Rotation: revoke the old one
         rt.IsRevoked = true;
         rt.RevokedAtUtc = nowUtc;
 
         // 4) Issue a NEW pair (access + refresh) – the service returns both RAW and HASH along with expirations.
-        var pair = jwt.IssueTokens(user);
+        var pair = jwt.IssueTokens(user, permissions);
 
         // 5) Save the NEW refresh token (HASH only) in the database
         var newRt = new RefreshTokenEntity

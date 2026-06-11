@@ -10,9 +10,11 @@ namespace Stowaway.Domain.Entities.Storage.StorageIdentity
     [Table("PriviledgeGroup_Priviledge", Schema = "StorageIdentity")]
     public class PriviledgeGroup_PriviledgeEntity
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public int PriviledgeGroupId { get; set; }
-        public PriviledgeGroupEntity PriviledgeGroup { get; set; }
+        public PriviledgeGroupEntity? PriviledgeGroup { get; set; }
         public int PriviledgeId {  set; get; } 
-        public PriviledgeEntity Priviledge { set; get; }
+        public PriviledgeEntity? Priviledge { set; get; }
     }
 }

@@ -13,7 +13,7 @@ namespace Stowaway.Application.Modules.Identity.Roles.Queries.List
             return await db.Roles.Select(r => new ListRolesQueryDto()
             {
                 roleId = r.Id,
-                roleName = Enum.GetName(r.Id)
+                roleName = Enum.GetName(r.Id) ?? "Unknown"
             }).ToListAsync();
         }
     }

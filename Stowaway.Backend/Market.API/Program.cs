@@ -54,7 +54,12 @@ public partial class Program
                 {
                     options.AddPolicy("FrontendPolicy", policy =>
                     {
-                        policy.WithOrigins("http://localhost:4200")
+                        policy.WithOrigins(
+                                "http://localhost:4200",
+                                "https://localhost:4200",
+                                "http://127.0.0.1:4200",
+                                "https://127.0.0.1:4200"
+                            )
                                .AllowAnyMethod()
                                .AllowAnyHeader()
                                .AllowCredentials();
@@ -81,7 +86,7 @@ public partial class Program
             app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
             // Only redirect to HTTPS in production
-            if (!app.Environment.IsDevelopment())
+            //if (!app.Environment.IsDevelopment())
             {
                 app.UseHttpsRedirection();
             }

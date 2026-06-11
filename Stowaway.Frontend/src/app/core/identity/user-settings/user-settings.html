@@ -1,0 +1,31 @@
+<section class="user-settings-page">
+  <div class="user-settings-card">
+    <h1>Account Settings</h1>
+    <p class="subtitle">Update your profile details and save changes.</p>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="user-settings-form">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
+
+      <label for="firstName">First name</label>
+      <input id="firstName" type="text" formControlName="firstName" placeholder="John" />
+
+      <label for="lastName">Last name</label>
+      <input id="lastName" type="text" formControlName="lastName" placeholder="Doe" />
+    
+        
+      <label for="role">Role</label>
+      <input id="role" type="text" formControlName="role" placeholder="User role" enabled="false" />
+
+      <div class="button-row">
+        <button type="button" class="secondary-button" (click)="cancel()">Cancel</button>
+        <button type="submit" class="primary-button" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Save changes' }}
+        </button>
+      </div>
+
+      <p class="message success" *ngIf="message">{{ message }}</p>
+      <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    </form>
+  </div>
+</section>

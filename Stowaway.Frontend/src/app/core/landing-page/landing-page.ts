@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
-import { LoginPage } from '../auth/login-page/login-page';
+import { LoginPage } from '../login-page/login-page'; 
 import {MatButtonModule} from '@angular/material/button'
 @Component({
   selector: 'app-landing-page',
