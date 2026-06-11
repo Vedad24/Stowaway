@@ -11,8 +11,8 @@ namespace Stowaway.Domain.Entities.Storage.StorageIdentity
     public class PriviledgeGroup_PriviledgeEntity
     {
         public int PriviledgeGroupId { get; set; }
-        public PriviledgeGroupEntity PriviledgeGroup { get; set; }
+        public PriviledgeGroupEntity? PriviledgeGroup { get; set; }
         public int PriviledgeId {  set; get; } 
-        public PriviledgeEntity Priviledge { set; get; }
+        public PriviledgeEntity? Priviledge { set; get; }
     }
 }

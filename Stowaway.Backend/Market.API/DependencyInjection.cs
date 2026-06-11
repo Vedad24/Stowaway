@@ -71,8 +71,9 @@ public static class DependencyInjection
                 .Build();
         });
 
-        services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+        services.AddSingleton<IAuthorizationPolicyProvider, StowawayAuthPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddScoped<IAuthorizationHandler, PriviledgeAuthorizationHandler>();
 
         // Swagger with Bearer auth
         services.AddEndpointsApiExplorer();

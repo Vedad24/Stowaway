@@ -3,6 +3,7 @@ namespace Market.Shared.Constants;
 public static class Permissions
 {
     public const string ClaimType = "permission";
+    public const string AuthPrefix = "Permission:";
 
     public const string UsersRead = "Users.Read";
     public const string UsersCreate = "Users.Create";

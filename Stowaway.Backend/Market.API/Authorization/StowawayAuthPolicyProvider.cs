@@ -3,11 +3,11 @@ using Microsoft.Extensions.Options;
 
 namespace Market.API.Authorization;
 
-public sealed class PermissionPolicyProvider : IAuthorizationPolicyProvider
+public sealed class StowawayAuthPolicyProvider : IAuthorizationPolicyProvider
 {
     private readonly DefaultAuthorizationPolicyProvider _fallbackPolicyProvider;
 
-    public PermissionPolicyProvider(IOptions<AuthorizationOptions> options)
+    public StowawayAuthPolicyProvider(IOptions<AuthorizationOptions> options)
     {
         _fallbackPolicyProvider = new DefaultAuthorizationPolicyProvider(options);
     }
@@ -20,12 +20,24 @@ public sealed class PermissionPolicyProvider : IAuthorizationPolicyProvider
     {
         if (string.IsNullOrWhiteSpace(policyName))
             return _fallbackPolicyProvider.GetPolicyAsync(policyName);
+        if(policyName.StartsWith("Priviledge:", StringComparison.OrdinalIgnoreCase))
+        {
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddRequirements(new PriviledgeRequirement(policyName))
+                .Build();
 
-        var policy = new AuthorizationPolicyBuilder()
+            return Task.FromResult<AuthorizationPolicy?>(policy);
+        }else if(policyName.StartsWith("Permission:", StringComparison.OrdinalIgnoreCase))
+        {
+             var policy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .AddRequirements(new PermissionRequirement(policyName))
             .Build();
 
-        return Task.FromResult<AuthorizationPolicy?>(policy);
+            return Task.FromResult<AuthorizationPolicy?>(policy);
+        }else
+            return _fallbackPolicyProvider.GetPolicyAsync(policyName);
+        
     }
 }

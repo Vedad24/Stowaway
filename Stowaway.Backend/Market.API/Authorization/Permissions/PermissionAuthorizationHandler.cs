@@ -1,3 +1,4 @@
+using Market.Infrastructure.Database;
 using Market.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
 

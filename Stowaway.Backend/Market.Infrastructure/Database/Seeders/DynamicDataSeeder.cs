@@ -21,6 +21,7 @@ public static class DynamicDataSeeder
         await SeedContainerTypesAsync(context);
         await SeedOrderStatusAsync(context);
         await SeedPermissionsAsync(context);
+        await SeedPrivilegesAsync(context);
         await SeedRolesAsync(context);
         await SeedUsersAsync(context);
         await SeedRolePermissionsAsync(context);
@@ -46,6 +47,70 @@ public static class DynamicDataSeeder
         context.Permissions.AddRange(permissions);
         await context.SaveChangesAsync();
         Console.WriteLine("✅ Dynamic seed: permissions added.");
+    }
+
+    private static async Task SeedPrivilegesAsync(DatabaseContext context)
+    {
+        var privilegeNames = new[]
+        {
+            Priviledges.WarehouseRead,
+            Priviledges.WarehouseCreate,
+            Priviledges.WarehouseUpdate,
+            Priviledges.WarehouseDelete,
+            Priviledges.InventoryRead,
+            Priviledges.InventoryCreate,
+            Priviledges.InventoryUpdate,
+            Priviledges.InventoryDelete,
+            Priviledges.ProductRead,
+            Priviledges.ProductCreate,
+            Priviledges.ProductUpdate,
+            Priviledges.ProductDelete,
+            Priviledges.OrderRead,
+            Priviledges.OrderCreate,
+            Priviledges.OrderUpdate,
+            Priviledges.OrderDelete,
+            Priviledges.SupplierRead,
+            Priviledges.SupplierCreate,
+            Priviledges.SupplierUpdate,
+            Priviledges.SupplierDelete,
+            Priviledges.UsersManage,
+            Priviledges.RolesManage,
+            Priviledges.WarehouseUsersManage,
+            Priviledges.ReportsRead,
+            Priviledges.ReportsExport,
+        };
+
+        var existingPrivileges = await context.Permissions
+            .Where(permission => privilegeNames.Contains(permission.Description))
+            .Select(permission => permission.Description)
+            .ToListAsync();
+
+        var missingPrivileges = privilegeNames
+            .Where(name => !existingPrivileges.Contains(name))
+            .Select((name, index) => new PermissionEntity
+            {
+                Description = name
+            })
+            .ToList();
+
+        if (missingPrivileges.Count == 0)
+        {
+            Console.WriteLine("✅ Dynamic seed: warehouse privileges already exist.");
+            return;
+        }
+
+        var nextId = await context.Permissions.AnyAsync()
+            ? await context.Permissions.MaxAsync(permission => permission.Id) + 1
+            : 1;
+
+        foreach (var privilege in missingPrivileges)
+        {
+            privilege.Id = nextId++;
+            context.Permissions.Add(privilege);
+        }
+
+        await context.SaveChangesAsync();
+        Console.WriteLine($"✅ Dynamic seed: {missingPrivileges.Count} warehouse privileges added.");
     }
 
     private static async Task SeedOrderStatusAsync(DatabaseContext context)
@@ -165,32 +230,53 @@ public static class DynamicDataSeeder
 
     private static async Task SeedRolePermissionsAsync(DatabaseContext context)
     {
-        if (await context.PermissionRoles.AnyAsync())
-            return;
-
         if (!await context.Permissions.AnyAsync())
             return;
 
-        var permissionMap = await context.Permissions
-            .ToDictionaryAsync(p => p.Description, p => p.Id);
+        var permissions = await context.Permissions
+            .AsNoTracking()
+            .ToListAsync();
 
-        var permissionRoleAssignments = new List<Permission_RoleEntity>
+        var existingAssignments = await context.PermissionRoles
+            .Select(permissionRole => new { permissionRole.RoleId, permissionRole.PermissionId })
+            .ToListAsync();
+
+        var existingSet = new HashSet<(Role RoleId, int PermissionId)>(
+            existingAssignments.Select(item => (item.RoleId, item.PermissionId)));
+
+        var permissionRoleAssignments = new List<Permission_RoleEntity>();
+
+        foreach (var permission in permissions)
         {
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersRead] },
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersCreate] },
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersUpdate] },
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.UsersDelete] },
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesRead] },
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesCreate] },
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesUpdate] },
-            new() { RoleId = Role.Admin, PermissionId = permissionMap[Permissions.RolesDelete] },
+            if (!existingSet.Contains((Role.Admin, permission.Id)))
+            {
+                permissionRoleAssignments.Add(new Permission_RoleEntity
+                {
+                    RoleId = Role.Admin,
+                    PermissionId = permission.Id,
+                });
+            }
 
-            new() { RoleId = Role.User, PermissionId = permissionMap[Permissions.UsersRead] }
-        };
+            if (permission.Description.EndsWith(".Read", StringComparison.OrdinalIgnoreCase) &&
+                !existingSet.Contains((Role.User, permission.Id)))
+            {
+                permissionRoleAssignments.Add(new Permission_RoleEntity
+                {
+                    RoleId = Role.User,
+                    PermissionId = permission.Id,
+                });
+            }
+        }
+
+        if (permissionRoleAssignments.Count == 0)
+        {
+            Console.WriteLine("✅ Dynamic seed: role permissions already exist.");
+            return;
+        }
 
         context.PermissionRoles.AddRange(permissionRoleAssignments);
         await context.SaveChangesAsync();
 
-        Console.WriteLine("✅ Dynamic seed: role permissions added.");
+        Console.WriteLine($"✅ Dynamic seed: {permissionRoleAssignments.Count} role permissions added.");
     }
 }
