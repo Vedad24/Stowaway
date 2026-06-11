@@ -14,4 +14,10 @@ public static class Permissions
     public const string RolesCreate = "Roles.Create";
     public const string RolesUpdate = "Roles.Update";
     public const string RolesDelete = "Roles.Delete";
+
+    public const string WarehouseCreate = "Warehouse.Create";
+    public const string WarehouseRead = "Warehouse.Read";
+    public const string WarehouseUpdate = "Warehouse.Update";
+    public const string WarehouseDelete = "Warehouse.Delete";
+
 }

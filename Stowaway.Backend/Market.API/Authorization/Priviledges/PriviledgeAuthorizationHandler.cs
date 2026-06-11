@@ -20,12 +20,16 @@ public sealed class PriviledgeAuthorizationHandler(DatabaseContext dbContext) : 
         int? warehouseId = GetWarehouseId(context);
         if(warehouseId is null)
             return;
+        string priviledgeCode = requirement.Priviledge;
         var hasPriviledge = await dbContext.WarehouseUsers
         .Where(wu => wu.UserId == userId && wu.WarehouseId == warehouseId)
-        .SelectMany(wu => wu.PriviledgeGroup.Priviledges) 
-        .AnyAsync(p => p.Code == requirement.Priviledge);
+        // .Include(wu => wu.PriviledgeGroup)
+        // .ThenInclude(pg => pg.Priviledges)
+        .SelectMany(wu => wu.PriviledgeGroup.Priviledges)
+        .AnyAsync(p =>  Priviledges.AuthPrefix + p.Priviledge.Code == priviledgeCode);
+        
         if(hasPriviledge)
-            context.Succeed(requirement);
+           context.Succeed(requirement);
         
         return;
 
@@ -33,10 +37,11 @@ public sealed class PriviledgeAuthorizationHandler(DatabaseContext dbContext) : 
 
     private int? GetWarehouseId(AuthorizationHandlerContext context)
     {
-        if(context.Resource is not AuthorizationFilterContext mvcContext)
+        Console.WriteLine(context.Resource?.GetType().FullName); //debug
+        if(context.Resource is not HttpContext mvcContext)
             return null;
         //Change id to warehouseId after controller update
-        var warehouseIdValue = mvcContext.RouteData.Values["id"]?.ToString();
+        var warehouseIdValue = mvcContext.Request.RouteValues["id"]?.ToString();
         if(!int.TryParse(warehouseIdValue, out var warehouseId))
             return null;
         return warehouseId;

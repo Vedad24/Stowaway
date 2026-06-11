@@ -2,6 +2,7 @@
 using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
+using Stowaway.Domain.Entities.Storage.StorageIdentity;
 
 namespace Market.Infrastructure.Database.Seeders;
 
@@ -24,6 +25,7 @@ public static class DynamicDataSeeder
         await SeedPrivilegesAsync(context);
         await SeedRolesAsync(context);
         await SeedUsersAsync(context);
+        await SeedStorageIdentityAsync(context);
         await SeedRolePermissionsAsync(context);
     }
 
@@ -80,15 +82,16 @@ public static class DynamicDataSeeder
             Priviledges.ReportsExport,
         };
 
-        var existingPrivileges = await context.Permissions
-            .Where(permission => privilegeNames.Contains(permission.Description))
-            .Select(permission => permission.Description)
+        var existingPrivileges = await context.Priviledges
+            .Where(permission => privilegeNames.Contains(permission.Code))
+            .Select(permission => permission.Code)
             .ToListAsync();
 
         var missingPrivileges = privilegeNames
             .Where(name => !existingPrivileges.Contains(name))
-            .Select((name, index) => new PermissionEntity
+            .Select((name, index) => new PriviledgeEntity
             {
+                Code = name,
                 Description = name
             })
             .ToList();
@@ -99,15 +102,7 @@ public static class DynamicDataSeeder
             return;
         }
 
-        var nextId = await context.Permissions.AnyAsync()
-            ? await context.Permissions.MaxAsync(permission => permission.Id) + 1
-            : 1;
-
-        foreach (var privilege in missingPrivileges)
-        {
-            privilege.Id = nextId++;
-            context.Permissions.Add(privilege);
-        }
+        context.Priviledges.AddRange(missingPrivileges);
 
         await context.SaveChangesAsync();
         Console.WriteLine($"✅ Dynamic seed: {missingPrivileges.Count} warehouse privileges added.");
@@ -226,6 +221,174 @@ public static class DynamicDataSeeder
         await context.SaveChangesAsync();
 
         Console.WriteLine("✅ Dynamic seed: demo users added.");
+    }
+
+    private static async Task SeedStorageIdentityAsync(DatabaseContext context)
+    {
+        var warehouse = await context.Warehouses.FirstOrDefaultAsync();
+
+        if (warehouse == null)
+        {
+            warehouse = new WarehouseEntity { Name = "Main Warehouse" };
+            context.Warehouses.Add(warehouse);
+            await context.SaveChangesAsync();
+            Console.WriteLine("✅ Dynamic seed: demo warehouse added.");
+        }
+
+        var privilegeCodes = new[]
+        {
+            Priviledges.WarehouseRead,
+            Priviledges.WarehouseCreate,
+            Priviledges.WarehouseUpdate,
+            Priviledges.WarehouseDelete,
+            Priviledges.InventoryRead,
+            Priviledges.InventoryCreate,
+            Priviledges.InventoryUpdate,
+            Priviledges.InventoryDelete,
+            Priviledges.ProductRead,
+            Priviledges.ProductCreate,
+            Priviledges.ProductUpdate,
+            Priviledges.ProductDelete,
+            Priviledges.OrderRead,
+            Priviledges.OrderCreate,
+            Priviledges.OrderUpdate,
+            Priviledges.OrderDelete,
+            Priviledges.SupplierRead,
+            Priviledges.SupplierCreate,
+            Priviledges.SupplierUpdate,
+            Priviledges.SupplierDelete,
+            Priviledges.UsersManage,
+            Priviledges.RolesManage,
+            Priviledges.WarehouseUsersManage,
+            Priviledges.ReportsRead,
+            Priviledges.ReportsExport,
+        };
+
+        var existingPrivileges = await context.Priviledges
+            .Where(privilege => privilegeCodes.Contains(privilege.Code))
+            .ToDictionaryAsync(privilege => privilege.Code, privilege => privilege.Id);
+
+        var nextPrivilegeId = await context.Priviledges.AnyAsync()
+            ? await context.Priviledges.MaxAsync(privilege => privilege.Id) + 1
+            : 1;
+
+        foreach (var code in privilegeCodes.Where(code => !existingPrivileges.ContainsKey(code)))
+        {
+            context.Priviledges.Add(new PriviledgeEntity
+            {
+                Id = nextPrivilegeId++,
+                Code = code,
+                Description = code,
+            });
+        }
+
+        await context.SaveChangesAsync();
+
+        var privilegeMap = await context.Priviledges
+            .ToDictionaryAsync(privilege => privilege.Code, privilege => privilege.Id);
+
+        var ownerGroup = await context.PriviledgeGroups
+            .FirstOrDefaultAsync(group => group.WarehouseId == warehouse.Id && group.Name == "Owner");
+
+        if (ownerGroup == null)
+        {
+            ownerGroup = new PriviledgeGroupEntity
+            {
+                Name = "Owner",
+                WarehouseId = warehouse.Id,
+            };
+
+            context.PriviledgeGroups.Add(ownerGroup);
+            await context.SaveChangesAsync();
+        }
+
+        var readerGroup = await context.PriviledgeGroups
+            .FirstOrDefaultAsync(group => group.WarehouseId == warehouse.Id && group.Name == "Reader");
+
+        if (readerGroup == null)
+        {
+            readerGroup = new PriviledgeGroupEntity
+            {
+                Name = "Reader",
+                WarehouseId = warehouse.Id,
+            };
+
+            context.PriviledgeGroups.Add(readerGroup);
+            await context.SaveChangesAsync();
+        }
+
+        foreach (var privilegeCode in privilegeCodes)
+        {
+            var privilegeId = privilegeMap[privilegeCode];
+
+            var ownerLinkExists = await context.PriviledgeGroupsPriviledges.AnyAsync(link =>
+                link.PriviledgeGroupId == ownerGroup.Id && link.PriviledgeId == privilegeId);
+
+            if (!ownerLinkExists)
+            {
+                context.PriviledgeGroupsPriviledges.Add(new PriviledgeGroup_PriviledgeEntity
+                {
+                    PriviledgeGroupId = ownerGroup.Id,
+                    PriviledgeId = privilegeId,
+                });
+            }
+        }
+
+        var readerPrivilegeId = privilegeMap[Priviledges.WarehouseRead];
+        var readerLinkExists = await context.PriviledgeGroupsPriviledges.AnyAsync(link =>
+            link.PriviledgeGroupId == readerGroup.Id && link.PriviledgeId == readerPrivilegeId);
+
+        if (!readerLinkExists)
+        {
+            context.PriviledgeGroupsPriviledges.Add(new PriviledgeGroup_PriviledgeEntity
+            {
+                PriviledgeGroupId = readerGroup.Id,
+                PriviledgeId = readerPrivilegeId,
+            });
+        }
+
+        await context.SaveChangesAsync();
+
+        var admin = await context.Users.SingleOrDefaultAsync(user => user.Email == "admin@market.local");
+        if (admin != null)
+        {
+            var adminAssignmentExists = await context.WarehouseUsers.AnyAsync(link =>
+                link.WarehouseId == warehouse.Id &&
+                link.UserId == admin.Id &&
+                link.PriviledgeGroupId == ownerGroup.Id);
+
+            if (!adminAssignmentExists)
+            {
+                context.WarehouseUsers.Add(new Warehouse_UserEntity
+                {
+                    WarehouseId = warehouse.Id,
+                    UserId = admin.Id,
+                    PriviledgeGroupId = ownerGroup.Id,
+                });
+            }
+        }
+
+        var readerUser = await context.Users.SingleOrDefaultAsync(user => user.Email == "manager@market.local");
+        if (readerUser != null)
+        {
+            var readerAssignmentExists = await context.WarehouseUsers.AnyAsync(link =>
+                link.WarehouseId == warehouse.Id &&
+                link.UserId == readerUser.Id &&
+                link.PriviledgeGroupId == readerGroup.Id);
+
+            if (!readerAssignmentExists)
+            {
+                context.WarehouseUsers.Add(new Warehouse_UserEntity
+                {
+                    WarehouseId = warehouse.Id,
+                    UserId = readerUser.Id,
+                    PriviledgeGroupId = readerGroup.Id,
+                });
+            }
+        }
+
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: warehouse identity groups and assignments added.");
     }
 
     private static async Task SeedRolePermissionsAsync(DatabaseContext context)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Stowaway.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260116000210_StatusNoIdentty")]
-    partial class StatusNoIdentty
+    [Migration("20260611213134_PriviledgeUpdatePatch4")]
+    partial class PriviledgeUpdatePatch4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,7 +130,10 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Stowaway.Domain.Entities.Identity.PermissionEntity", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -180,9 +183,6 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Property<int>("OrderStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderStatusId1")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Subtotal")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -196,7 +196,9 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderStatusId1");
+                    b.HasIndex("OrderStatusId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Order", "Sales");
                 });
@@ -426,8 +428,11 @@ namespace Stowaway.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Code")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -443,7 +448,16 @@ namespace Stowaway.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("WarehouseId");
 
                     b.ToTable("PriviledgeGroup", "StorageIdentity");
                 });
@@ -455,6 +469,12 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.Property<int>("PriviledgeId")
                         .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.HasKey("PriviledgeGroupId", "PriviledgeId");
 
@@ -608,9 +628,19 @@ namespace Stowaway.Infrastructure.Migrations
                 {
                     b.HasOne("Stowaway.Domain.Entities.Sales.OrderStatusEntity", "OrderStatus")
                         .WithMany()
-                        .HasForeignKey("OrderStatusId1");
+                        .HasForeignKey("OrderStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Market.Domain.Entities.Identity.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("OrderStatus");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderItemEntity", b =>
@@ -622,7 +652,7 @@ namespace Stowaway.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Stowaway.Domain.Entities.Sales.OrderEntity", "Order")
-                        .WithMany()
+                        .WithMany("orderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -733,10 +763,21 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", b =>
+                {
+                    b.HasOne("Stowaway.Domain.Entities.Storage.WarehouseEntity", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Warehouse");
+                });
+
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroup_PriviledgeEntity", b =>
                 {
                     b.HasOne("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", "PriviledgeGroup")
-                        .WithMany()
+                        .WithMany("Priviledges")
                         .HasForeignKey("PriviledgeGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -801,6 +842,16 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Market.Domain.Entities.Identity.UserEntity", b =>
                 {
                     b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Stowaway.Domain.Entities.Sales.OrderEntity", b =>
+                {
+                    b.Navigation("orderItems");
+                });
+
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", b =>
+                {
+                    b.Navigation("Priviledges");
                 });
 #pragma warning restore 612, 618
         }

@@ -432,12 +432,7 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PriviledgeGroupEntityId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PriviledgeGroupEntityId");
 
                     b.ToTable("Priviledge", "StorageIdentity");
                 });
@@ -471,6 +466,12 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.Property<int>("PriviledgeId")
                         .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.HasKey("PriviledgeGroupId", "PriviledgeId");
 
@@ -759,13 +760,6 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeEntity", b =>
-                {
-                    b.HasOne("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", null)
-                        .WithMany("Priviledges")
-                        .HasForeignKey("PriviledgeGroupEntityId");
-                });
-
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", b =>
                 {
                     b.HasOne("Stowaway.Domain.Entities.Storage.WarehouseEntity", "Warehouse")
@@ -780,7 +774,7 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroup_PriviledgeEntity", b =>
                 {
                     b.HasOne("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", "PriviledgeGroup")
-                        .WithMany()
+                        .WithMany("Priviledges")
                         .HasForeignKey("PriviledgeGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

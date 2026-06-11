@@ -1,4 +1,6 @@
-﻿using Stowaway.Application.Modules.Storage.Warehouse.Commands.Create;
+﻿using Market.API.Authorization;
+using Market.Shared.Constants;
+using Stowaway.Application.Modules.Storage.Warehouse.Commands.Create;
 using Stowaway.Application.Modules.Storage.Warehouse.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Warehouse.Commands.Update;
 using Stowaway.Application.Modules.Storage.Warehouse.Queries.GetById;
@@ -41,6 +43,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [HasPriviledge(Permissions.WarehouseUpdate)]
+        
         public async Task Update(int id, UpdateWarehouseCommand command, CancellationToken ct)
         {
             command.Id = id;
