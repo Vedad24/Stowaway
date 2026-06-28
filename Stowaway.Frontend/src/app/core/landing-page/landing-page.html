@@ -1,8 +1,86 @@
-<p>landing-page works!</p>
-<br>
-<div class="w-lvw flex items-center justify-center">
-    <div class="buttons flex flex-col items-center w-40 justify-center">
-        <button matButton (click)="goToLogin()">Login</button>
-        <button matButton (click)="goToSignUp()">Sign up</button>
-    </div>
-</div>
+<section class="landing-page">
+  <mat-toolbar color="primary" class="topbar">
+    <span>Stowaway</span>
+    <span class="spacer"></span>
+    <button mat-button (click)="goToLogin()">Log in</button>
+    <button mat-flat-button color="accent" (click)="goToSignUp()">Sign up</button>
+  </mat-toolbar>
+
+  <main class="content">
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p class="eyebrow">Smart storage management</p>
+        <h1>Bring clarity to every warehouse operation.</h1>
+        <p class="hero-text">
+          Stowaway helps teams manage inventory, suppliers, containers, and orders from one modern workspace.
+          Keep every process visible and every shipment on schedule.
+        </p>
+        <div class="hero-actions">
+          <button mat-flat-button color="primary" (click)="goToSignUp()">Create account</button>
+          <button mat-stroked-button color="primary" (click)="goToLogin()">Explore the platform</button>
+        </div>
+        <div class="hero-highlights">
+          <span>Live inventory overview</span>
+          <span>Fast order tracking</span>
+          <span>Secure team access</span>
+        </div>
+      </div>
+
+      <mat-card class="preview-card">
+        <mat-card-title>Today at a glance</mat-card-title>
+        <mat-card-content>
+          <div class="preview-row">
+            <strong>32</strong>
+            <span>Active containers</span>
+          </div>
+          <div class="preview-row">
+            <strong>14</strong>
+            <span>Pending orders</span>
+          </div>
+          <div class="preview-row">
+            <strong>98%</strong>
+            <span>On-time deliveries</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <section class="features-section">
+      <h2>Built for modern storage teams</h2>
+      <div class="feature-grid">
+        <mat-card class="feature-card">
+          <mat-card-title>Inventory overview</mat-card-title>
+          <mat-card-content>
+            <p>Track stock levels and movement with a simple, reliable view of your warehouse.</p>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="feature-card">
+          <mat-card-title>Supplier coordination</mat-card-title>
+          <mat-card-content>
+            <p>Streamline supplier relationships and keep incoming goods organized without friction.</p>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="feature-card">
+          <mat-card-title>Order visibility</mat-card-title>
+          <mat-card-content>
+            <p>Monitor every order from placement to delivery, giving your team better control.</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <h2>Ready to manage your storage operations with confidence?</h2>
+      <p>Join Stowaway to simplify operations and give your team a clearer view of every workflow.</p>
+      <div class="hero-actions">
+        <button mat-flat-button color="primary" (click)="goToSignUp()">Sign up now</button>
+        <button mat-stroked-button color="primary" (click)="goToLogin()">Log in</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 Stowaway</span>
+    <span>Storage management, simplified.</span>
+  </footer>
+</section>
