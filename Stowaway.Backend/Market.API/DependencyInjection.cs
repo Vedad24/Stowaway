@@ -1,5 +1,6 @@
 ﻿using Market.API.Authorization;
 using Market.Infrastructure.Common;
+using Market.Infrastructure.Payments.Stripe;
 using Market.Shared.Dtos;
 using Market.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -100,7 +101,9 @@ public static class DependencyInjection
 
         services.AddExceptionHandler<MarketExceptionHandler>();
         services.AddProblemDetails();
-
+        //Stripe options
+        
+        services.Configure<StripeOptions>(configuration.GetSection("Stripe"));
         return services;
     }
 }

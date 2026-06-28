@@ -18,7 +18,7 @@ public static class DynamicDataSeeder
     {
         // Osiguraj da baza postoji (bez migracija)
         await context.Database.EnsureCreatedAsync();
-
+        return;
         //await SeedProductCategoriesAsync(context);
         await SeedContainerTypesAsync(context);
         await SeedOrderStatusAsync(context);
@@ -268,7 +268,7 @@ public static class DynamicDataSeeder
             Name = "Cardboard box",
             ContainerTypeId = 1,
             ParentContainerId = null,
-            WarehouseId = 2
+            WarehouseId = 1
         };
 
         var WoodenPallet = new ContainerEntity
@@ -296,7 +296,7 @@ public static class DynamicDataSeeder
             Name = "Natural water",
             Description = "0,5l plastic bottle",
             Quantity = 50,
-            ContainerId = 1,
+            ContainerId = 2,
             SupplierId = 2,
             ByteImage = null,
         };

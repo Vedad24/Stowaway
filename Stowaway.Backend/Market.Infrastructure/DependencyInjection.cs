@@ -1,6 +1,8 @@
 ﻿using Market.Application.Abstractions;
+using Market.Application.Abstractions.Payments;
 using Market.Infrastructure.Common;
 using Market.Infrastructure.Database;
+using Market.Infrastructure.Payments.Stripe;
 using Market.Shared.Constants;
 using Market.Shared.Options;
 using Microsoft.Extensions.Configuration;
@@ -52,6 +54,9 @@ public static class DependencyInjection
 
         // TimeProvider (if used in handlers/services)
         services.AddSingleton<TimeProvider>(TimeProvider.System);
+
+        // Stripe payment provider
+        services.AddScoped<IPaymentProvider, StripePaymentProvider>();
 
         return services;
     }
