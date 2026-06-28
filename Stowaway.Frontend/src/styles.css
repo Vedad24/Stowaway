@@ -1,3 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+.invalid-credentials-snackbar {
+  background: #ffffff;
+  color: #0d47a1;
+  border: 1px solid #bbdefb;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(13, 71, 161, 0.16);
+}
+
+.invalid-credentials-snackbar .mdc-snackbar__surface {
+  background: transparent;
+}

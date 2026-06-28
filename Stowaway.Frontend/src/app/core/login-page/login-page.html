@@ -1,22 +1,45 @@
-<div class="flex items-center justify-center w-full">
-    <form [formGroup]="loginForm" class="flex flex-col items-center justify-center w-2xl">
-        <mat-form-field>
-            <mat-label>Email</mat-label>
-            <input matInput
-            formControlName="email">
-        </mat-form-field>
-        <mat-form-field>
-            <mat-label>Password</mat-label>
-            <input
-            matInput
-            [type]="hidePassword ? 'password' : 'text'"
-            formControlName="password">
-            <button matSuffix matIconButton (click)="hidePassword = !hidePassword">
-                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-        </mat-form-field>
-        <button matButton="outlined" type="submit" (click)="tryLogin()" [disabled]="!loginForm.valid">Log in</button>
-        <button matButton="outlined" type="submit" (click)="tryLogin()">Log in -- force</button>
+<div class="auth-shell">
+  <mat-card class="auth-card">
+    <div class="auth-header">
+      <div class="brand-badge">S</div>
+      <div>
+        <h1>Welcome back</h1>
+        <p>Sign in to continue managing your storage workspace.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="loginForm" class="auth-form" (ngSubmit)="tryLogin()">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" autocomplete="email" />
+        @if (loginForm.get('email')?.hasError('required')) {
+          <mat-error>Email is required</mat-error>
+        }
+        @if (loginForm.get('email')?.hasError('email')) {
+          <mat-error>Enter a valid email</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="auth-actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="!loginForm.valid">Log in</button>
+        <button mat-button color="primary" type="button" (click)="goToSignUp()">Create account</button>
+      </div>
+
+      <p class="helper-text">Use your workspace credentials to access the dashboard.</p>
     </form>
+  </mat-card>
 </div>
 

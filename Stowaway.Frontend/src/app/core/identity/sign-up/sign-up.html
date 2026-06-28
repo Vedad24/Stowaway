@@ -1,66 +1,78 @@
-<mat-horizontal-stepper linear>
-
-  <!-- Step 1: Email -->
-  <mat-step [stepControl]="emailForm">
-    <form [formGroup]="emailForm">
-      <ng-template matStepLabel>Email</ng-template>
-
-      <mat-form-field class="w-full">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" />
-        @if(emailForm.invalid){
-            <mat-error> Invalid email format</mat-error>
-        }
-      </mat-form-field>
-
-      <button matButton matStepperNext [disabled]="emailForm.invalid">Next</button>
-    </form>
-  </mat-step>
-
-  <!-- Step 2: Password -->
-  <mat-step [stepControl]="passwordForm">
-    <form [formGroup]="passwordForm">
-      <ng-template matStepLabel>Password</ng-template>
-
-      <mat-form-field class="w-full">
-        <mat-label>Password</mat-label>
-        <input matInput formControlName="password" type="password" />
-        @if(passwordForm.invalid){
-            <mat-error>Minimum 8 characters</mat-error>
-        }
-      </mat-form-field>
-
-      <div class="flex gap-2">
-        <button matButton matStepperPrevious>Back</button>
-        <button matButton matStepperNext [disabled]="passwordForm.invalid">Next</button>
+<div class="auth-shell">
+  <mat-card class="auth-card">
+    <div class="auth-header">
+      <div class="brand-badge">S</div>
+      <div>
+        <h1>Create your account</h1>
+        <p>Set up your Stowaway workspace in a few steps.</p>
       </div>
-    </form>
-  </mat-step>
+    </div>
 
-  <!-- Step 3: Profile -->
-  <mat-step [stepControl]="profileForm">
-    <form [formGroup]="profileForm">
-      <ng-template matStepLabel>Profile</ng-template>
+    <mat-horizontal-stepper linear class="auth-stepper">
+      <mat-step [stepControl]="emailForm">
+        <form [formGroup]="emailForm">
+          <ng-template matStepLabel>Email</ng-template>
 
-      <mat-form-field class="w-full">
-        <mat-label>First Name</mat-label>
-        <input matInput formControlName="firstName" required=""/>
-      </mat-form-field>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" autocomplete="email" />
+            @if (emailForm.invalid) {
+              <mat-error>Enter a valid email address</mat-error>
+            }
+          </mat-form-field>
 
-      <mat-form-field class="w-full">
-        <mat-label>Last Name</mat-label>
-        <input matInput formControlName="lastName" />
-      </mat-form-field>
+          <div class="step-actions">
+            <button mat-flat-button color="primary" matStepperNext [disabled]="emailForm.invalid">Next</button>
+          </div>
+        </form>
+      </mat-step>
 
-      <div class="flex gap-2">
-        <button matButton matStepperPrevious>Back</button>
-        <button mat-raised-button color="primary"
-                [disabled]="profileForm.invalid"
-                (click)="createUser()">
-          Sign Up
-        </button>
-      </div>
-    </form>
-  </mat-step>
+      <mat-step [stepControl]="passwordForm">
+        <form [formGroup]="passwordForm">
+          <ng-template matStepLabel>Password</ng-template>
 
-</mat-horizontal-stepper>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" type="password" autocomplete="new-password" />
+            @if (passwordForm.invalid) {
+              <mat-error>Use at least 8 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="step-actions">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-flat-button color="primary" matStepperNext [disabled]="passwordForm.invalid">Next</button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="profileForm">
+        <form [formGroup]="profileForm">
+          <ng-template matStepLabel>Profile</ng-template>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName" />
+          </mat-form-field>
+
+          <div class="step-actions">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-flat-button color="primary" [disabled]="profileForm.invalid" (click)="createUser()">
+              Sign up
+            </button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-horizontal-stepper>
+
+    <div class="auth-footer">
+      <span>Already have an account?</span>
+      <button mat-button color="primary" type="button" (click)="goToLogin()">Log in</button>
+    </div>
+  </mat-card>
+</div>
