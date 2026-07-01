@@ -21,7 +21,11 @@ namespace Stowaway.Domain.Entities.Sales
         public DateTime OrderDate { get; set; }
         public OrderStatus OrderStatusId { get; set; }
         public OrderStatusEntity? OrderStatus { get; set; }
-
-        public List<OrderItemEntity>? orderItems { get; set; }
+        
+        // Stripe-specific columns
+        public string? PaymentIntentId { get; set; }
+        public string? StripeSessionId { get; set; }
+        
+        public List<OrderItemEntity>? OrderItems { get; set; }
     }
 }

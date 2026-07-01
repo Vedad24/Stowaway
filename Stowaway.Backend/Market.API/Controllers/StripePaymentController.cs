@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Market.Application.Modules.Sales.Payment.Commands.Create;
+using Market.Application.Modules.Sales.Payment.Commands.Update;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Stripe;
 
 namespace Market.API.Controllers
 {
@@ -21,14 +23,47 @@ namespace Market.API.Controllers
             this.logger = logger;
         }
 
-        [HttpPost("test")]
+        [HttpPost("pay")]
         public async Task<IActionResult> MakePayment(
         CreatePaymentCommand command,
         CancellationToken cancellationToken)
-    {
-        var result = await sender.Send(command, cancellationToken);
+        {
+            var result = await sender.Send(command, cancellationToken);
+            return Ok(result);
+        }
 
-        return Ok(result);
-    }
+        
+        //stripe listen --forward-to localhost:5177/StripePayment/payment-webhook
+        //Change wehbook secret in appsettings.Development.json
+        [HttpPost("payment-webhook")]
+        [AllowAnonymous]
+        public async Task<ActionResult> PaymentWebhook()
+        {
+             var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+
+        try
+        {
+            var stripeEvent = EventUtility.ConstructEvent(
+                json, 
+                Request.Headers["Stripe-Signature"], 
+                Infrastructure.Payments.Stripe.StripeOptions.WebhookSecret
+            );
+
+            // Send to MediatR
+            var command = new UpdateStripePaymentCommand
+            {
+                EventType = stripeEvent.Type,
+                EventData = stripeEvent.Data.Object,
+                EventId = stripeEvent.Id
+            };
+
+            await sender.Send(command);
+            return Ok();
+        }
+        catch (StripeException)
+        {
+            return BadRequest();
+        }
+        }
     }
 }

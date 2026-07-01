@@ -8,5 +8,6 @@ namespace Market.Infrastructure.Payments.Stripe
     public class StripeOptions
     {
         public string ApiKey { get; set; } = null!;
+        public static string WebhookSecret { get; set; } = null!;
     }
 }

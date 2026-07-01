@@ -12,7 +12,7 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
         public async Task<CreatePaymentResponse> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
              var order = await db.Orders
-            .FirstOrDefaultAsync(
+                .FirstOrDefaultAsync(
                 x => x.Id == request.OrderId,
                 cancellationToken);
 

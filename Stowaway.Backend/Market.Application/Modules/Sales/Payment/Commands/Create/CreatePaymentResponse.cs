@@ -8,16 +8,16 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
 {
     public class CreatePaymentResponse
     {
+        public string CheckoutUrl { get; set; }
+        public string ExternalPaymentId { get; set; }
+        public string Status { get; set; }
+
         public CreatePaymentResponse(CreatePaymentResult? result)
         {
             CheckoutUrl = result?.CheckoutUrl ?? string.Empty;
             ExternalPaymentId = result?.ExternalPaymentId ?? string.Empty;
+            Status = result?.Status ?? string.Empty;
         }
-        public CreatePaymentResponse()
-        {
-            
-        }
-        public string CheckoutUrl { get; set; }
-        public string ExternalPaymentId { get; set; }
+        
     }
 }

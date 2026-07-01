@@ -16,7 +16,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
         public async Task<bool> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
         {
             //Trebalo bi biti sporo, ali bi trebalo da radi...pa sad...
-            var order = await db.Orders.Include(o => o.orderItems).FirstOrDefaultAsync(o => o.Id == request.Id);
+            var order = await db.Orders.Include(o => o.OrderItems).FirstOrDefaultAsync(o => o.Id == request.Id);
             if (order == null)
             {
                 throw new StowawayNotFoundException($"Order with id {request.Id} doesn't exist");
@@ -55,7 +55,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
 
             }).ToList();
             
-            order.orderItems = newItems;
+            order.OrderItems = newItems;
             await db.SaveChangesAsync(cancellationToken);
             return true;
         }

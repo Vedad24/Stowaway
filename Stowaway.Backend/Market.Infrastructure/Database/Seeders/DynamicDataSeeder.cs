@@ -143,7 +143,7 @@ public static class DynamicDataSeeder
             };
         order.Subtotal = orderItems.Sum(oi => oi.Subtotal);
         order.Total = orderItems.Sum(oi => oi.Total);
-        order.orderItems = orderItems;
+        order.OrderItems = orderItems;
         context.SaveChanges();
         Console.WriteLine("✅ Dynamic seed: demo orders added.");
 

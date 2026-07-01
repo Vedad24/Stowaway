@@ -53,17 +53,25 @@ namespace Market.Infrastructure.Payments.Stripe
                 Metadata = new Dictionary<string, string>
                 {
                     { "OrderId", request.OrderId.ToString() }
+                },
+                PaymentIntentData = new SessionPaymentIntentDataOptions
+                {
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "OrderId", request.OrderId.ToString() }
+                    }
                 }
             };
 
             var service = new SessionService();
 
             var session = await service.CreateAsync(options);
-
+            
             return new CreatePaymentResult
             {
                 CheckoutUrl = session.Url,
-                ExternalPaymentId = session.Id
+                ExternalPaymentId = session.PaymentIntentId,
+                Status = session.PaymentStatus
             };
         }
     }
