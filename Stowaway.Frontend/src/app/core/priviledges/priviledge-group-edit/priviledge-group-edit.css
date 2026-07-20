@@ -1,0 +1,29 @@
+.editor-shell {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+  gap: 16px;
+  padding: 12px;
+}
+
+.group-list-card,
+.privileges-card {
+  height: 100%;
+}
+
+.toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+mat-nav-list a.active {
+  background: rgba(0, 0, 0, 0.06);
+}

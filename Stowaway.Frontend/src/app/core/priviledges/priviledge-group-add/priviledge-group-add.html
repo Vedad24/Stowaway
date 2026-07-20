@@ -1,0 +1,16 @@
+<div class="dialog-card">
+  <h2>Create privilege group</h2>
+  <p>Enter a name for the new privilege group.</p>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Name</mat-label>
+    <input matInput [(ngModel)]="name" name="name" required />
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-button type="button" (click)="dialogRef.close(false)">Cancel</button>
+    <button mat-flat-button color="primary" type="button" [disabled]="isSubmitting" (click)="submit()">
+      {{ isSubmitting ? 'Creating...' : 'Create' }}
+    </button>
+  </div>
+</div>

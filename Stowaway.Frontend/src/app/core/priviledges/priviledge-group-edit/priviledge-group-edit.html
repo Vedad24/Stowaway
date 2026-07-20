@@ -1,0 +1,45 @@
+<div class="editor-shell">
+  <mat-card class="group-list-card">
+    <mat-card-title>Privilege groups</mat-card-title>
+    <mat-card-actions align="end">
+      <button mat-flat-button color="primary" type="button" (click)="openAddDialog()">Add group</button>
+    </mat-card-actions>
+    <mat-card-content>
+      <mat-nav-list>
+        @for (group of groups; track group.id) {
+          <a
+            mat-list-item
+            [class.active]="group.id === selectedGroupId"
+            (click)="selectGroup(group)"
+          >
+            <span>{{ group.name }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="privileges-card">
+    <mat-card-title>{{ selectedGroup?.name || 'Privilege group' }}</mat-card-title>
+    <mat-card-content>
+      <p>Turn privileges on or off for this group.</p>
+      <div class="toggle-list">
+        @for (privilege of selectedPrivileges; track privilege.id) {
+          <div class="toggle-row">
+            <span>{{ privilege.name }}</span>
+            <mat-slide-toggle
+              [checked]="privilege.enabled"
+              (change)="togglePrivilege(privilege.id, $event.checked)"
+            ></mat-slide-toggle>
+          </div>
+        }
+      </div>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions align="end">
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="isSaving">
+        {{ isSaving ? 'Saving...' : 'Save changes' }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

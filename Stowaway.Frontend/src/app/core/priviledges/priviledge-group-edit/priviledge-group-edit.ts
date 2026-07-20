@@ -1,0 +1,145 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { PriviledgeGroupService } from '../../../services/storage-identity/priviledge-group/priviledge-group-service';
+import { PriviledgesService } from '../../../services/storage-identity/priviledges/priviledges-service';
+import { ListPriviledgeGroupQueryDto, UpdatePriviledgeGroupCommand } from '../../../services/storage-identity/priviledge-group/priviledge-group-service.models';
+import { ListPriviledgesQueryDto } from '../../../services/storage-identity/priviledges/priviledges-service.models';
+import { PriviledgeGroupAdd } from '../priviledge-group-add/priviledge-group-add';
+import { ActivatedRoute } from '@angular/router';
+
+interface PrivilegeToggleOption {
+  id: number;
+  name: string;
+  enabled: boolean;
+}
+
+@Component({
+  selector: 'app-priviledge-group-edit',
+  standalone: true,
+  imports: [CommonModule, MatListModule, MatCardModule, MatButtonModule, MatSlideToggleModule, MatDividerModule],
+  templateUrl: './priviledge-group-edit.html',
+  styleUrl: './priviledge-group-edit.css',
+})
+export class PriviledgeGroupEdit implements OnInit {
+  private readonly priviledgeGroupService = inject(PriviledgeGroupService);
+  private readonly priviledgesService = inject(PriviledgesService);
+  private readonly dialog = inject(MatDialog);
+  private readonly route = inject(ActivatedRoute);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  groups: ListPriviledgeGroupQueryDto[] = [];
+  privileges: ListPriviledgesQueryDto[] = [];
+
+  selectedGroupId: number | null = null;
+  selectedPrivileges: PrivilegeToggleOption[] = [];
+  isSaving = false;
+
+  ngOnInit(): void {
+    this.loadGroups();
+    this.loadPrivileges();
+    console.log(this.groups);
+    console.log(this.privileges);
+  }
+
+  get warehouseId(): number | null {
+    const warehouseId = this.route.snapshot.paramMap.get('warehouseId');
+    return warehouseId ? Number(warehouseId) : null;
+  }
+
+  get selectedGroup(): ListPriviledgeGroupQueryDto | undefined {
+    return this.groups.find((group) => group.id === this.selectedGroupId);
+  }
+
+  loadGroups(): void {
+    const warehouseId = this.warehouseId;
+    this.priviledgeGroupService.list(warehouseId ?? 0).subscribe({
+      next: (response) => {
+        this.groups = response ?? [];
+        if (!this.selectedGroupId && this.groups.length) {
+          this.selectGroup(this.groups[0]);
+        }
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  loadPrivileges(): void {
+    this.priviledgesService.list().subscribe({
+      next: (response) => {
+        this.privileges = response ?? [];
+        if (this.selectedGroup) {
+          this.syncSelectedPrivileges();
+        }
+      },
+    });
+  }
+
+  selectGroup(group: ListPriviledgeGroupQueryDto): void {
+    this.selectedGroupId = group.id;
+    this.syncSelectedPrivileges();
+  }
+
+  syncSelectedPrivileges(): void {
+    const selectedGroup = this.selectedGroup;
+    this.selectedPrivileges = (this.privileges ?? []).map((privilege) => ({
+      id: privilege.id,
+      name: privilege.name,
+      enabled: !!selectedGroup && selectedGroup.priviledgeIds.includes(privilege.id),
+    }));
+  }
+
+  togglePrivilege(privilegeId: number, checked: boolean): void {
+    const privilege = this.selectedPrivileges.find((item) => item.id === privilegeId);
+    if (privilege) {
+      privilege.enabled = checked;
+    }
+  }
+
+  openAddDialog(): void {
+    const dialogRef = this.dialog.open(PriviledgeGroupAdd, {
+      width: '420px',
+      disableClose: false,
+      data: { warehouseId: this.warehouseId },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        
+        this.loadGroups();
+      }
+    });
+  }
+
+  save(): void {
+    if (!this.selectedGroup) {
+      return;
+    }
+
+    this.isSaving = true;
+
+    const payload = {
+      priviledgeId: this.selectedGroup.id,
+      name: this.selectedGroup.name,
+      warehouseId: this.selectedGroup.warehouseId,
+      priviledgeIds: this.selectedPrivileges.filter((item) => item.enabled).map((item) => item.id),
+    } as UpdatePriviledgeGroupCommand;
+
+    this.priviledgeGroupService.update(this.selectedGroup.id, payload).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.isSaving = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isSaving = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+}
