@@ -1,0 +1,37 @@
+<section class="product-page-card">
+  <h2>Product page</h2>
+  <p>Select a warehouse, choose a container type, and add the desired quantity to your cart.</p>
+
+  <form class="product-page-form" (ngSubmit)="addToCart()">
+    <label>
+      Warehouse
+      <select [(ngModel)]="selectedWarehouseId" name="warehouse">
+        <option [ngValue]="null" disabled>Select warehouse</option>
+        <option *ngFor="let warehouse of warehouses" [ngValue]="warehouse.id">
+          {{ warehouse.name }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Container type
+      <select [(ngModel)]="selectedContainerTypeId" name="containerType">
+        <option [ngValue]="null" disabled>Select container type</option>
+        <option *ngFor="let containerType of containerTypes" [ngValue]="containerType.id">
+          {{ containerType.displayName }} - {{ containerType.price | currency }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Quantity
+      <input type="number" min="1" [(ngModel)]="quantity" name="quantity" />
+    </label>
+
+    <button type="submit" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Adding...' : 'Add to cart' }}
+    </button>
+  </form>
+
+  <p class="message" *ngIf="message">{{ message }}</p>
+</section>

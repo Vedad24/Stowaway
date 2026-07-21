@@ -1,4 +1,5 @@
 ﻿using Market.Application.Abstractions;
+using Market.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
@@ -19,6 +20,7 @@ public partial class DatabaseContext : DbContext, IAppDbContext
     public DbSet<OrderEntity> Orders => Set<OrderEntity>();
     public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
     public DbSet<OrderStatusEntity> OrderStatuses => Set<OrderStatusEntity>();
+    public DbSet<CartItemEntity> CartItems => Set<CartItemEntity>();
 
     //Storage
     public DbSet<ContainerEntity> Containers => Set<ContainerEntity>();

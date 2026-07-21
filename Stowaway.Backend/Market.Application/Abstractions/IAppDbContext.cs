@@ -1,4 +1,5 @@
-﻿using Stowaway.Domain.Entities.Identity;
+﻿using Market.Domain.Entities.Sales;
+using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
 using Stowaway.Domain.Entities.Storage.StorageIdentity;
@@ -30,5 +31,6 @@ public interface IAppDbContext
     public DbSet<OrderEntity> Orders { get; }
     public DbSet<OrderItemEntity> OrderItems { get; }
     public DbSet<OrderStatusEntity> OrderStatuses { get; }
+    public DbSet<CartItemEntity> CartItems { get; }
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

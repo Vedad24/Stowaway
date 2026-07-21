@@ -16,6 +16,7 @@ import { EditSupplier } from './core/supplier/edit/edit';
 import { EditWarehouse } from './core/warehouse/warehouse/edit/edit';
 import { Layout } from './core/layout/layout';
 import { PriviledgeGroupEdit } from './core/priviledges/priviledge-group-edit/priviledge-group-edit';
+import { ProductPage } from './core/sales/product-page/product-page';
 
 export const routes: Routes = [
     {
@@ -89,5 +90,9 @@ export const routes: Routes = [
     {
         path: "priviledge-group/edit/:warehouseId",
         component: PriviledgeGroupEdit
+    },
+    {
+        path: 'product-page',
+        component: ProductPage
     }
 ];
