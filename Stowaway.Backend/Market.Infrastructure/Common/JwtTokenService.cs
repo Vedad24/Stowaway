@@ -33,8 +33,8 @@ public sealed class JwtTokenService : IJwtTokenService
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(ClaimTypes.NameIdentifier,   user.Id.ToString()),
-            new(ClaimTypes.Email,            user.Email),
+            new(JwtRegisteredClaimNames.NameId,   user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email,            user.Email),
             new("ver",         user.TokenVersion.ToString()),
             new(JwtRegisteredClaimNames.Iat, ToUnixTimeSeconds(nowInstant).ToString(), ClaimValueTypes.Integer64),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
