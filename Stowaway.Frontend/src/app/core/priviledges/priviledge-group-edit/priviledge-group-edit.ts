@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -38,7 +38,7 @@ export class PriviledgeGroupEdit implements OnInit {
 
   selectedGroupId: number | null = null;
   selectedPrivileges: PrivilegeToggleOption[] = [];
-  isSaving = false;
+  isSaving = signal(false);
 
   ngOnInit(): void {
     this.loadGroups();
@@ -121,7 +121,7 @@ export class PriviledgeGroupEdit implements OnInit {
       return;
     }
 
-    this.isSaving = true;
+    this.isSaving.set(true);
 
     const payload = {
       priviledgeId: this.selectedGroup.id,
@@ -133,12 +133,12 @@ export class PriviledgeGroupEdit implements OnInit {
     this.priviledgeGroupService.update(this.selectedGroup.id, payload).subscribe({
       next: (response) => {
         console.log(response);
-        this.isSaving = false;
-        this.cdr.detectChanges();
+        this.isSaving.set(false);
+        
       },
       error: () => {
-        this.isSaving = false;
-        this.cdr.detectChanges();
+        this.isSaving.set(false);
+        
       },
     });
   }

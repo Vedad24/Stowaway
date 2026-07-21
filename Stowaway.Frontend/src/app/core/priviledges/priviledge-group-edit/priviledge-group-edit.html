@@ -37,8 +37,8 @@
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions align="end">
-      <button mat-flat-button color="primary" (click)="save()" [disabled]="isSaving">
-        {{ isSaving ? 'Saving...' : 'Save changes' }}
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="isSaving()">
+        {{ isSaving() ? 'Saving...' : 'Save changes' }}
       </button>
     </mat-card-actions>
   </mat-card>
