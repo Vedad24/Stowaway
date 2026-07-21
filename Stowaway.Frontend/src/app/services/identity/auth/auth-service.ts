@@ -22,6 +22,7 @@ export class AuthService {
     .pipe(
       
       tap( (response) => {
+        //console.log(response);
         this.currentUser.initializeUser(response as LoginCommandDto, email);
       }),
 
