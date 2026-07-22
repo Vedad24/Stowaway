@@ -26,10 +26,15 @@ export interface ListCartItemsQueryDto {
   cartItems: CartItemDto[];
 }
 
+export enum CartItemStatus {
+    InCart,
+    SavedForLater
+}
+
 export interface CartItemDto {
   id: number;
   userId: number;
   containerType: ContainerTypeEntity;
   quantity: number;
-  cartItemStatus: string;
+  cartItemStatus: CartItemStatus;
 }
