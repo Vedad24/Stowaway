@@ -7,9 +7,11 @@
       Warehouse
       <select [(ngModel)]="selectedWarehouseId" name="warehouse">
         <option [ngValue]="null" disabled>Select warehouse</option>
-        <option *ngFor="let warehouse of warehouses" [ngValue]="warehouse.id">
-          {{ warehouse.name }}
-        </option>
+        @for (warehouse of warehouses(); track warehouse.id) {
+          <option [ngValue]="warehouse.id">
+            {{ warehouse.name }}
+          </option>
+        }
       </select>
     </label>
 
@@ -17,9 +19,11 @@
       Container type
       <select [(ngModel)]="selectedContainerTypeId" name="containerType">
         <option [ngValue]="null" disabled>Select container type</option>
-        <option *ngFor="let containerType of containerTypes" [ngValue]="containerType.id">
-          {{ containerType.displayName }} - {{ containerType.price | currency }}
-        </option>
+        @for (containerType of containerTypes(); track containerType.id) {
+          <option [ngValue]="containerType.id">
+            {{ containerType.displayName }} - {{ containerType.price | currency }}
+          </option>
+        }
       </select>
     </label>
 
@@ -33,5 +37,7 @@
     </button>
   </form>
 
-  <p class="message" *ngIf="message">{{ message }}</p>
+  @if (message) {
+    <p class="message">{{ message }}</p>
+  }
 </section>

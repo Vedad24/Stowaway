@@ -23,8 +23,8 @@ export class ProductPage implements OnInit {
   private readonly productPageService = inject(ProductPageService);
   private readonly cartService = inject(CartService);
   private readonly currentUserService = inject(CurrentUserService);
-  warehouses: ListWarehousesQueryDto[] = [];
-  containerTypes: ListContainerTypeQueryDto[] = [];
+  warehouses = signal<ListWarehousesQueryDto[]>([]);
+  containerTypes = signal<ListContainerTypeQueryDto[]>([]);
 
   selectedWarehouseId: number | null = null;
   selectedContainerTypeId: number | null = null;
@@ -35,15 +35,15 @@ export class ProductPage implements OnInit {
   ngOnInit(): void {
     this.loadWarehouses();
     this.loadContainerTypes();
-    console.log('Current User ID:', this.currentUserService.userId);
+    //console.log('Current User ID:', this.currentUserService.userId);
   }
 
   private loadWarehouses(): void {
     this.productPageService.getUserWarehouses().subscribe({
       next: (response) => {
-        this.warehouses = response.items ?? [];
-        if (this.warehouses.length && this.selectedWarehouseId === null) {
-          this.selectedWarehouseId = this.warehouses[0].id;
+        this.warehouses.set(response.items ?? []);
+        if (this.warehouses().length && this.selectedWarehouseId === null) {
+          this.selectedWarehouseId = this.warehouses()[0].id;
         }
       },
       error: () => {
@@ -55,9 +55,9 @@ export class ProductPage implements OnInit {
   private loadContainerTypes(): void {
     this.productPageService.getContainerTypes().subscribe({
       next: (response) => {
-        this.containerTypes = response.items ?? [];
-        if (this.containerTypes.length && this.selectedContainerTypeId === null) {
-          this.selectedContainerTypeId = this.containerTypes[0].id;
+        this.containerTypes.set(response.items ?? []);
+        if (this.containerTypes().length && this.selectedContainerTypeId === null) {
+          this.selectedContainerTypeId = this.containerTypes()[0].id;
         }
       },
       error: () => {
