@@ -1,0 +1,66 @@
+<section class="cart-page">
+  <div class="cart-list-column">
+    <div class="cart-section">
+      <div class="section-header">
+        <h2>In Cart</h2>
+        <span>{{ inCartItems.length }} item(s)</span>
+      </div>
+
+      @if (isLoading()) {
+        <div class="empty-state">Loading...</div>
+      }
+      @if (!isLoading() && inCartItems.length === 0) {
+        <div class="empty-state">Your cart is empty.</div>
+      }
+
+      @for (item of inCartItems; track item.id) {
+        <div class="cart-item">
+          <div>
+            <h3>{{ item.containerType.displayName || 'Container' }}</h3>
+            <p>Qty: {{ item.quantity }}</p>
+            <p class="price">{{ (item.containerType.price ?? 0) * item.quantity | currency }}</p>
+          </div>
+          <button type="button" class="secondary-btn" (click)="toggleStatus(item, 1)">
+            Save for later
+          </button>
+        </div>
+      }
+    </div>
+
+    <div class="cart-section">
+      <div class="section-header">
+        <h2>Saved for later</h2>
+        <span>{{ savedForLaterItems.length }} item(s)</span>
+      </div>
+
+      @if (!isLoading() && savedForLaterItems.length === 0) {
+        <div class="empty-state">Nothing saved for later.</div>
+      }
+
+      @for (item of savedForLaterItems; track item.id) {
+        <div class="cart-item">
+          <div>
+            <h3>{{ item.containerType.displayName || 'Container' }}</h3>
+            <p>Qty: {{ item.quantity }}</p>
+            <p class="price">{{ (item.containerType.price ?? 0) * item.quantity | currency }}</p>
+          </div>
+          <button type="button" class="primary-btn" (click)="toggleStatus(item, 0)">
+            Move to cart
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <aside class="summary-card">
+    <h2>Order Summary</h2>
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <strong>{{ subtotal | currency }}</strong>
+    </div>
+    <button type="button" class="checkout-btn" disabled>Checkout</button>
+    @if (message) {
+      <p class="message">{{ message }}</p>
+    }
+  </aside>
+</section>

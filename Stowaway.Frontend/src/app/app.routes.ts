@@ -17,6 +17,7 @@ import { EditWarehouse } from './core/warehouse/warehouse/edit/edit';
 import { Layout } from './core/layout/layout';
 import { PriviledgeGroupEdit } from './core/priviledges/priviledge-group-edit/priviledge-group-edit';
 import { ProductPage } from './core/sales/product-page/product-page';
+import { Cart } from './core/sales/cart/cart';
 
 export const routes: Routes = [
     {
@@ -94,5 +95,9 @@ export const routes: Routes = [
     {
         path: 'product-page',
         component: ProductPage
+    },
+    {
+        path: 'cart',
+        component: Cart
     }
 ];
