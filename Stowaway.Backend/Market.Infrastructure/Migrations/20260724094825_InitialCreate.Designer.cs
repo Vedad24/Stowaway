@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Stowaway.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260701163403_StripeUpdate_OrderPaymentIntegration")]
-    partial class StripeUpdate_OrderPaymentIntegration
+    [Migration("20260724094825_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -125,6 +125,33 @@ namespace Stowaway.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Market.Domain.Entities.Sales.CartItemEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartItemStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContainerTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContainerTypeId");
+
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Identity.PermissionEntity", b =>
@@ -627,6 +654,17 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Market.Domain.Entities.Sales.CartItemEntity", b =>
+                {
+                    b.HasOne("Stowaway.Domain.Entities.Storage.ContainerTypeEntity", "ContainerType")
+                        .WithMany()
+                        .HasForeignKey("ContainerTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContainerType");
+                });
+
             modelBuilder.Entity("Stowaway.Domain.Entities.Identity.Permission_RoleEntity", b =>
                 {
                     b.HasOne("Stowaway.Domain.Entities.Identity.PermissionEntity", "Permission")
@@ -809,19 +847,19 @@ namespace Stowaway.Infrastructure.Migrations
                     b.HasOne("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", "PriviledgeGroup")
                         .WithMany()
                         .HasForeignKey("PriviledgeGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Market.Domain.Entities.Identity.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Stowaway.Domain.Entities.Storage.WarehouseEntity", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("PriviledgeGroup");

@@ -18,7 +18,6 @@ public static class DynamicDataSeeder
     {
         // Osiguraj da baza postoji (bez migracija)
         await context.Database.EnsureCreatedAsync();
-        return;
         //await SeedProductCategoriesAsync(context);
         await SeedContainerTypesAsync(context);
         await SeedOrderStatusAsync(context);
@@ -41,14 +40,14 @@ public static class DynamicDataSeeder
 
         var permissions = new List<PermissionEntity>
         {
-            new() { Id = 1, Description = Permissions.UsersRead },
-            new() { Id = 2, Description = Permissions.UsersCreate },
-            new() { Id = 3, Description = Permissions.UsersUpdate },
-            new() { Id = 4, Description = Permissions.UsersDelete },
-            new() { Id = 5, Description = Permissions.RolesRead },
-            new() { Id = 6, Description = Permissions.RolesCreate },
-            new() { Id = 7, Description = Permissions.RolesUpdate },
-            new() { Id = 8, Description = Permissions.RolesDelete }
+            new() { Description = Permissions.UsersRead },
+            new() { Description = Permissions.UsersCreate },
+            new() { Description = Permissions.UsersUpdate },
+            new() { Description = Permissions.UsersDelete },
+            new() { Description = Permissions.RolesRead },
+            new() { Description = Permissions.RolesCreate },
+            new() { Description = Permissions.RolesUpdate },
+            new() { Description = Permissions.RolesDelete }
         };
 
         context.Permissions.AddRange(permissions);

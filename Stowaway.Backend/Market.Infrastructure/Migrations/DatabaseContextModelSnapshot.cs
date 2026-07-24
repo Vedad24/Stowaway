@@ -844,19 +844,19 @@ namespace Stowaway.Infrastructure.Migrations
                     b.HasOne("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", "PriviledgeGroup")
                         .WithMany()
                         .HasForeignKey("PriviledgeGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Market.Domain.Entities.Identity.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Stowaway.Domain.Entities.Storage.WarehouseEntity", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("PriviledgeGroup");
