@@ -1,0 +1,30 @@
+<div class="module-shell">
+  <div class="module-header">
+    <div class="brand-badge"><img src="assets/icons/dolly.png" alt=""></div>
+    <div>
+      <h1>Welcome {{currentUser.roleId == 1 ? "Admin" : "User"}}</h1>
+    </div>
+  </div>
+
+  <div class="module-grid">
+    <mat-card class="module-card">
+      <mat-icon class="module-icon">warehouse</mat-icon>
+      <h2>Warehouse management</h2>
+      <p>Warehouses, containers, and item operations.</p>
+      <button mat-flat-button color="primary" type="button" (click)="openWarehouseManagement()">
+        Open
+      </button>
+    </mat-card>
+
+    @if (currentUser.isManager) {
+      <mat-card class="module-card">
+        <mat-icon class="module-icon">groups</mat-icon>
+        <h2>Worker management</h2>
+        <p>Team members, roles, and warehouse access.</p>
+        <button mat-flat-button color="primary" type="button" (click)="openWorkerManagement()">
+          Open
+        </button>
+      </mat-card>
+    }
+  </div>
+</div>

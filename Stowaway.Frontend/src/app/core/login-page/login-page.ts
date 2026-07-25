@@ -46,7 +46,7 @@ export class LoginPage {
       .pipe(
         tap((success) => {
           if (success) {
-            this.router.navigate(['main']);
+            this.router.navigate(['/choose-module']);
             return;
           }
 

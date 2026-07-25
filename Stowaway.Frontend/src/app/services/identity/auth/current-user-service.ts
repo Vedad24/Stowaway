@@ -9,6 +9,7 @@ import { LocalStorageService } from '../../local-storage-service';
 export class CurrentUserService {
   private _currentUser : CurrentUserDto | null = null;
   private localStorageService = inject(LocalStorageService);
+
   public get currentUser() : CurrentUserDto | null { 
     if(this._currentUser === null )
       this.getUserFromStorage();
@@ -17,10 +18,14 @@ export class CurrentUserService {
 
   initializeUser(response : LoginCommandDto, email : string)
   {
-    //console.log("LoginDTO response: ", response);
+    const decoded = jwtDecode<JwtUserPayload>(response.accessToken);
+    const roleClaim =
+      decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
+      decoded.role;
+    console.log("LoginDTO response: ", roleClaim);
     this._currentUser = {
-      roleId : 1, //please for the love of God change this later
-      accessToken : response.accessToken
+      roleId : roleClaim != null ? roleClaim == "Admin" ? 1 : 0 : 0,
+      accessToken: response.accessToken
     }
     //console.log("Current user", this._currentUser);
     this.localStorageService.setItem('currentUserStorage', JSON.stringify(this._currentUser));
@@ -55,7 +60,27 @@ export class CurrentUserService {
     
   }
 
+  public get roleId(): number {
+    return this.currentUser?.roleId ?? -1;
+  }
 
-  
+  public get permissions(): string[] {
+    const raw = this.decodedJwt?.permission;
+    if (raw == null) {
+      return [];
+    }
+    return Array.isArray(raw) ? raw : [raw];
+  }
+
+  public get isManager(): boolean {
+    if (this.roleId === 1) {
+      return true;
+    }
+    const workerManageCodes = [
+      'WarehouseUsers.Manage',
+    ];
+    return this.permissions.some((p) => workerManageCodes.includes(p));
+  }
+
 }
 
