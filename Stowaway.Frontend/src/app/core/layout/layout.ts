@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { Navbar } from './navbar/navbar';
 import { Sidebar } from './sidebar/sidebar';
-import { MainSection } from './main-section/main-section';
+import { WarehouseCanvas } from './warehouse-canvas/warehouse-canvas';
 
 @Component({
   selector: 'app-layout',
-  imports: [Navbar,Sidebar,MainSection],
+  imports: [Navbar, Sidebar, WarehouseCanvas],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
 })
-export class Layout {
-
-}
+export class Layout {}

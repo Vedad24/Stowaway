@@ -1,9 +1,10 @@
 <section class="landing-page">
   <mat-toolbar color="primary" class="topbar">
     <span>Stowaway</span>
-    <span class="spacer"></span>
-    <button mat-button (click)="goToLogin()">Log in</button>
-    <button mat-flat-button color="accent" (click)="goToSignUp()">Sign up</button>
+    <div class="spacer">
+      <button mat-flat-button (click)="goToLogin()">Log in</button>
+      <button mat-flat-button  (click)="goToSignUp()">Sign up</button>
+    </div>
   </mat-toolbar>
 
   <main class="content">
@@ -17,7 +18,7 @@
         </p>
         <div class="hero-actions">
           <button mat-flat-button color="primary" (click)="goToSignUp()">Create account</button>
-          <button mat-stroked-button color="primary" (click)="goToLogin()">Explore the platform</button>
+          <button mat-flat-button color="primary" (click)="goToLogin()">Explore the platform</button>
         </div>
         <div class="hero-highlights">
           <span>Live inventory overview</span>
@@ -73,8 +74,8 @@
       <h2>Ready to manage your storage operations with confidence?</h2>
       <p>Join Stowaway to simplify operations and give your team a clearer view of every workflow.</p>
       <div class="hero-actions">
-        <button mat-flat-button color="primary" (click)="goToSignUp()">Sign up now</button>
-        <button mat-stroked-button color="primary" (click)="goToLogin()">Log in</button>
+        <button mat-flat-button color="primary" (click)="goToSignUp()">Sign up</button>
+        <button mat-flat-button color="primary" (click)="goToLogin()">Log in</button>
       </div>
     </section>
   </main>

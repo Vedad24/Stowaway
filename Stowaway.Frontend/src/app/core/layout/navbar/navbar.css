@@ -1,21 +1,28 @@
 @import "tailwindcss";
 
-.logoName{
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
+:host {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
-.buttons{
-    display: flex;
-    gap: 2rem;
+.logoName {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
 }
 
-.buttons button{
-    padding: 8px 12px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+.buttons {
+  display: flex;
+  gap: 2rem;
+}
+
+.buttons button {
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }

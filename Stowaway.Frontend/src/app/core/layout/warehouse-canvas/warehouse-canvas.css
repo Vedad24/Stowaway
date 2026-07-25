@@ -1,9 +1,11 @@
 :host {
   display: block;
   height: 100%;
+  min-height: 0;
 }
 
-.sidebar-tree {
+.canvas-shell {
   height: 100%;
   min-height: 0;
+  background: #fafafa;
 }
