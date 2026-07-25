@@ -1,13 +1,83 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
+
+:root {
+  --sage: #8fa28a;
+  --sage-soft: #c7d3c0;
+  --cream: #f7f4ed;
+  --gold: #c8a96b;
+  --text-dark: #2f352f;
+  --text-muted: #5c665d;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--cream);
+  color: var(--text-dark);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, var(--cream) 0%, var(--sage-soft) 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--sage);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--gold);
+}
+
+button,
+.mat-mdc-raised-button,
+.mat-mdc-button,
+.mat-mdc-icon-button {
+  background-color: var(--sage) !important;
+  color: var(--cream) !important;
+  border: none;
+}
+
+button:hover,
+.mat-mdc-raised-button:hover,
+.mat-mdc-button:hover,
+.mat-mdc-icon-button:hover {
+  background-color: var(--gold) !important;
+}
+
+.mat-toolbar,
+.mat-sidenav-container,
+.mat-mdc-card,
+.mat-mdc-form-field,
+.mat-mdc-snack-bar-container {
+  background-color: var(--cream) !important;
+  color: var(--text-dark) !important;
+}
+
+.mat-mdc-card {
+  border: 1px solid rgba(143, 162, 138, 0.25);
+  box-shadow: 0 8px 24px rgba(47, 53, 47, 0.08);
+}
+
+.mat-form-field-outline,
+.mat-mdc-form-field-flex {
+  border-color: var(--sage-soft) !important;
+}
 
 .invalid-credentials-snackbar {
-  background: #ffffff;
-  color: #0d47a1;
-  border: 1px solid #bbdefb;
+  background: var(--cream);
+  color: var(--sage);
+  border: 1px solid var(--sage-soft);
   border-radius: 12px;
-  box-shadow: 0 12px 30px rgba(13, 71, 161, 0.16);
+  box-shadow: 0 12px 30px rgba(47, 53, 47, 0.16);
 }
 
 .invalid-credentials-snackbar .mdc-snackbar__surface {

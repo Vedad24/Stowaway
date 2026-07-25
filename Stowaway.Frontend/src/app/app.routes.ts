@@ -3,7 +3,8 @@ import { LandingPage } from './core/landing-page/landing-page';
 import { Warehouse } from './core/warehouse/warehouse/warehouse';
 import { Item } from './core/item/item';
 import { Supplier } from './core/supplier/supplier';
-import { LoginPage } from './core/login-page/login-page'; 
+import { LoginPage } from './core/login-page/login-page';
+import { ChooseModule } from './core/choose-module/choose-module'; 
 import { TestUsers } from './core/identity/test-users/test-users';
 import { TestSales } from './core/sales/test-sales/test-sales';
 import { SignUp } from './core/identity/sign-up/sign-up';
@@ -33,8 +34,8 @@ export const routes: Routes = [
         component: LoginPage,
     },
     {
-        path: 'main',
-        component: Layout
+        path: 'choose-module',
+        component: ChooseModule,
     },
     {
         path: 'warehouse',
