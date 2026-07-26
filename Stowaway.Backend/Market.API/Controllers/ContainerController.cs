@@ -9,10 +9,10 @@ namespace Stowaway.API.Controllers
     {
         [HttpGet]
         [AllowAnonymous]
-        public async Task<PageResult<SharedContainerDto>> ListNames([FromQuery] ListNamesContainerQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult<ListContainersDto>> ListNames([FromQuery] ListContainersQuery query, CancellationToken cancellationToken)
         {
             var result = await sender.Send(query, cancellationToken);
-            return result;
+            return Ok(result);
         }
     }
 }

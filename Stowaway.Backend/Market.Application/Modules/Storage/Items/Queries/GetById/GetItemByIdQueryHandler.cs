@@ -32,7 +32,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 },
-                Container = new SharedContainerDto 
+                Container = new ListContainersDto 
                 {    
                     Id = x.Id,
                     Name = x.Container.Name

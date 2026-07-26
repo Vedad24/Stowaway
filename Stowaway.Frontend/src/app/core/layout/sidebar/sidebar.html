@@ -1,1 +1,93 @@
-<nav class="sidebar-tree" aria-label="Warehouse navigation"></nav>
+<nav class="sidebar-tree" aria-label="Warehouse navigation">
+  <label class="sidebar-search" for="sidebar-search">
+    <span class="search-icon">🔎</span>
+    <input
+      id="sidebar-search"
+      type="text"
+      placeholder="Search here..."
+      [value]="searchText()"
+      (input)="updateSearch($any($event.target).value)"
+      (keydown.enter)="executeSearch()"
+    />
+  </label>
+
+  @if (isLoading()) {
+    <div class="tree-state">Loading warehouses…</div>
+  }
+
+
+  @if (!isLoading() && errorMessage()) {
+    <div class="tree-state tree-error">{{ errorMessage() }}</div>
+  }
+
+  @if (!isLoading() && !errorMessage()) {
+    @if (warehouses().length === 0) {
+      <div class="tree-state">Nothing available.</div>
+    } @else {
+      <ul class="tree-list">
+        @for (warehouse of visibleWarehouses(); track warehouse.id) {
+          <li class="tree-node">
+            <div class="tree-row" [class.tree-row-match]="warehouse.searchMatch">
+              <button type="button" class="tree-toggle" (click)="toggleWarehouse(warehouse)">
+                <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
+              </button>
+              <span class="tree-label">{{ warehouse.name }}</span>
+            </div>
+            @if (warehouse.loading) {
+              <div class="tree-loading">Loading containers…</div>
+            }
+            @if (warehouse.expanded && warehouse.childrenLoaded) {
+              <ul class="tree-children">
+                @for (container of warehouse.children; track container.id) {
+                  @if (container.visible !== false) {
+                    <ng-container
+                      [ngTemplateOutlet]="containerNode"
+                      [ngTemplateOutletContext]="{ $implicit: container }"
+                    ></ng-container>
+                  }
+                }
+                @if (warehouse.children.length === 0) {
+                  <li class="tree-empty">No containers.</li>
+                }
+              </ul>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+</nav>
+
+<ng-template #containerNode let-container>
+  <li class="tree-node">
+    <div class="tree-row tree-container-row" [class.tree-row-match]="container.searchMatch">
+      <button
+        type="button"
+        class="tree-toggle"
+        [disabled]="!container.hasChildren"
+        (click)="toggleContainer(container)"
+      >
+        <span class="tree-icon" [class.tree-icon-spacer]="!container.hasChildren">
+          {{ container.expanded ? '▾' : '▸' }}
+        </span>
+      </button>
+      <span class="tree-label">{{ container.name }}</span>
+    </div>
+    @if (container.loading) {
+      <div class="tree-loading">Loading containers…</div>
+    }
+    @if (container.expanded && container.childrenLoaded) {
+      <ul class="tree-children">
+        @for (child of container.children; track child.id) {
+          <ng-container
+            [ngTemplateOutlet]="containerNode"
+            [ngTemplateOutletContext]="{ $implicit: child }"
+          ></ng-container>
+        }
+        @if (container.children.length === 0) {
+          <li class="tree-empty">No nested containers.</li>
+        }
+      </ul>
+    }
+  </li>
+</ng-template>
