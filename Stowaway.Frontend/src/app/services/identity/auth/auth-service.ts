@@ -9,8 +9,9 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
 })
 export class AuthService {
   
+  
   backendApi = inject(HttpClient)
-  currentUser : CurrentUserService = inject(CurrentUserService);
+  currentUserService : CurrentUserService = inject(CurrentUserService);
   backendUrl = environment.apiUrl;
   login(email: string, password: string) : Observable<boolean>{
     
@@ -23,7 +24,7 @@ export class AuthService {
       
       tap( (response) => {
         //console.log(response);
-        this.currentUser.initializeUser(response as LoginCommandDto, email);
+        this.currentUserService.initializeUser(response as LoginCommandDto, email);
       }),
 
       map( () => true ),
@@ -32,5 +33,9 @@ export class AuthService {
         return of (false);
       }),
     );
+  }
+
+  isLoggedIn(): import("@angular/router").MaybeAsync<import("@angular/router").GuardResult> {
+    return this.currentUserService.currentUser !== null;
   }
 }
