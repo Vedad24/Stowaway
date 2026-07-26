@@ -58,7 +58,7 @@ private fb = inject(FormBuilder);
 
   loadContainers() {
     this.containerService.list().subscribe(res => {
-      this.containers = res.items;
+      this.containers = res;
     });
     console.log(this.containers);
   }

@@ -1,14 +1,19 @@
 import { BasePagedQuery } from "../../../models/paging/base-paged-query";
 import { PageResult } from "../../../models/paging/page-result";
 
-export class ListNamesContainersQuery extends BasePagedQuery{
+export class ListContainersQuery{
     search?: string | null;
+    warehouseId?: number | null;
+    parentContainerId?: number | null;
 }
 
-export interface ListNamesContainersQueryDto {
+export interface ListContainersQueryDto {
     id: number,
     name: string,
+    warehouseId: number,
+    parentContainerId: number | null,
+    hasChildren: boolean,
 }
 
-export interface ListNamesContainerQueryResponse extends PageResult<ListNamesContainersQueryDto>{ }
+export type ListContainersQueryResponse = ListContainersQueryDto[];
 
