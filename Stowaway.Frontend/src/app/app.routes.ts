@@ -19,15 +19,18 @@ import { Layout } from './core/layout/layout';
 import { PriviledgeGroupEdit } from './core/priviledges/priviledge-group-edit/priviledge-group-edit';
 import { ProductPage } from './core/sales/product-page/product-page';
 import { Cart } from './core/sales/cart/cart';
+import { routeGuardGuard } from './services/route-guard-guard';
 
 export const routes: Routes = [
     {
         path: '',
         component: LandingPage
     },
+    //almost all routes should have a route guard on canActivate
     {
         path: 'main',
-        component: Layout
+        component: Layout,
+        canActivate: [routeGuardGuard]
     },
     {
         path: 'login',
