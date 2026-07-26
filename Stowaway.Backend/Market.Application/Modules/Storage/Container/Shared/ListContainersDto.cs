@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace Stowaway.Application.Modules.Storage.Container.Shared
 {
-    public sealed class SharedContainerDto
+    public sealed class ListContainersDto
     {
         public required int Id { get; set; }
         public required string Name { get; set; }
+        public int WarehouseId { get; set; }
+        public int? ParentContainerId { get; set; }
+        public bool HasChildren { get; set; }
     }
 }

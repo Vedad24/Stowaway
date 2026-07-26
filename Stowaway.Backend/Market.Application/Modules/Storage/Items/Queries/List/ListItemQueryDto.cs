@@ -15,7 +15,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
         public required string Description { get; init; }
         public required byte[] ByteImage { get; init; }
         public required int Quantity { get; init; }
-        public required SharedContainerDto Container { get; init; }
+        public required ListContainersDto Container { get; init; }
         public required SharedSupplierDto Supplier { get; init; }
     }
 }
