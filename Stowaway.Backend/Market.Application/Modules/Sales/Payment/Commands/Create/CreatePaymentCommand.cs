@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Market.Application.Modules.Sales.Payment.Commands.Create
 {
-    public sealed record CreatePaymentCommand(int OrderId) : IRequest<CreatePaymentResponse>
+    public sealed record CreatePaymentCommand : IRequest<CreatePaymentResponse>
     {
-        
+        public int OrderId {get; set;}
     }
 }
