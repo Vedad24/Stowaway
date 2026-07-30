@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle at top, var(--cream) 0%, var(--sage-soft) 45%, #ffffff 100%);
+  background: radial-gradient(circle at top, #fff4f4 0%, #fff8f8 45%, #ffffff 100%);
   padding: 24px;
 }
 
@@ -12,10 +12,10 @@
   width: 100%;
   background: #ffffff;
   border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(143, 162, 138, 0.16);
+  box-shadow: 0 24px 60px rgba(209, 100, 100, 0.12);
   padding: 36px 30px;
   text-align: center;
-  border: 1px solid rgba(143, 162, 138, 0.24);
+  border: 1px solid rgba(209, 100, 100, 0.12);
 }
 
 .icon-circle {
@@ -28,7 +28,7 @@
 }
 
 .cancel-icon {
-  background: linear-gradient(135deg, var(--gold) 0%, var(--sage) 100%);
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff3f59 100%);
 }
 
 .icon {
@@ -40,18 +40,18 @@
 h1 {
   margin: 0 0 14px;
   font-size: 2rem;
-  color: var(--text-dark);
+  color: #3e1c1c;
 }
 
 .order-text {
   margin: 0 0 28px;
   font-size: 1rem;
-  color: var(--text-muted);
+  color: #5b2e2e;
 }
 
 .notification {
-  background: var(--cream);
-  border: 1px solid var(--sage-soft);
+  background: #fff2f2;
+  border: 1px solid #ffdad9;
   border-radius: 18px;
   padding: 22px 20px;
 }
@@ -59,16 +59,16 @@ h1 {
 .redirect-title {
   margin: 0 0 8px;
   font-weight: 700;
-  color: var(--sage);
+  color: #c62828;
   font-size: 1.05rem;
 }
 
 .countdown {
   margin: 0;
-  color: var(--text-dark);
+  color: #603030;
   font-size: 0.96rem;
 }
 
 strong {
-  color: var(--text-dark);
+  color: #3e1c1c;
 }
