@@ -1,0 +1,74 @@
+.payment-status-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, var(--cream) 0%, var(--sage-soft) 45%, #ffffff 100%);
+  padding: 24px;
+}
+
+.status-card {
+  max-width: 420px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(143, 162, 138, 0.16);
+  padding: 36px 30px;
+  text-align: center;
+  border: 1px solid rgba(143, 162, 138, 0.24);
+}
+
+.icon-circle {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.cancel-icon {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--sage) 100%);
+}
+
+.icon {
+  color: white;
+  font-size: 42px;
+  line-height: 1;
+}
+
+h1 {
+  margin: 0 0 14px;
+  font-size: 2rem;
+  color: var(--text-dark);
+}
+
+.order-text {
+  margin: 0 0 28px;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.notification {
+  background: var(--cream);
+  border: 1px solid var(--sage-soft);
+  border-radius: 18px;
+  padding: 22px 20px;
+}
+
+.redirect-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: var(--sage);
+  font-size: 1.05rem;
+}
+
+.countdown {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 0.96rem;
+}
+
+strong {
+  color: var(--text-dark);
+}
