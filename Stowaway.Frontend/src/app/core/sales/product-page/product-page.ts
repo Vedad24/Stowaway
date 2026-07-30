@@ -11,11 +11,13 @@ import { AddToCartCommand } from '../../../services/sales/cart/cart-service.mode
 import { UserService } from '../../../services/identity/user/user-service';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 import { AuthService } from '../../../services/identity/auth/auth-service';
+import { MatButton, MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatButton],
   templateUrl: './product-page.html',
   styleUrl: './product-page.css',
 })
@@ -23,6 +25,7 @@ export class ProductPage implements OnInit {
   private readonly productPageService = inject(ProductPageService);
   private readonly cartService = inject(CartService);
   private readonly currentUserService = inject(CurrentUserService);
+  private readonly router = inject(Router);
   warehouses = signal<ListWarehousesQueryDto[]>([]);
   containerTypes = signal<ListContainerTypeQueryDto[]>([]);
 
@@ -93,5 +96,9 @@ export class ProductPage implements OnInit {
         this.isSubmitting.update(iS => iS = false);
       },
     });
+  }
+  goToCart() : void 
+  {
+    this.router.navigate(['/cart']);
   }
 }
