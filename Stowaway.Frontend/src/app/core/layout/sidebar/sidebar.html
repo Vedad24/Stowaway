@@ -32,6 +32,7 @@
                 <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
               </button>
               <span class="tree-label">{{ warehouse.name }}</span>
+              <button matButton (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
             </div>
             @if (warehouse.loading) {
               <div class="tree-loading">Loading containers…</div>

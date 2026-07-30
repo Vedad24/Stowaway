@@ -4,6 +4,8 @@ import { ProductPageService } from '../../../services/sales/product-page/product
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
+import { MatIcon, MatIconModule } from "@angular/material/icon";
+import { Router } from '@angular/router';
 
 interface ContainerTreeNode extends ListContainersQueryDto {
   expanded: boolean;
@@ -25,14 +27,16 @@ interface WarehouseTreeNode extends ListWarehousesQueryDto {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIcon, MatIconModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar implements OnInit {
+
   private readonly productPageService = inject(ProductPageService);
   private readonly containerService = inject(ContainerApiService);
+  private readonly router = inject(Router);
 
   warehouses = signal<WarehouseTreeNode[]>([]);
   isLoading = signal(false);
@@ -226,5 +230,9 @@ export class Sidebar implements OnInit {
 
   private refreshTree(): void {
     this.warehouses.update(warehouses => [...warehouses]);
+  }
+
+  goToPriviledges(warehouseId : number) {
+    this.router.navigate(['priviledge-group/edit', warehouseId]);
   }
 }
