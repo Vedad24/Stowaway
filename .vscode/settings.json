@@ -1,9 +1,0 @@
-{
-    "VsCodeTaskButtons.tasks": [
-  {
-    "label": "▶ Start All",
-    "task": "Start All",
-    "tooltip": "Starts backend + frontend"
-  }
-]
-}
