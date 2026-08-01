@@ -10,26 +10,15 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
     {
         public async Task<Unit> Handle(MoveContainerCommand request, CancellationToken cancellationToken)
         {
+            if (request.Id == request.ParentContainerId)
+            {
+                throw new Exception("A container cannot be placed inside itself");
+            }
+
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (container is null)
             {
                 throw new Exception($"Container with id: {request.Id} not found");
-            }
-
-            if (request.ParentContainerId is null)
-            {
-                container.ParentContainerId = null;
-                container.CanvasX = null;
-                container.CanvasY = null;
-
-                await ctx.SaveChangesAsync(cancellationToken);
-
-                return Unit.Value;
-            }
-
-            if (request.Id == request.ParentContainerId)
-            {
-                throw new Exception("A container cannot be placed inside itself");
             }
 
             var target = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.ParentContainerId, cancellationToken);

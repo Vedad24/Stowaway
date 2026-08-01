@@ -25,9 +25,4 @@ export class ContainerApiService {
     const payload: MoveContainerCommand = { parentContainerId };
     return this.http.put<void>(`${this.baseUrl}/${id}/parent-container`, payload);
   }
-
-  moveToRoot(id: number): Observable<void>{
-    const payload: MoveContainerCommand = { parentContainerId: null };
-    return this.http.put<void>(`${this.baseUrl}/${id}/parent-container`, payload);
-  }
 }

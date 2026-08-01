@@ -10,10 +10,7 @@
           type="button"
           class="crumb"
           [class.crumb-current]="path().length === 0"
-          [class.crumb-drop-target]="breadcrumbTargetId() === 'root'"
-          [attr.data-crumb-root]="path().length > 0 ? '' : null"
           (click)="goToRoot()"
-          title="Drop here to move back to the warehouse root"
         >
           {{ warehouse()!.name }}
         </button>
@@ -23,10 +20,7 @@
             type="button"
             class="crumb"
             [class.crumb-current]="i === path().length - 1"
-            [class.crumb-drop-target]="breadcrumbTargetId() === crumb.id"
-            [attr.data-crumb-id]="i === path().length - 1 ? null : crumb.id"
             (click)="goToCrumb(i)"
-            title="Drop here to move back to {{ crumb.name }}"
           >
             {{ crumb.name }}
           </button>
@@ -41,13 +35,7 @@
     </div>
 
     <div class="canvas-body">
-      <aside
-        class="canvas-tray"
-        cdkDropList
-        #tray="cdkDropList"
-        [cdkDropListData]="emptyDropData"
-        [cdkDropListConnectedTo]="[canvasList]"
-      >
+      <aside class="canvas-tray">
         <h3 class="tray-title">Unplaced</h3>
         @if (!hasUnplaced()) {
           <p class="tray-empty">Everything here is placed on the canvas.</p>
@@ -56,9 +44,9 @@
           <div
             class="tray-card tray-card-container"
             cdkDrag
-            [cdkDragData]="{ kind: 'container', id: container.id }"
-            (cdkDragMoved)="onDragMoved($event, 'container', container.id)"
-            (cdkDragEnded)="nestTargetId.set(null)"
+            #drag="cdkDrag"
+            (cdkDragMoved)="onDragMoved($event, 'container', container.id, canvasGrid)"
+            (cdkDragEnded)="onDragEnded($event, 'container', container.id, canvasGrid, drag)"
           >
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
@@ -68,9 +56,9 @@
           <div
             class="tray-card tray-card-item"
             cdkDrag
-            [cdkDragData]="{ kind: 'item', id: item.id }"
-            (cdkDragMoved)="onDragMoved($event, 'item', item.id)"
-            (cdkDragEnded)="nestTargetId.set(null)"
+            #drag="cdkDrag"
+            (cdkDragMoved)="onDragMoved($event, 'item', item.id, canvasGrid)"
+            (cdkDragEnded)="onDragEnded($event, 'item', item.id, canvasGrid, drag)"
           >
             <span class="card-icon">🏷️</span>
             <span class="card-label">{{ item.name }}</span>
@@ -79,28 +67,20 @@
       </aside>
 
       <div class="canvas-grid" #canvasGrid>
-        <div
-          class="canvas-drop-target"
-          cdkDropList
-          #canvasList="cdkDropList"
-          [cdkDropListData]="emptyDropData"
-          [cdkDropListConnectedTo]="[tray]"
-          (cdkDropListDropped)="onCanvasDrop($event, canvasGrid)"
-        ></div>
-
         @if (!isLoading() && containers().length === 0 && items().length === 0) {
           <p class="canvas-hint">No containers here yet.</p>
         }
         @for (container of placedContainers(); track container.id) {
           <div
             class="canvas-card canvas-card-container"
-            [class.canvas-card-nest-target]="nestTargetId() === container.id"
+            [class.canvas-card-nest-target]="isNestTarget(container.id)"
             [attr.data-container-id]="container.id"
             cdkDrag
+            #drag="cdkDrag"
             cdkDragBoundary=".canvas-grid"
             [cdkDragFreeDragPosition]="positionOf('container', container.id)"
-            (cdkDragMoved)="onDragMoved($event, 'container', container.id)"
-            (cdkDragEnded)="onReposition($event, 'container', container.id)"
+            (cdkDragMoved)="onDragMoved($event, 'container', container.id, canvasGrid)"
+            (cdkDragEnded)="onDragEnded($event, 'container', container.id, canvasGrid, drag)"
             (dblclick)="enterContainer(container)"
             title="Double-click to open, or drag another item onto it to nest"
           >
@@ -121,10 +101,11 @@
           <div
             class="canvas-card canvas-card-item"
             cdkDrag
+            #drag="cdkDrag"
             cdkDragBoundary=".canvas-grid"
             [cdkDragFreeDragPosition]="positionOf('item', item.id)"
-            (cdkDragMoved)="onDragMoved($event, 'item', item.id)"
-            (cdkDragEnded)="onReposition($event, 'item', item.id)"
+            (cdkDragMoved)="onDragMoved($event, 'item', item.id, canvasGrid)"
+            (cdkDragEnded)="onDragEnded($event, 'item', item.id, canvasGrid, drag)"
           >
             <button
               type="button"

@@ -9,6 +9,6 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
     public class MoveContainerCommand : IRequest<Unit>
     {
         public int Id { get; set; }
-        public int? ParentContainerId { get; set; }
+        public int ParentContainerId { get; set; }
     }
 }

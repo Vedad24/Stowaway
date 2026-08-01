@@ -25,6 +25,6 @@ export interface UpdateCanvasPositionCommand{
 }
 
 export interface MoveContainerCommand{
-    parentContainerId: number | null,
+    parentContainerId: number,
 }
 

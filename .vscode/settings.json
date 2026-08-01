@@ -1,3 +1,9 @@
 {
-    "dotnet-test-explorer.testProjectPath": "**/*.Tests.@(csproj|vbproj|fsproj)",
+    "VsCodeTaskButtons.tasks": [
+  {
+    "label": "▶ Start All",
+    "task": "Start All",
+    "tooltip": "Starts backend + frontend"
+  }
+]
 }

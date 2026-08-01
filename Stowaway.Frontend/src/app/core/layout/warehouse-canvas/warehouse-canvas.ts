@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { CdkDragDrop, CdkDragEnd, CdkDragMove, DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragEnd, CdkDragMove, DragDropModule } from '@angular/cdk/drag-drop';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryDto } from '../../../services/storage/container/container.model';
@@ -13,7 +13,17 @@ interface Position {
 }
 
 type EntityKind = 'container' | 'item';
-type BreadcrumbTarget = { type: 'root' } | { type: 'container'; id: number };
+
+// Where a drag ends up: nested into another container, dropped at a spot
+// on the canvas, or dropped outside the canvas entirely (which unplaces it).
+type DropResolution =
+  | { action: 'nest'; containerId: number }
+  | { action: 'position'; position: Position }
+  | { action: 'outside' };
+
+// A card is roughly 112x48 — these offsets center it under the pointer on drop.
+const CARD_DROP_OFFSET_X = 56;
+const CARD_DROP_OFFSET_Y = 24;
 
 @Component({
   selector: 'app-warehouse-canvas',
@@ -35,16 +45,15 @@ export class WarehouseCanvas {
   readonly errorMessage = signal<string | null>(null);
   private readonly layout = signal<Record<string, Position>>({});
   private loadToken = 0;
-  readonly nestTargetId = signal<number | null>(null);
-  readonly breadcrumbTargetId = signal<number | 'root' | null>(null);
+
+  // The container the card currently being dragged is hovering over, for highlighting.
+  private readonly nestTargetId = signal<number | null>(null);
 
   readonly placedContainers = computed(() => this.containers().filter(c => !!this.layout()[this.key('container', c.id)]));
   readonly unplacedContainers = computed(() => this.containers().filter(c => !this.layout()[this.key('container', c.id)]));
   readonly placedItems = computed(() => this.items().filter(i => !!this.layout()[this.key('item', i.id)]));
   readonly unplacedItems = computed(() => this.items().filter(i => !this.layout()[this.key('item', i.id)]));
   readonly hasUnplaced = computed(() => this.unplacedContainers().length > 0 || this.unplacedItems().length > 0);
-
-  readonly emptyDropData: unknown[] = [];
 
   constructor() {
     effect(() => {
@@ -68,6 +77,10 @@ export class WarehouseCanvas {
     return this.layout()[this.key(kind, id)] ?? { x: 0, y: 0 };
   }
 
+  isNestTarget(containerId: number): boolean {
+    return this.nestTargetId() === containerId;
+  }
+
   enterContainer(container: ListContainersQueryDto): void {
     this.canvasState.enterContainer({ id: container.id, name: container.name });
   }
@@ -80,71 +93,82 @@ export class WarehouseCanvas {
     this.canvasState.goToCrumb(index);
   }
 
-  onCanvasDrop(event: CdkDragDrop<unknown[]>, canvasEl: HTMLElement): void {
+  // Fires continuously while a card (placed or still in the tray) is dragged —
+  // used only to highlight whatever it's currently hovering over.
+  onDragMoved(event: CdkDragMove, kind: EntityKind, id: number, canvasEl: HTMLElement): void {
+    const resolution = this.resolveDrop(event.pointerPosition, kind, id, canvasEl);
+    this.nestTargetId.set(resolution.action === 'nest' ? resolution.containerId : null);
+  }
+
+  // Fires once when a card (placed or still in the tray) is released. This is the
+  // single place that decides what a drag actually did — CDK's drop-list events
+  // are not used here since they only fire when the release point is inside a
+  // connected list, which nest targets are not.
+  onDragEnded(event: CdkDragEnd, kind: EntityKind, id: number, canvasEl: HTMLElement, dragRef: CdkDrag): void {
     this.nestTargetId.set(null);
-    this.breadcrumbTargetId.set(null);
-    if (event.previousContainer === event.container) {
-      return;
-    }
-    const data = event.item.data as { kind: EntityKind; id: number };
+    const resolution = this.resolveDrop(event.dropPoint, kind, id, canvasEl);
 
-    const nestTargetId = this.findNestTarget(event.dropPoint, data.kind === 'container' ? data.id : undefined);
+    switch (resolution.action) {
+      case 'nest':
+        this.nestInto(kind, id, resolution.containerId);
+        break;
+      case 'position':
+        this.setPosition(kind, id, resolution.position);
+        break;
+      case 'outside':
+        // Placed cards get removed from the canvas by unplace() below (which
+        // destroys/recreates their element in the tray). Tray cards aren't bound to
+        // [cdkDragFreeDragPosition], so nothing else resets their drag transform —
+        // without this they'd stay visually stuck wherever the pointer let go.
+        dragRef.reset();
+        if (this.layout()[this.key(kind, id)]) {
+          this.unplace(kind, id);
+        }
+        break;
+    }
+  }
+
+  unplace(kind: EntityKind, id: number): void {
+    const previous = this.layout()[this.key(kind, id)] ?? null;
+    const updated = { ...this.layout() };
+    delete updated[this.key(kind, id)];
+    this.layout.set(updated);
+    this.persistPosition(kind, id, null, previous);
+  }
+
+  private resolveDrop(point: Position, kind: EntityKind, id: number, canvasEl: HTMLElement): DropResolution {
+    const excludeContainerId = kind === 'container' ? id : undefined;
+
+    const nestTargetId = this.findNestTarget(point, excludeContainerId);
     if (nestTargetId != null) {
-      this.nestInto(data.kind, data.id, nestTargetId);
-      return;
-    }
-
-    const crumbTarget = this.findBreadcrumbTarget(event.dropPoint);
-    if (crumbTarget) {
-      this.moveToCrumb(data.kind, data.id, crumbTarget);
-      return;
+      return { action: 'nest', containerId: nestTargetId };
     }
 
     const rect = canvasEl.getBoundingClientRect();
-    const x = Math.max(0, event.dropPoint.x - rect.left - 56);
-    const y = Math.max(0, event.dropPoint.y - rect.top - 24);
-    this.setPosition(data.kind, data.id, { x, y });
-  }
-
-  onReposition(event: CdkDragEnd, kind: EntityKind, id: number): void {
-    this.nestTargetId.set(null);
-    this.breadcrumbTargetId.set(null);
-
-    const nestTargetId = this.findNestTarget(event.dropPoint, kind === 'container' ? id : undefined);
-    if (nestTargetId != null) {
-      this.nestInto(kind, id, nestTargetId);
-      return;
+    const insideGrid = point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
+    if (!insideGrid) {
+      return { action: 'outside' };
     }
 
-    const crumbTarget = this.findBreadcrumbTarget(event.dropPoint);
-    if (crumbTarget) {
-      this.moveToCrumb(kind, id, crumbTarget);
-      return;
-    }
-
-    this.setPosition(kind, id, event.source.getFreeDragPosition());
+    return {
+      action: 'position',
+      position: {
+        x: Math.max(0, point.x - rect.left - CARD_DROP_OFFSET_X),
+        y: Math.max(0, point.y - rect.top - CARD_DROP_OFFSET_Y),
+      },
+    };
   }
 
-  onDragMoved(event: CdkDragMove, kind: EntityKind, id: number): void {
-    const nestTargetId = this.findNestTarget(event.pointerPosition, kind === 'container' ? id : undefined);
-    this.nestTargetId.set(nestTargetId);
-
-    if (nestTargetId != null) {
-      this.breadcrumbTargetId.set(null);
-      return;
-    }
-
-    const crumbTarget = this.findBreadcrumbTarget(event.pointerPosition);
-    this.breadcrumbTargetId.set(crumbTarget ? (crumbTarget.type === 'root' ? 'root' : crumbTarget.id) : null);
+  // elementsFromPoint (not elementFromPoint) because CDK renders a floating preview
+  // clone over the pointer while dragging — the real card underneath is further down.
+  private elementsAtPoint(point: Position): Element[] {
+    return document
+      .elementsFromPoint(point.x, point.y)
+      .filter(el => !el.classList.contains('cdk-drag-preview') && !el.classList.contains('cdk-drag-placeholder'));
   }
 
-  private findNestTarget(point: { x: number; y: number }, excludeContainerId?: number): number | null {
-    // elementsFromPoint (not elementFromPoint) because CDK renders a floating preview clone
-    // over the pointer while dragging — the real card underneath is further down the stack.
-    for (const element of document.elementsFromPoint(point.x, point.y)) {
-      if (element.classList.contains('cdk-drag-preview') || element.classList.contains('cdk-drag-placeholder')) {
-        continue;
-      }
+  private findNestTarget(point: Position, excludeContainerId?: number): number | null {
+    for (const element of this.elementsAtPoint(point)) {
       const cardEl = element.closest<HTMLElement>('.canvas-card-container');
       if (!cardEl) {
         continue;
@@ -180,62 +204,6 @@ export class WarehouseCanvas {
       },
       error: () => this.errorMessage.set(`Unable to move the ${kind} into the container.`),
     });
-  }
-
-  private findBreadcrumbTarget(point: { x: number; y: number }): BreadcrumbTarget | null {
-    for (const element of document.elementsFromPoint(point.x, point.y)) {
-      if (element.classList.contains('cdk-drag-preview') || element.classList.contains('cdk-drag-placeholder')) {
-        continue;
-      }
-      const crumbEl = element.closest<HTMLElement>('.crumb');
-      if (!crumbEl) {
-        continue;
-      }
-      if (crumbEl.dataset['crumbRoot'] !== undefined) {
-        return { type: 'root' };
-      }
-      const containerId = Number(crumbEl.dataset['crumbId']);
-      if (crumbEl.dataset['crumbId'] !== undefined && Number.isFinite(containerId)) {
-        return { type: 'container', id: containerId };
-      }
-      return null;
-    }
-    return null;
-  }
-
-  private moveToCrumb(kind: EntityKind, id: number, target: BreadcrumbTarget): void {
-    if (kind === 'item' && target.type === 'root') {
-      return;
-    }
-
-    const request = target.type === 'root'
-      ? this.containerService.moveToRoot(id)
-      : kind === 'container'
-        ? this.containerService.moveToContainer(id, target.id)
-        : this.itemService.moveToContainer(id, target.id);
-
-    request.subscribe({
-      next: () => {
-        if (kind === 'container') {
-          this.containers.set(this.containers().filter(c => c.id !== id));
-        } else {
-          this.items.set(this.items().filter(i => i.id !== id));
-        }
-        const updated = { ...this.layout() };
-        delete updated[this.key(kind, id)];
-        this.layout.set(updated);
-        this.canvasState.notifyLocationChanged();
-      },
-      error: () => this.errorMessage.set(`Unable to move the ${kind} back.`),
-    });
-  }
-
-  unplace(kind: EntityKind, id: number): void {
-    const previous = this.layout()[this.key(kind, id)] ?? null;
-    const updated = { ...this.layout() };
-    delete updated[this.key(kind, id)];
-    this.layout.set(updated);
-    this.persistPosition(kind, id, null, previous);
   }
 
   private setPosition(kind: EntityKind, id: number, position: Position): void {
