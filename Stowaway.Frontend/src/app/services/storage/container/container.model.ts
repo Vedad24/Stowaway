@@ -13,7 +13,18 @@ export interface ListContainersQueryDto {
     warehouseId: number,
     parentContainerId: number | null,
     hasChildren: boolean,
+    canvasX: number | null,
+    canvasY: number | null,
 }
 
 export type ListContainersQueryResponse = ListContainersQueryDto[];
+
+export interface UpdateCanvasPositionCommand{
+    canvasX: number | null,
+    canvasY: number | null,
+}
+
+export interface MoveContainerCommand{
+    parentContainerId: number,
+}
 

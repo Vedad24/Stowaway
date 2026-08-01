@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "stowaway-frontend",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["ng", "serve", "--port", "4300"],
+      "port": 4300
+    }
+  ]
+}

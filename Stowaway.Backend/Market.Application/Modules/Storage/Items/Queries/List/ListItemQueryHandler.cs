@@ -23,6 +23,11 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 query = query.Where(x => x.Name.ToLower().Contains(searchTerm));
             }
 
+            if (request.ContainerId.HasValue)
+            {
+                query = query.Where(x => x.ContainerId == request.ContainerId.Value);
+            }
+
             var projectedQuery = query.Select(x => new ListItemQueryDto
             {
                 Id = x.Id,
@@ -39,11 +44,13 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 },
-                Container = new ListContainersDto 
+                Container = new ListContainersDto
                 {
                     Id = x.Id,
                     Name = x.Container.Name
-                }
+                },
+                CanvasX = x.CanvasX,
+                CanvasY = x.CanvasY,
             });
 
             return await PageResult<ListItemQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);

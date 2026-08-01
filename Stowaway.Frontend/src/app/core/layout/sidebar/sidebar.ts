@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
+import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 
 interface ContainerTreeNode extends ListContainersQueryDto {
   expanded: boolean;
@@ -12,6 +15,10 @@ interface ContainerTreeNode extends ListContainersQueryDto {
   children: ContainerTreeNode[];
   searchMatch?: boolean;
   visible?: boolean;
+  // Bumped on every children-list request for this node; a response is only
+  // applied if it's still the most recent request, so an older, slower
+  // response can never clobber a newer one that already landed.
+  requestToken: number;
 }
 
 interface WarehouseTreeNode extends ListWarehousesQueryDto {
@@ -21,18 +28,23 @@ interface WarehouseTreeNode extends ListWarehousesQueryDto {
   children: ContainerTreeNode[];
   searchMatch?: boolean;
   visible?: boolean;
+  requestToken: number;
 }
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIcon, MatIconModule],
+  
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar implements OnInit {
+
   private readonly productPageService = inject(ProductPageService);
   private readonly containerService = inject(ContainerApiService);
+  private readonly canvasState = inject(WarehouseCanvasState);
+  private readonly router = inject(Router);
 
   warehouses = signal<WarehouseTreeNode[]>([]);
   isLoading = signal(false);
@@ -40,6 +52,16 @@ export class Sidebar implements OnInit {
   searchText = signal('');
 
   visibleWarehouses = computed(() => this.warehouses().filter((warehouse) => warehouse.visible !== false));
+
+  constructor() {
+    effect(() => {
+      const version = this.canvasState.locationChanged();
+      if (version === 0) {
+        return;
+      }
+      this.refreshLoadedNodes();
+    });
+  }
 
   ngOnInit(): void {
     this.loadTree();
@@ -92,6 +114,21 @@ export class Sidebar implements OnInit {
     this.refreshTree();
   }
 
+  selectWarehouse(warehouse: WarehouseTreeNode): void {
+    this.canvasState.selectWarehouse({ id: warehouse.id, name: warehouse.name });
+  }
+
+  withAncestor(ancestors: ContainerTreeNode[], container: ContainerTreeNode): ContainerTreeNode[] {
+    return [...ancestors, container];
+  }
+
+  selectContainer(container: ContainerTreeNode, ancestors: ContainerTreeNode[], warehouse: WarehouseTreeNode): void {
+    this.canvasState.navigateTo(
+      { id: warehouse.id, name: warehouse.name },
+      [...ancestors, container].map(node => ({ id: node.id, name: node.name })),
+    );
+  }
+
   private loadTree(): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
@@ -104,6 +141,7 @@ export class Sidebar implements OnInit {
           loading: false,
           childrenLoaded: false,
           children: [],
+          requestToken: 0,
         })));
         this.isLoading.set(false);
       },
@@ -121,6 +159,7 @@ export class Sidebar implements OnInit {
     callback?: () => void,
   ): void {
     node.loading = true;
+    const requestToken = ++node.requestToken;
     this.refreshTree();
 
     this.containerService.list({
@@ -128,6 +167,9 @@ export class Sidebar implements OnInit {
       parentContainerId,
     }).subscribe({
       next: (response: ListContainersQueryResponse) => {
+        if (requestToken !== node.requestToken) {
+          return;
+        }
         node.children = response.map(container => this.toTreeNode(container));
         node.childrenLoaded = true;
         node.loading = false;
@@ -135,6 +177,9 @@ export class Sidebar implements OnInit {
         callback?.();
       },
       error: () => {
+        if (requestToken !== node.requestToken) {
+          return;
+        }
         node.loading = false;
         this.errorMessage.set('Unable to load containers. Please try again.');
         this.refreshTree();
@@ -221,10 +266,68 @@ export class Sidebar implements OnInit {
       loading: false,
       childrenLoaded: false,
       children: [],
+      requestToken: 0,
     };
   }
 
   private refreshTree(): void {
     this.warehouses.update(warehouses => [...warehouses]);
   }
+
+  // After a move, re-fetch every branch of the tree that's currently expanded.
+  // The whole tree is walked up front (synchronously, off the state as it stands
+  // right now) so every branch's request fires at once instead of cascading one
+  // level at a time — a tree several levels deep no longer takes several
+  // sequential round-trips to catch up.
+  private refreshLoadedNodes(): void {
+    const targets: { node: WarehouseTreeNode | ContainerTreeNode; warehouseId: number; parentContainerId: number | null }[] = [];
+
+    const collect = (node: WarehouseTreeNode | ContainerTreeNode, warehouseId: number, parentContainerId: number | null): void => {
+      if (!node.childrenLoaded) {
+        return;
+      }
+      targets.push({ node, warehouseId, parentContainerId });
+      node.children.forEach((child) => collect(child, warehouseId, child.id));
+    };
+
+    this.warehouses().forEach((warehouse) => collect(warehouse, warehouse.id, null));
+    targets.forEach(({ node, warehouseId, parentContainerId }) => this.refreshNodeChildren(node, warehouseId, parentContainerId));
+  }
+
+  private refreshNodeChildren(
+    node: WarehouseTreeNode | ContainerTreeNode,
+    warehouseId: number,
+    parentContainerId: number | null,
+  ): void {
+    const requestToken = ++node.requestToken;
+
+    this.containerService.list({ warehouseId, parentContainerId }).subscribe({
+      next: (response: ListContainersQueryResponse) => {
+        if (requestToken !== node.requestToken) {
+          return;
+        }
+        const previousById = new Map(node.children.map((child) => [child.id, child]));
+        // Mutate matched nodes in place rather than replacing them: a toggleContainer()
+        // expand may still be in flight for one of these, and its callback closes over
+        // the existing object reference. Swapping in a fresh copy here would orphan that
+        // callback, leaving the node's `loading` flag stuck true forever.
+        node.children = response.map((container) => {
+          const previous = previousById.get(container.id);
+          if (previous) {
+            Object.assign(previous, container);
+            return previous;
+          }
+          return this.toTreeNode(container);
+        });
+        this.refreshTree();
+      },
+      error: () => {},
+    });
+  }
+
+  
+  goToPriviledges(warehouseId : number) {
+    this.router.navigate(['priviledge-group/edit', warehouseId]);
+  }
 }
+

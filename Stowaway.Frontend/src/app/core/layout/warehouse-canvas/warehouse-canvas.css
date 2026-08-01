@@ -8,4 +8,219 @@
   height: 100%;
   min-height: 0;
   background: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+.canvas-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.canvas-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.crumb {
+  border: 0;
+  background: transparent;
+  color: #4b5563;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.3rem;
+}
+
+.crumb:hover {
+  background: #f3f4f6;
+}
+
+.crumb-current {
+  color: #1f2937;
+}
+
+.crumb-sep {
+  color: #9ca3af;
+}
+
+.canvas-status {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.canvas-status-error {
+  color: #dc2626;
+}
+
+.canvas-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.canvas-tray {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid #e5e7eb;
+  background: #f7f7f5;
+  padding: 0.75rem;
+  overflow-y: auto;
+}
+
+.tray-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+
+.tray-empty {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.tray-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  margin-bottom: 0.5rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.4rem;
+  cursor: grab;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+.tray-card:active {
+  cursor: grabbing;
+}
+
+.tray-card-item {
+  background: #fdf6ec;
+}
+
+.canvas-grid {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background-image: radial-gradient(circle, #dfe3da 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.canvas-hint {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.canvas-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  width: 112px;
+  padding: 0.6rem 0.5rem 0.5rem;
+  background: #fff;
+  border: 1px solid #d4d8cf;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: grab;
+  text-align: center;
+  user-select: none;
+}
+
+.canvas-card:active {
+  cursor: grabbing;
+}
+
+.canvas-card-container {
+  border-top: 3px solid #8fa28a;
+}
+
+.canvas-card-nest-target {
+  border-color: #4f7cff;
+  box-shadow: 0 0 0 2px #4f7cff, 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.canvas-card-item {
+  border-top: 3px solid #d9a441;
+  width: 96px;
+}
+
+.card-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.card-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1f2937;
+  overflow-wrap: anywhere;
+}
+
+.card-hint {
+  font-size: 0.7rem;
+  color: #9ca3af;
+}
+
+.card-unplace {
+  position: absolute;
+  top: -0.4rem;
+  right: -0.4rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #6b7280;
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-unplace:hover {
+  background: #374151;
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
 }

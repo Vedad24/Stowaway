@@ -17,5 +17,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
         public required int Quantity { get; init; }
         public required ListContainersDto Container { get; init; }
         public required SharedSupplierDto Supplier { get; init; }
+        public double? CanvasX { get; init; }
+        public double? CanvasY { get; init; }
     }
 }

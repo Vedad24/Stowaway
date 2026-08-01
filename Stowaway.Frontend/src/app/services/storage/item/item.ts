@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment';
-import { CreateItemCommand, GetItemByIdDto, ListItemQuery, ListItemQueryDto, ListItemQueryResponse, UpdateItemCommand } from './item.model';
+import { CreateItemCommand, GetItemByIdDto, ListItemQuery, ListItemQueryDto, ListItemQueryResponse, MoveItemCommand, UpdateCanvasPositionCommand, UpdateItemCommand } from './item.model';
 import { Observable, onErrorResumeNextWith } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
@@ -32,5 +32,14 @@ export class ItemApiService {
 
   delete(id: number): Observable<void>{
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  updateCanvasPosition(id: number, payload: UpdateCanvasPositionCommand): Observable<void>{
+    return this.http.put<void>(`${this.baseUrl}/${id}/canvas-position`, payload);
+  }
+
+  moveToContainer(id: number, containerId: number): Observable<void>{
+    const payload: MoveItemCommand = { containerId };
+    return this.http.put<void>(`${this.baseUrl}/${id}/container`, payload);
   }
 }
