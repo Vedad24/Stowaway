@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
@@ -47,6 +47,16 @@ export class Sidebar implements OnInit {
   searchText = signal('');
 
   visibleWarehouses = computed(() => this.warehouses().filter((warehouse) => warehouse.visible !== false));
+
+  constructor() {
+    effect(() => {
+      const version = this.canvasState.locationChanged();
+      if (version === 0) {
+        return;
+      }
+      this.refreshLoadedNodes();
+    });
+  }
 
   ngOnInit(): void {
     this.loadTree();
@@ -248,6 +258,35 @@ export class Sidebar implements OnInit {
 
   private refreshTree(): void {
     this.warehouses.update(warehouses => [...warehouses]);
+  }
+
+  private refreshLoadedNodes(): void {
+    this.warehouses().forEach((warehouse) => this.refreshNodeChildren(warehouse, warehouse.id, null));
+  }
+
+  private refreshNodeChildren(
+    node: WarehouseTreeNode | ContainerTreeNode,
+    warehouseId: number,
+    parentContainerId: number | null,
+  ): void {
+    if (!node.childrenLoaded) {
+      return;
+    }
+
+    this.containerService.list({ warehouseId, parentContainerId }).subscribe({
+      next: (response: ListContainersQueryResponse) => {
+        const previousById = new Map(node.children.map((child) => [child.id, child]));
+        node.children = response.map((container) => {
+          const previous = previousById.get(container.id);
+          return previous
+            ? { ...container, expanded: previous.expanded, loading: previous.loading, childrenLoaded: previous.childrenLoaded, children: previous.children, searchMatch: previous.searchMatch, visible: previous.visible }
+            : this.toTreeNode(container);
+        });
+        this.refreshTree();
+        node.children.forEach((child) => this.refreshNodeChildren(child, warehouseId, child.id));
+      },
+      error: () => {},
+    });
   }
 
   

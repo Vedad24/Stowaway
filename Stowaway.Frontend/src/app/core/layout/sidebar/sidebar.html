@@ -31,7 +31,6 @@
               <button type="button" class="tree-toggle" (click)="toggleWarehouse(warehouse)">
                 <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
               </button>
-              <span class="tree-label">{{ warehouse.name }}</span>
               <span class="tree-label" (click)="selectWarehouse(warehouse)">{{ warehouse.name }}</span>
               <button matButton (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
             </div>

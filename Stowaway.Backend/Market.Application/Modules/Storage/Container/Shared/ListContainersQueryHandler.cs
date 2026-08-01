@@ -32,6 +32,8 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 WarehouseId = x.WarehouseId,
                 ParentContainerId = x.ParentContainerId,
                 HasChildren = ctx.Containers.Any(child => child.ParentContainerId == x.Id),
+                CanvasX = x.CanvasX,
+                CanvasY = x.CanvasY,
             });
 
             return await projectedQuery.ToListAsync(cancellationToken);

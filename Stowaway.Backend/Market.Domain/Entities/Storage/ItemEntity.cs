@@ -22,6 +22,8 @@ namespace Stowaway.Domain.Entities.Storage
         public SupplierEntity? Supplier { get; set; }
         public int ContainerId { get; set; }
         public ContainerEntity Container { get; set; }
+        public double? CanvasX { get; set; }
+        public double? CanvasY { get; set; }
 
     }
 }

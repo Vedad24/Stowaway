@@ -13,5 +13,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
         public int WarehouseId { get; set; }
         public int? ParentContainerId { get; set; }
         public bool HasChildren { get; set; }
+        public double? CanvasX { get; set; }
+        public double? CanvasY { get; set; }
     }
 }

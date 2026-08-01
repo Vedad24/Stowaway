@@ -44,11 +44,13 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 },
-                Container = new ListContainersDto 
+                Container = new ListContainersDto
                 {
                     Id = x.Id,
                     Name = x.Container.Name
-                }
+                },
+                CanvasX = x.CanvasX,
+                CanvasY = x.CanvasY,
             });
 
             return await PageResult<ListItemQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);

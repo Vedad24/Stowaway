@@ -16,6 +16,7 @@ export interface CanvasContainerCrumb {
 export class WarehouseCanvasState {
   readonly warehouse = signal<CanvasWarehouse | null>(null);
   readonly path = signal<CanvasContainerCrumb[]>([]);
+  readonly locationChanged = signal(0);
 
   readonly currentContainer = computed<CanvasContainerCrumb | null>(() => {
     const path = this.path();
@@ -42,5 +43,9 @@ export class WarehouseCanvasState {
 
   goToCrumb(index: number): void {
     this.path.update(path => path.slice(0, index + 1));
+  }
+
+  notifyLocationChanged(): void {
+    this.locationChanged.update(v => v + 1);
   }
 }
