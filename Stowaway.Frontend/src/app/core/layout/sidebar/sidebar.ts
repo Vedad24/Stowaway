@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
-import { MatIcon, MatIconModule } from "@angular/material/icon";
-import { Router } from '@angular/router';
+import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 
 interface ContainerTreeNode extends ListContainersQueryDto {
   expanded: boolean;
@@ -28,6 +29,7 @@ interface WarehouseTreeNode extends ListWarehousesQueryDto {
 @Component({
   selector: 'app-sidebar',
   imports: [CommonModule, MatIcon, MatIconModule],
+  
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,6 +38,7 @@ export class Sidebar implements OnInit {
 
   private readonly productPageService = inject(ProductPageService);
   private readonly containerService = inject(ContainerApiService);
+  private readonly canvasState = inject(WarehouseCanvasState);
   private readonly router = inject(Router);
 
   warehouses = signal<WarehouseTreeNode[]>([]);
@@ -94,6 +97,21 @@ export class Sidebar implements OnInit {
       this.loadChildren(container, container.warehouseId, container.id);
     }
     this.refreshTree();
+  }
+
+  selectWarehouse(warehouse: WarehouseTreeNode): void {
+    this.canvasState.selectWarehouse({ id: warehouse.id, name: warehouse.name });
+  }
+
+  withAncestor(ancestors: ContainerTreeNode[], container: ContainerTreeNode): ContainerTreeNode[] {
+    return [...ancestors, container];
+  }
+
+  selectContainer(container: ContainerTreeNode, ancestors: ContainerTreeNode[], warehouse: WarehouseTreeNode): void {
+    this.canvasState.navigateTo(
+      { id: warehouse.id, name: warehouse.name },
+      [...ancestors, container].map(node => ({ id: node.id, name: node.name })),
+    );
   }
 
   private loadTree(): void {
@@ -232,7 +250,9 @@ export class Sidebar implements OnInit {
     this.warehouses.update(warehouses => [...warehouses]);
   }
 
+  
   goToPriviledges(warehouseId : number) {
     this.router.navigate(['priviledge-group/edit', warehouseId]);
   }
 }
+

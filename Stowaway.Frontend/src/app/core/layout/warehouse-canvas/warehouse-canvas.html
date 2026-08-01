@@ -1,1 +1,111 @@
-<div class="canvas-shell" aria-label="Warehouse workspace canvas"></div>
+<div class="canvas-shell" aria-label="Warehouse workspace canvas">
+  @if (!warehouse()) {
+    <div class="canvas-empty">
+      <p>Select a warehouse from the tree to start placing containers.</p>
+    </div>
+  } @else {
+    <div class="canvas-toolbar">
+      <nav class="breadcrumb" aria-label="Canvas location">
+        <button type="button" class="crumb" [class.crumb-current]="path().length === 0" (click)="goToRoot()">
+          {{ warehouse()!.name }}
+        </button>
+        @for (crumb of path(); track crumb.id; let i = $index) {
+          <span class="crumb-sep">/</span>
+          <button type="button" class="crumb" [class.crumb-current]="i === path().length - 1" (click)="goToCrumb(i)">
+            {{ crumb.name }}
+          </button>
+        }
+      </nav>
+      @if (isLoading()) {
+        <span class="canvas-status">Loading…</span>
+      }
+      @if (errorMessage()) {
+        <span class="canvas-status canvas-status-error">{{ errorMessage() }}</span>
+      }
+    </div>
+
+    <div class="canvas-body">
+      <aside
+        class="canvas-tray"
+        cdkDropList
+        #tray="cdkDropList"
+        [cdkDropListData]="emptyDropData"
+        [cdkDropListConnectedTo]="[canvasList]"
+      >
+        <h3 class="tray-title">Unplaced</h3>
+        @if (!hasUnplaced()) {
+          <p class="tray-empty">Everything here is placed on the canvas.</p>
+        }
+        @for (container of unplacedContainers(); track container.id) {
+          <div class="tray-card tray-card-container" cdkDrag [cdkDragData]="{ kind: 'container', id: container.id }">
+            <span class="card-icon">📦</span>
+            <span class="card-label">{{ container.name }}</span>
+          </div>
+        }
+        @for (item of unplacedItems(); track item.id) {
+          <div class="tray-card tray-card-item" cdkDrag [cdkDragData]="{ kind: 'item', id: item.id }">
+            <span class="card-icon">🏷️</span>
+            <span class="card-label">{{ item.name }}</span>
+          </div>
+        }
+      </aside>
+
+      <div class="canvas-grid" #canvasGrid>
+        <div
+          class="canvas-drop-target"
+          cdkDropList
+          #canvasList="cdkDropList"
+          [cdkDropListData]="emptyDropData"
+          [cdkDropListConnectedTo]="[tray]"
+          (cdkDropListDropped)="onCanvasDrop($event, canvasGrid)"
+        ></div>
+
+        @if (!isLoading() && containers().length === 0 && items().length === 0) {
+          <p class="canvas-hint">No containers here yet.</p>
+        }
+        @for (container of placedContainers(); track container.id) {
+          <div
+            class="canvas-card canvas-card-container"
+            cdkDrag
+            cdkDragBoundary=".canvas-grid"
+            [cdkDragFreeDragPosition]="positionOf('container', container.id)"
+            (cdkDragEnded)="onReposition($event, 'container', container.id)"
+            (dblclick)="enterContainer(container)"
+            title="Double-click to open"
+          >
+            <button
+              type="button"
+              class="card-unplace"
+              (click)="unplace('container', container.id); $event.stopPropagation()"
+              aria-label="Remove from canvas"
+            >×</button>
+            <span class="card-icon">📦</span>
+            <span class="card-label">{{ container.name }}</span>
+            @if (container.hasChildren) {
+              <span class="card-hint">has sub-containers</span>
+            }
+          </div>
+        }
+        @for (item of placedItems(); track item.id) {
+          <div
+            class="canvas-card canvas-card-item"
+            cdkDrag
+            cdkDragBoundary=".canvas-grid"
+            [cdkDragFreeDragPosition]="positionOf('item', item.id)"
+            (cdkDragEnded)="onReposition($event, 'item', item.id)"
+          >
+            <button
+              type="button"
+              class="card-unplace"
+              (click)="unplace('item', item.id); $event.stopPropagation()"
+              aria-label="Remove from canvas"
+            >×</button>
+            <span class="card-icon">🏷️</span>
+            <span class="card-label">{{ item.name }}</span>
+            <span class="card-hint">qty {{ item.quantity }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

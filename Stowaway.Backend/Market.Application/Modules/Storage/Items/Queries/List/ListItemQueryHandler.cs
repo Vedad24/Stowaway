@@ -23,6 +23,11 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 query = query.Where(x => x.Name.ToLower().Contains(searchTerm));
             }
 
+            if (request.ContainerId.HasValue)
+            {
+                query = query.Where(x => x.ContainerId == request.ContainerId.Value);
+            }
+
             var projectedQuery = query.Select(x => new ListItemQueryDto
             {
                 Id = x.Id,

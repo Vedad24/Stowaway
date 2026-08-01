@@ -104,6 +104,14 @@
 .tree-label {
   font-weight: 600;
   color: #2f352f;
+  cursor: pointer;
+  border-radius: 0.2rem;
+  padding: 0.1rem 0.3rem;
+  margin: -0.1rem -0.3rem;
+}
+
+.tree-label:hover {
+  background-color: #e4ded0;
 }
 
 .tree-children {

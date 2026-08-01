@@ -3,6 +3,7 @@ import { PageResult } from "../../../models/paging/page-result";
 
 export class ListItemQuery extends BasePagedQuery{
     search?: string | null;
+    containerId?: number | null;
 }
 
 export interface SharedSupplierDto{
