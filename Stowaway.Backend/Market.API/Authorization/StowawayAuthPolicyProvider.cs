@@ -1,3 +1,4 @@
+using Market.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
@@ -20,7 +21,7 @@ public sealed class StowawayAuthPolicyProvider : IAuthorizationPolicyProvider
     {
         if (string.IsNullOrWhiteSpace(policyName))
             return _fallbackPolicyProvider.GetPolicyAsync(policyName);
-        if(policyName.StartsWith("Priviledge:", StringComparison.OrdinalIgnoreCase))
+        if(policyName.StartsWith(Priviledges.AuthPrefix, StringComparison.OrdinalIgnoreCase))
         {
             var policy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
@@ -28,7 +29,7 @@ public sealed class StowawayAuthPolicyProvider : IAuthorizationPolicyProvider
                 .Build();
 
             return Task.FromResult<AuthorizationPolicy?>(policy);
-        }else if(policyName.StartsWith("Permission:", StringComparison.OrdinalIgnoreCase))
+        }else if(policyName.StartsWith(Permissions.AuthPrefix, StringComparison.OrdinalIgnoreCase))
         {
              var policy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()

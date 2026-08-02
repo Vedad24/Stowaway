@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using Market.Infrastructure.Database;
@@ -13,7 +14,7 @@ public sealed class PriviledgeAuthorizationHandler(DatabaseContext dbContext) : 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PriviledgeRequirement requirement)
     {
         
-        var userIdString = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userIdString = context.User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value;
         int userId;
         if(!int.TryParse(userIdString, out userId))
             return;
