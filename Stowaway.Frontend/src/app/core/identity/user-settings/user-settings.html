@@ -19,8 +19,8 @@
 
       <div class="button-row">
         <button type="button" class="secondary-button" (click)="cancel()">Cancel</button>
-        <button type="submit" class="primary-button" [disabled]="isSubmitting">
-          {{ isSubmitting ? 'Saving...' : 'Save changes' }}
+        <button type="submit" class="primary-button" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Saving...' : 'Save changes' }}
         </button>
       </div>
 

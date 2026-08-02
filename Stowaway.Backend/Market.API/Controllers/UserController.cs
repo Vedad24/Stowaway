@@ -28,9 +28,9 @@ namespace Stowaway.API.Controllers
 
         [HttpGet("{id:int}")]
         [HasPermission(Permissions.UsersRead)]
-        public async Task<GetByIdQueryDto> GetById(int mail, CancellationToken ct)
+        public async Task<GetByIdQueryDto> GetById(int id, CancellationToken ct)
         {
-            return await sender.Send(new GetByIdQuery { Id = mail }, ct);
+            return await sender.Send(new GetByIdQuery { Id = id }, ct);
         }
 
         [HttpPut]
