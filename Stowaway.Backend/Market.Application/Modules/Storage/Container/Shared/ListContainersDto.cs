@@ -10,7 +10,6 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
     {
         public required int Id { get; set; }
         public required string Name { get; set; }
-        public int ContainerTypeId { get; set; }
         public int WarehouseId { get; set; }
         public int? ParentContainerId { get; set; }
         public bool HasChildren { get; set; }

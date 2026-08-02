@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
@@ -59,11 +59,7 @@ export class Sidebar implements OnInit {
       if (version === 0) {
         return;
       }
-      // refreshLoadedNodes() reads the `warehouses` signal (and rewrites it once
-      // responses land). Without untracked(), that read makes `warehouses` a
-      // second dependency of this effect — its own write-back then re-triggers
-      // this same effect, which re-reads it and writes again, forever.
-      untracked(() => this.refreshLoadedNodes());
+      this.refreshLoadedNodes();
     });
   }
 
