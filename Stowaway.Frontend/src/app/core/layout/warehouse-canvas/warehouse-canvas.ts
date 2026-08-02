@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CdkDrag, CdkDragEnd, CdkDragMove, DragDropModule } from '@angular/cdk/drag-drop';
+import { MatDialog } from '@angular/material/dialog';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { ItemApiService } from '../../../services/storage/item/item';
 import { ListItemQuery, ListItemQueryDto } from '../../../services/storage/item/item.model';
+import { ContainerEdit } from '../container-edit/container-edit';
 
 interface Position {
   x: number;
@@ -35,6 +37,7 @@ export class WarehouseCanvas {
   private readonly canvasState = inject(WarehouseCanvasState);
   private readonly containerService = inject(ContainerApiService);
   private readonly itemService = inject(ItemApiService);
+  private readonly dialog = inject(MatDialog);
 
   readonly warehouse = this.canvasState.warehouse;
   readonly path = this.canvasState.path;
@@ -59,6 +62,7 @@ export class WarehouseCanvas {
     effect(() => {
       const warehouse = this.warehouse();
       const container = this.canvasState.currentContainer();
+      this.canvasState.locationChanged();
       if (!warehouse) {
         this.containers.set([]);
         this.items.set([]);
@@ -83,6 +87,23 @@ export class WarehouseCanvas {
 
   enterContainer(container: ListContainersQueryDto): void {
     this.canvasState.enterContainer({ id: container.id, name: container.name });
+  }
+
+  editContainer(container: ListContainersQueryDto): void {
+    const dialogRef = this.dialog.open(ContainerEdit, {
+      width: '420px',
+      data: {
+        id: container.id,
+        name: container.name,
+        containerTypeId: container.containerTypeId,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.canvasState.notifyLocationChanged();
+      }
+    });
   }
 
   goToRoot(): void {

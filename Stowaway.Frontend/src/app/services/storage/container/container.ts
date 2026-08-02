@@ -3,7 +3,7 @@ import { Observable, onErrorResumeNextWith } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment';
-import { ListContainersQueryResponse, ListContainersQuery, MoveContainerCommand, UpdateCanvasPositionCommand } from './container.model';
+import { ListContainersQueryResponse, ListContainersQuery, MoveContainerCommand, UpdateCanvasPositionCommand, CreateContainerCommand, UpdateContainerCommand } from './container.model';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +15,14 @@ export class ContainerApiService {
   list(request? : ListContainersQuery): Observable<ListContainersQueryResponse>{
     const params = request ? buildHttpParams(request as any) : undefined;
     return this.http.get<ListContainersQueryResponse>(this.baseUrl, { params });
+  }
+
+  create(payload: CreateContainerCommand): Observable<number>{
+    return this.http.post<number>(this.baseUrl, payload);
+  }
+
+  update(id: number, payload: UpdateContainerCommand): Observable<void>{
+    return this.http.put<void>(`${this.baseUrl}/${id}`, payload);
   }
 
   updateCanvasPosition(id: number, payload: UpdateCanvasPositionCommand): Observable<void>{
