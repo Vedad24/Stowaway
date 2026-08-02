@@ -40,6 +40,26 @@ export interface DeleteUserCommand{
     id : number
 }
 
+export interface GetSelfDto{
+    email: string,
+    firstName: string,
+    lastName: string,
+    role: Role
+}
+
+export interface UpdateSelfCommand{
+    email: string | null,
+    firstName: string | null,
+    lastName: string | null
+}
+
+export interface UpdateSelfCommandDto
+{
+    email : string,
+    firstName : string,
+    lastName : string
+}
+
 export interface GetUserById{
     id: number,
 }

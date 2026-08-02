@@ -8,7 +8,7 @@ public sealed class PermissionAuthorizationHandler : AuthorizationHandler<Permis
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
-        if (context.User.HasClaim(c => c.Type == Permissions.ClaimType && c.Value == requirement.Permission))
+        if (context.User.HasClaim(c => c.Type == Permissions.ClaimType && (Permissions.AuthPrefix + c.Value) == requirement.Permission))
         {
             context.Succeed(requirement);
         }

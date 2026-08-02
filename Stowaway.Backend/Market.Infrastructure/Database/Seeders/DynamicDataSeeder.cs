@@ -35,24 +35,40 @@ public static class DynamicDataSeeder
     }
     private static async Task SeedPermissionsAsync(DatabaseContext context)
     {
-        if (await context.Permissions.AnyAsync())
-            return;
-
-        var permissions = new List<PermissionEntity>
+        var permissionDescriptions = new[]
         {
-            new() { Description = Permissions.UsersRead },
-            new() { Description = Permissions.UsersCreate },
-            new() { Description = Permissions.UsersUpdate },
-            new() { Description = Permissions.UsersDelete },
-            new() { Description = Permissions.RolesRead },
-            new() { Description = Permissions.RolesCreate },
-            new() { Description = Permissions.RolesUpdate },
-            new() { Description = Permissions.RolesDelete }
+            Permissions.UsersRead,
+            Permissions.UsersCreate,
+            Permissions.UsersUpdate,
+            Permissions.UsersDelete,
+            Permissions.UsersSelfRead,
+            Permissions.UsersSelfUpdate,
+            Permissions.UsersSelfDelete,
+            Permissions.RolesRead,
+            Permissions.RolesCreate,
+            Permissions.RolesUpdate,
+            Permissions.RolesDelete
         };
 
-        context.Permissions.AddRange(permissions);
+        var existingDescriptions = await context.Permissions
+            .Where(p => permissionDescriptions.Contains(p.Description))
+            .Select(p => p.Description)
+            .ToListAsync();
+
+        var missingPermissions = permissionDescriptions
+            .Where(d => !existingDescriptions.Contains(d))
+            .Select(d => new PermissionEntity { Description = d })
+            .ToList();
+
+        if (missingPermissions.Count == 0)
+        {
+            Console.WriteLine("✅ Dynamic seed: permissions already exist.");
+            return;
+        }
+
+        context.Permissions.AddRange(missingPermissions);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: permissions added.");
+        Console.WriteLine($"✅ Dynamic seed: {missingPermissions.Count} permissions added.");
     }
 
     private static async Task SeedPrivilegesAsync(DatabaseContext context)
@@ -565,6 +581,13 @@ public static class DynamicDataSeeder
         var existingSet = new HashSet<(Role RoleId, int PermissionId)>(
             existingAssignments.Select(item => (item.RoleId, item.PermissionId)));
 
+        var selfPermissionDescriptions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            Permissions.UsersSelfRead,
+            Permissions.UsersSelfUpdate,
+            Permissions.UsersSelfDelete,
+        };
+
         var permissionRoleAssignments = new List<Permission_RoleEntity>();
 
         foreach (var permission in permissions)
@@ -578,8 +601,10 @@ public static class DynamicDataSeeder
                 });
             }
 
-            if (permission.Description.EndsWith(".Read", StringComparison.OrdinalIgnoreCase) &&
-                !existingSet.Contains((Role.User, permission.Id)))
+            var grantToUser = permission.Description.EndsWith(".Read", StringComparison.OrdinalIgnoreCase)
+                || selfPermissionDescriptions.Contains(permission.Description);
+
+            if (grantToUser && !existingSet.Contains((Role.User, permission.Id)))
             {
                 permissionRoleAssignments.Add(new Permission_RoleEntity
                 {
