@@ -29,7 +29,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
             {
                 Id = x.Id,
                 Name = x.Name,
-                ContainerTypeId = x.ContainerTypeId,
                 WarehouseId = x.WarehouseId,
                 ParentContainerId = x.ParentContainerId,
                 HasChildren = ctx.Containers.Any(child => child.ParentContainerId == x.Id),

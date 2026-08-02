@@ -216,36 +216,6 @@
   background: #374151;
 }
 
-.card-edit {
-  position: absolute;
-  top: -0.4rem;
-  left: -0.4rem;
-  width: 1.2rem;
-  height: 1.2rem;
-  border: 0;
-  border-radius: 999px;
-  background: #8fa28a;
-  color: #fff;
-  font-size: 0.7rem;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.card-edit:hover {
-  background: #62775d;
-}
-
-.card-edit-inline {
-  position: static;
-  width: 1.4rem;
-  height: 1.4rem;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
 .cdk-drag-preview {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 0.5rem;
