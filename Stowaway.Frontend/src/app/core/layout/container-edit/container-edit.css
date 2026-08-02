@@ -1,0 +1,24 @@
+.dialog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 4px;
+  min-width: 320px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error {
+  color: var(--mat-sys-error, #b3261e);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}

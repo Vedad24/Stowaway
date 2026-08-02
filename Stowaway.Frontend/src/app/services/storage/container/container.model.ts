@@ -10,6 +10,7 @@ export class ListContainersQuery{
 export interface ListContainersQueryDto {
     id: number,
     name: string,
+    containerTypeId: number,
     warehouseId: number,
     parentContainerId: number | null,
     hasChildren: boolean,
@@ -26,5 +27,17 @@ export interface UpdateCanvasPositionCommand{
 
 export interface MoveContainerCommand{
     parentContainerId: number,
+}
+
+export interface CreateContainerCommand{
+    name: string,
+    containerTypeId: number,
+    warehouseId: number,
+    parentContainerId?: number | null,
+}
+
+export interface UpdateContainerCommand{
+    name: string,
+    containerTypeId: number,
 }
 
