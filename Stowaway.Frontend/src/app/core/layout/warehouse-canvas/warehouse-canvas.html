@@ -50,6 +50,12 @@
           >
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
+            <button
+              type="button"
+              class="card-edit card-edit-inline"
+              (click)="editContainer(container); $event.stopPropagation()"
+              aria-label="Edit container"
+            >✎</button>
           </div>
         }
         @for (item of unplacedItems(); track item.id) {
@@ -90,6 +96,12 @@
               (click)="unplace('container', container.id); $event.stopPropagation()"
               aria-label="Remove from canvas"
             >×</button>
+            <button
+              type="button"
+              class="card-edit"
+              (click)="editContainer(container); $event.stopPropagation()"
+              aria-label="Edit container"
+            >✎</button>
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
             @if (container.hasChildren) {

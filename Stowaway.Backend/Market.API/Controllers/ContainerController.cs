@@ -1,4 +1,6 @@
-﻿using Stowaway.Application.Modules.Storage.Container.Commands.Move;
+﻿using Stowaway.Application.Modules.Storage.Container.Commands.Create;
+using Stowaway.Application.Modules.Storage.Container.Commands.Move;
+using Stowaway.Application.Modules.Storage.Container.Commands.Update;
 using Stowaway.Application.Modules.Storage.Container.Commands.UpdateCanvasPosition;
 using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Application.Modules.Storage.Items.Queries.List;
@@ -15,6 +17,22 @@ namespace Stowaway.API.Controllers
         {
             var result = await sender.Send(query, cancellationToken);
             return Ok(result);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult<int>> Create(CreateContainerCommand command, CancellationToken cancellationToken)
+        {
+            int id = await sender.Send(command, cancellationToken);
+            return Ok(id);
+        }
+
+        [HttpPut("{id:int}")]
+        [AllowAnonymous]
+        public async Task Update(int id, UpdateContainerCommand command, CancellationToken cancellationToken)
+        {
+            command.Id = id;
+            await sender.Send(command, cancellationToken);
         }
 
         [HttpPut("{id:int}/canvas-position")]
