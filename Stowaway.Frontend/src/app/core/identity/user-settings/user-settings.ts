@@ -5,7 +5,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { catchError, tap, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service'; 
 import { UserService } from '../../../services/identity/user/user-service';
-import { GetUserByIdOrMailDto, UpdateUserCommand, Role, RoleName } from '../../../services/identity/user/user-service.models';
+import { GetSelfDto, UpdateSelfCommand, RoleName } from '../../../services/identity/user/user-service.models';
 import { resolveSoa } from 'node:dns';
 
 @Component({
@@ -28,21 +28,16 @@ export class UserSettings implements OnInit {
     role : [{value: '', disabled : true}],
   });
 
-  user?: GetUserByIdOrMailDto;
+  user?: GetSelfDto;
   isSubmitting = signal(false);
   message = '';
   errorMessage = '';
 
   ngOnInit(): void {
-    
-    if (!this.currentUserService.userId) {
-      this.errorMessage = 'Unable to load current user information.';
-      return;
-    }
     this.loadUserData();
   }
   loadUserData() : void {
-    this.userService.get(this.currentUserService.userId).subscribe({
+    this.userService.getSelf().subscribe({
       next: (response) => {
         this.user = response;
         console.log('User data loaded:', response);
@@ -70,17 +65,14 @@ export class UserSettings implements OnInit {
     }
 
     this.isSubmitting.set(true);
-    const payload: UpdateUserCommand = {
-      id: this.currentUserService.userId,
+    const payload: UpdateSelfCommand = {
       email: this.form.value.email ?? null,
       firstName: this.form.value.firstName ?? null,
       lastName: this.form.value.lastName ?? null,
-      role: this.user.role ?? null,
-      isEnabled: this.user.isEnabled ?? null,
     };
-    console.log("Update user payload", payload);
+    console.log("Update self payload", payload);
     this.userService
-      .update(payload)
+      .updateSelf(payload)
       .pipe(
         tap(() => {
           this.message = 'Your settings have been saved successfully.';

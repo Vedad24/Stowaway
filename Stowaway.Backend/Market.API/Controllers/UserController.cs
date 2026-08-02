@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using Stowaway.Application.Modules.Identity.Users.Commands.Create;
 using Stowaway.Application.Modules.Identity.Users.Commands.Delete;
+using Stowaway.Application.Modules.Identity.Users.Commands.DeleteSelf;
 using Stowaway.Application.Modules.Identity.Users.Commands.Update;
+using Stowaway.Application.Modules.Identity.Users.Commands.UpdateSelf;
 using Stowaway.Application.Modules.Identity.Users.Queries.GetById;
 using Stowaway.Application.Modules.Identity.Users.Queries.GetByMail;
+using Stowaway.Application.Modules.Identity.Users.Queries.GetSelf;
 using Stowaway.Application.Modules.Identity.Users.Queries.List;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -60,6 +63,27 @@ namespace Stowaway.API.Controllers
         public async Task<GetByMailQueryDto> GetByMail(string mail, CancellationToken ct)
         {
             return await sender.Send(new GetByMailQuery { Mail = mail }, ct);
+        }
+
+        [HttpGet("me")]
+        [HasPermission(Permissions.UsersSelfRead)]
+        public async Task<GetSelfQueryDto> GetSelf(CancellationToken ct)
+        {
+            return await sender.Send(new GetSelfQuery(), ct);
+        }
+
+        [HttpPut("me")]
+        [HasPermission(Permissions.UsersSelfUpdate)]
+        public async Task<UpdateSelfCommandDto> UpdateSelf([FromBody] UpdateSelfCommand command, CancellationToken ct)
+        {
+            return await sender.Send(command, ct);
+        }
+
+        [HttpDelete("me")]
+        [HasPermission(Permissions.UsersSelfDelete)]
+        public async Task DeleteSelf(CancellationToken ct)
+        {
+            await sender.Send(new DeleteSelfCommand(), ct);
         }
     }
 }
