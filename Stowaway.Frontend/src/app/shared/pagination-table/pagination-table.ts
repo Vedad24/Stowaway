@@ -1,4 +1,4 @@
-import { Component, inject, Inject, Injectable, ViewChild } from '@angular/core';
+import { Component, effect, inject, Inject, Injectable, Input, signal, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 
@@ -10,31 +10,42 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 })
 export class PaginationTable<TDto>{
   
-  initializeTable(displayColumns : any[]){
-    this.columns = displayColumns;
-  }
   
-  columns : any[] = [
-    // {
-    //   columnDef: 'id',
-    //   header: 'ID',
-    //   cell: (user: ListUserQueryDto) => `${user.id}`,
-    // },
-  ]
-  displayColumns = this.columns.map(c => c.columnDef);
+  
+  @Input() columns : TableColumnDef<TDto>[] = [];
+  @Input() rawData = signal<TDto[]>([]);
   dataSource = new MatTableDataSource<TDto>();
+  
+  get displayColumns() : string[] {return this.columns.map(c => c.columnDef);}
+  
   @ViewChild(MatPaginator) paginator !: MatPaginator;
 
-  ngOnInit() {
-      
+  /**
+   *
+   */
+  constructor() {
+    //Wrapper for when data changes
+    effect(() => {
+      this.dataSource.data = this.rawData();
+    });
   }
+  
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
 
-  refreshUsers(newData : TDto[] = [])
+  refreshTable(newData : TDto[] = [])
   {
-    this.dataSource.data = newData;
+    this.rawData.set(newData);
+  }
+
+  getCellValue(row: TDto, column: TableColumnDef<TDto>): string {
+    return column.cell(row);
+  }
 }
+export interface TableColumnDef<TDto>{
+  columnDef: string,
+  header: string,
+  cell: (row: TDto) => string,
 }
