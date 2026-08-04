@@ -348,7 +348,11 @@ public static class DynamicDataSeeder
         {
             Id = Role.User
         };
-        context.Roles.AddRange(roleAdmin, roleUser);
+        var roleManager = new RoleEntity
+        {
+            Id = Role.Manager
+        };
+        context.Roles.AddRange(roleAdmin, roleUser, roleManager);
         await context.SaveChangesAsync();
 
 
@@ -369,9 +373,17 @@ public static class DynamicDataSeeder
             IsEnabled = true,
         };
 
-        var user = new UserEntity
+        var manager = new UserEntity
         {
             Email = "manager@market.local",
+            PasswordHash = hasher.HashPassword(null!, "Manager123!"),
+            RoleId = Role.Manager,
+            IsEnabled = true,
+        };
+
+        var user = new UserEntity
+        {
+            Email = "user@market.local",
             PasswordHash = hasher.HashPassword(null!, "User123!"),
             RoleId = Role.User,
             IsEnabled = true,
@@ -391,7 +403,7 @@ public static class DynamicDataSeeder
             RoleId = Role.User,
             IsEnabled = true,
         };
-        context.Users.AddRange(admin, user, dummyForSwagger, dummyForTests);
+        context.Users.AddRange(admin, manager, user, dummyForSwagger, dummyForTests);
         await context.SaveChangesAsync();
 
         Console.WriteLine("✅ Dynamic seed: demo users added.");
@@ -604,11 +616,24 @@ public static class DynamicDataSeeder
             var grantToUser = permission.Description.EndsWith(".Read", StringComparison.OrdinalIgnoreCase)
                 || selfPermissionDescriptions.Contains(permission.Description);
 
+            var grantToManager = permission.Description.StartsWith("Users.", StringComparison.OrdinalIgnoreCase)
+                || permission.Description.StartsWith("Warehouse.", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(permission.Description, Permissions.RolesRead, StringComparison.OrdinalIgnoreCase);
+
             if (grantToUser && !existingSet.Contains((Role.User, permission.Id)))
             {
                 permissionRoleAssignments.Add(new Permission_RoleEntity
                 {
                     RoleId = Role.User,
+                    PermissionId = permission.Id,
+                });
+            }
+
+            if (grantToManager && !existingSet.Contains((Role.Manager, permission.Id)))
+            {
+                permissionRoleAssignments.Add(new Permission_RoleEntity
+                {
+                    RoleId = Role.Manager,
                     PermissionId = permission.Id,
                 });
             }
