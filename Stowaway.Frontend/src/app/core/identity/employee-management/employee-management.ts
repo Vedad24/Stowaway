@@ -1,4 +1,8 @@
 import { AfterViewInit, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
 import { ListUserQuery, ListUserQueryDto, ListUserQueryResponse, RoleName } from '../../../services/identity/user/user-service.models';
 import { UserService } from '../../../services/identity/user/user-service';
@@ -7,7 +11,7 @@ import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-employee-management',
-  imports: [PaginationTable],
+  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   templateUrl: './employee-management.html',
   styleUrl: './employee-management.css',
 })
@@ -70,6 +74,10 @@ export class EmployeeManagement implements AfterViewInit {
   @ViewChild(PaginationTable) paginationTable !: PaginationTable<ListUserQueryDto>
   
   ngAfterViewInit(): void {
+    this.loadData();
+  }
+
+  loadData(): void {
     //Get data from backend
     //Prepare payload
     const pageNum = this.paginationTable.paginator.pageIndex + 1;
@@ -80,11 +88,19 @@ export class EmployeeManagement implements AfterViewInit {
       paging: new PageRequest(pageNum, pageSize)
     }
     this.userService.list(payload).subscribe(
-      (response) => 
+      (response) =>
       {
         this.rawData.set(response.items);
       }
     )
+  }
+
+  onSearch(): void {
+    this.paginationTable.paginator.pageIndex = 0;
+    this.loadData();
+  }
+
+  onAddEmployee(): void {
   }
 
 }
