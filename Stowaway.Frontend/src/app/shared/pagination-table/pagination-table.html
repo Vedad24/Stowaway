@@ -8,7 +8,29 @@
                     {{ column.header }}
                 </th>
                 <td mat-cell *matCellDef="let row">
-                    {{ getCellValue(row, column) }}
+                    @if(column.type === 'action')
+                    {
+                       <!-- Render Buttons -->
+                        <div class="flex gap-2">
+                            @for(btn of column.buttons; track btn.label) {
+                                @if(btn.type === 'icon') {
+                                    <button mat-icon-button 
+                                            (click)="btn.action(row)">
+                                        <mat-icon>{{ btn.icon }}</mat-icon>
+                                    </button>
+                                } @else {
+                                    <button mat-raised-button 
+                                            (click)="btn.action(row)">
+                                        {{ btn.label }}
+                                    </button>
+                                }
+                            }
+                        </div>
+                    }@else
+                    {
+                        {{ getCellValue(row, column) }}
+
+                    }
                 </td>
             </ng-container>
         }
