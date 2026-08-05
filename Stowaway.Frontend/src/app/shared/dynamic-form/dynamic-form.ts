@@ -1,12 +1,13 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { QuestionControlService } from './question-service/question-control-service';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { QuestionBase } from './question-service/question.models';
 import { DynamicFormQuestion } from './dynamic-form-question/dynamic-form-question';
 
 @Component({
   selector: 'app-dynamic-form',
-  imports: [DynamicFormQuestion, ReactiveFormsModule],
+  imports: [DynamicFormQuestion, ReactiveFormsModule, MatButtonModule],
   templateUrl: './dynamic-form.html',
   styleUrl: './dynamic-form.css',
 })
@@ -22,6 +23,6 @@ export class DynamicForm {
   //Call in component implementing dynamic form
   onSubmit() {
     this.payLoad = JSON.stringify(this.form().getRawValue());
-    
+    console.log("payload:", this.payLoad);
   }
 }

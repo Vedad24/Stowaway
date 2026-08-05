@@ -1,0 +1,13 @@
+.dynamic-form-question {
+  display: block;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error-message {
+  color: var(--mat-sys-error, #b3261e);
+  font-size: 12px;
+  margin-top: 4px;
+}

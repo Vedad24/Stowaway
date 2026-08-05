@@ -1,27 +1,37 @@
-<div [formGroup]="form()">
-  <label [attr.for]="question().key">{{ question().label }}</label>
-  <div>
-    @switch (question().controlType) {
-      @case ('textbox') {
-        <input [formControlName]="question().key" [id]="question().key" [type]="question().type" />
-      }
-      @case ('dropdown') {
-        <select [id]="question().key" [formControlName]="question().key">
+<div [formGroup]="form()" class="dynamic-form-question">
+  @switch (question().controlType) {
+    @case ('textbox') {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ question().label }}</mat-label>
+        <input matInput [formControlName]="question().key" [id]="question().key" [type]="question().type" />
+        @if (!isValid) {
+          <mat-error>{{ question().label }} is required</mat-error>
+        }
+      </mat-form-field>
+    }
+    @case ('dropdown') {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ question().label }}</mat-label>
+        <mat-select [id]="question().key" [formControlName]="question().key">
           @for (opt of question().options; track opt) {
-            <option [value]="opt.key">{{ opt.value }}</option>
+            <mat-option [value]="opt.key">{{ opt.value }}</mat-option>
           }
-        </select>
-      }
-      @case ('autocomplete') {
-        <app-autocomplete-component
-          [formControlName]="question().key"
-          [options]="question().options ?? []"
-          [optionInfo]="question().optionInfo">
-        </app-autocomplete-component>
+        </mat-select>
+        @if (!isValid) {
+          <mat-error>{{ question().label }} is required</mat-error>
+        }
+      </mat-form-field>
+    }
+    @case ('autocomplete') {
+      <app-autocomplete-component
+        class="full-width"
+        [formControlName]="question().key"
+        [options]="question().options ?? []"
+        [optionInfo]="question().optionInfo">
+      </app-autocomplete-component>
+      @if (!isValid) {
+        <div class="error-message">{{ question().label }} is required</div>
       }
     }
-  </div>
-  @if (!isValid) {
-    <div class="errorMessage">{{ question().label }} is required</div>
   }
 </div>
