@@ -46,8 +46,24 @@ export class EmployeeManagement implements AfterViewInit {
       columnDef: 'role',
       header: 'Role',
       cell: (row: ListUserQueryDto) => `${RoleName[row.roleId]}`
+    },
+    {
+      columnDef: 'btnEdit',
+      header: 'Edit',
+      type: 'action',
+      buttons:
+      [{
+        type: 'icon',
+        label: 'Edit',
+        icon: 'edit',
+        color: '',
+        action: (row: ListUserQueryDto) => this.onEdit(row)
+      }]
     }
   ]
+  onEdit(row: ListUserQueryDto) : void{
+    console.error("Not implemented", row.email);
+  }
   //Search field
   searchField : string = "";
   //Paginator
