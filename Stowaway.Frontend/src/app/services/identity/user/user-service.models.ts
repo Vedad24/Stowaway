@@ -4,7 +4,8 @@ import { PageResult } from "../../../models/paging/page-result"
 export enum RoleName
 {
     User = 0,
-    Admin
+    Admin,
+    Manager
 }
 
 export interface Role 
@@ -83,7 +84,7 @@ export interface ListUserQueryDto{
     email: string,
     firstName: string,
     lastName: string,
-    role: Role,
+    roleId: number,
     isEnabled: boolean
 }
 

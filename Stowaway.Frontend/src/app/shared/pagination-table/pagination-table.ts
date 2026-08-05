@@ -11,13 +11,16 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 export class PaginationTable<TDto>{
   
   
-  
+  //Input display columns and raw data
   @Input() columns : TableColumnDef<TDto>[] = [];
-  @Input() rawData = signal<TDto[]>([]);
+  @Input() rawData = signal<TDto[]>([]); // <- Update in parent, it will be reflected here
+  //this will get populated on rawData change
   dataSource = new MatTableDataSource<TDto>();
   
+  //This will get resolved for displaying the columns
   get displayColumns() : string[] {return this.columns.map(c => c.columnDef);}
   
+  //Needed for pagination, just use paginator.pageSize and (paginator.PageIndex + 1) for pagination
   @ViewChild(MatPaginator) paginator !: MatPaginator;
 
   /**
@@ -30,14 +33,8 @@ export class PaginationTable<TDto>{
     });
   }
   
-
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
-  }
-
-  refreshTable(newData : TDto[] = [])
-  {
-    this.rawData.set(newData);
   }
 
   getCellValue(row: TDto, column: TableColumnDef<TDto>): string {

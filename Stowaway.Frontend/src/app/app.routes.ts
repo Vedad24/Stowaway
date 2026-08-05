@@ -20,6 +20,7 @@ import { PriviledgeGroupEdit } from './core/priviledges/priviledge-group-edit/pr
 import { ProductPage } from './core/sales/product-page/product-page';
 import { Cart } from './core/sales/cart/cart';
 import { routeGuardGuard } from './services/route-guard-guard';
+import { EmployeeManagement } from './core/identity/employee-management/employee-management';
 
 export const routes: Routes = [
     {
@@ -103,5 +104,9 @@ export const routes: Routes = [
     {
         path: 'cart',
         component: Cart
+    },
+    {
+        path: 'employee-management',
+        component: EmployeeManagement
     }
 ];

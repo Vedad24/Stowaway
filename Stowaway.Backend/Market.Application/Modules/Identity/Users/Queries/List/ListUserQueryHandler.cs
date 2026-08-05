@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Domain.Entities.Identity;
 
 namespace Stowaway.Application.Modules.Identity.Users.Queries.List
 {
@@ -21,14 +22,16 @@ namespace Stowaway.Application.Modules.Identity.Users.Queries.List
                 users = users.Where(u => (u.RoleId ?? 0) == request.RoleId).AsNoTracking();
             }
             var result = users.Select(u => new ListUserQueryDto
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email,
-                IsEnabled = u.IsEnabled
-            }
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    IsEnabled = u.IsEnabled,
+                    RoleId = (int?) u.Role.Id ??  (int) Role.User
+                }
             );
+            
             return await PageResult<ListUserQueryDto>.FromQueryableAsync(result, request.Paging, cancellationToken);
         }
     }
