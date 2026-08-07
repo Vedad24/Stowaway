@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CreateUserCommand, GetSelfDto, GetUserById, GetUserByIdOrMailDto, ListUserQuery, ListUserQueryResponse, UpdateSelfCommand, UpdateSelfCommandDto, UpdateUserCommand } from './user-service.models';
+import { CreateUserCommand, GetEmployeeFormQueryDto, GetSelfDto, GetUserById, GetUserByIdOrMailDto, ListUserQuery, ListUserQueryResponse, UpdateSelfCommand, UpdateSelfCommandDto, UpdateUserCommand } from './user-service.models';
 import { environment } from '../../../../enviroments/enivroment';
 import { Observable } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
@@ -47,6 +47,10 @@ export class UserService {
 
   public deleteSelf() : Observable<void>{
     return this.http.delete<void>(`${this.userURL}/me`);
+  }
+
+  public getEmployeeForm() : Observable<GetEmployeeFormQueryDto>{
+    return this.http.get<GetEmployeeFormQueryDto>(`${this.userURL}/employee-form`);
   }
 
   signUpData : {

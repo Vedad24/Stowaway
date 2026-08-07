@@ -9,6 +9,7 @@ using Stowaway.Application.Modules.Identity.Users.Commands.DeleteSelf;
 using Stowaway.Application.Modules.Identity.Users.Commands.Update;
 using Stowaway.Application.Modules.Identity.Users.Commands.UpdateSelf;
 using Stowaway.Application.Modules.Identity.Users.Queries.GetById;
+using Stowaway.Application.Modules.Identity.Users.Queries.GetEmployeeForm;
 using Stowaway.Application.Modules.Identity.Users.Queries.GetByMail;
 using Stowaway.Application.Modules.Identity.Users.Queries.GetSelf;
 using Stowaway.Application.Modules.Identity.Users.Queries.List;
@@ -29,11 +30,20 @@ namespace Stowaway.API.Controllers
             return id;
         }
 
+
+
         [HttpGet("{id:int}")]
         [HasPermission(Permissions.UsersRead)]
         public async Task<GetByIdQueryDto> GetById(int id, CancellationToken ct)
         {
             return await sender.Send(new GetByIdQuery { Id = id }, ct);
+        }
+
+        [HttpGet("employee-form")]
+        [HasPermission(Permissions.UsersRead)]
+        public async Task<GetEmployeeFormQueryDto> GetEmployeeForm(CancellationToken ct)
+        {
+            return await sender.Send(new GetEmployeeFormQuery(), ct);
         }
 
         [HttpPut]

@@ -89,3 +89,27 @@ export interface ListUserQueryDto{
 }
 
 export interface ListUserQueryResponse extends PageResult<ListUserQueryDto>{   }
+
+export interface GetEmployeeFormOptionDto{
+    key: string,
+    value: string
+}
+
+export interface GetEmployeeFormOptionInfoDto{
+    displayName: string
+}
+
+export interface GetEmployeeFormQuestionDto{
+    key: string,
+    label: string,
+    required: boolean,
+    order: number,
+    controlType: string, //<- create different question types based on this 
+    type: string | null,
+    options: GetEmployeeFormOptionDto[] | null, //<- add only if autocomplete or dropdown
+    optionInfo: GetEmployeeFormOptionInfoDto | null //<- add only if autocomplete or dropdown
+}
+
+export interface GetEmployeeFormQueryDto{
+    questions: GetEmployeeFormQuestionDto[]
+}
