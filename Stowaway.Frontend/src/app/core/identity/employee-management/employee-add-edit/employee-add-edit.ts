@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { DynamicForm } from '../../../../shared/dynamic-form/dynamic-form';
 import {
   AutocompleteQuestion,
@@ -8,11 +10,13 @@ import {
 
 @Component({
   selector: 'app-employee-add-edit',
-  imports: [DynamicForm],
+  imports: [DynamicForm, MatDialogModule, MatButtonModule],
   templateUrl: './employee-add-edit.html',
   styleUrl: './employee-add-edit.css',
 })
 export class EmployeeAddEdit {
+  
+
   readonly questions = [
     new TextboxQuestion({
       key: 'firstName',

@@ -3,11 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
 import { ListUserQuery, ListUserQueryDto, ListUserQueryResponse, RoleName } from '../../../services/identity/user/user-service.models';
 import { UserService } from '../../../services/identity/user/user-service';
 import { PageRequest } from '../../../models/paging/page-request';
 import { MatPaginator } from '@angular/material/paginator';
+import { EmployeeAddEdit } from './employee-add-edit/employee-add-edit';
 
 @Component({
   selector: 'app-employee-management',
@@ -19,6 +21,7 @@ export class EmployeeManagement implements AfterViewInit {
   
   //Services
   userService = inject(UserService);
+  dialog = inject(MatDialog);
   //Raw user data from backend
   rawData = signal<ListUserQueryDto[]>([]); 
   //Column definitions for the table
@@ -88,10 +91,16 @@ export class EmployeeManagement implements AfterViewInit {
       paging: new PageRequest(pageNum, pageSize)
     }
     this.userService.list(payload).subscribe(
-      (response) =>
+      {
+      next: (response) =>
       {
         this.rawData.set(response.items);
+      },
+      error: (error) =>
+      {
+        console.error("Error loading data", error);
       }
+    }
     )
   }
 
@@ -101,6 +110,24 @@ export class EmployeeManagement implements AfterViewInit {
   }
 
   onAddEmployee(): void {
+    const dialogRef = this.dialog.open(EmployeeAddEdit, {
+      width: '480px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        if(result !== false)
+        {
+          //Send data to backend to create user(idK)
+          this.AddEmployee(result);
+        }
+        
+      }
+    });
+  }
+  AddEmployee(result: any) {
+    throw new Error('Function not implemented.');
   }
 
 }
+

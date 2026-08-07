@@ -1,7 +1,7 @@
 <div [formGroup]="form()" class="dynamic-form-question">
   @switch (question().controlType) {
     @case ('textbox') {
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>{{ question().label }}</mat-label>
         <input matInput [formControlName]="question().key" [id]="question().key" [type]="question().type" />
         @if (!isValid) {
@@ -10,7 +10,7 @@
       </mat-form-field>
     }
     @case ('dropdown') {
-      <mat-form-field appearance="outline" class="full-width">
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
         <mat-label>{{ question().label }}</mat-label>
         <mat-select [id]="question().key" [formControlName]="question().key">
           @for (opt of question().options; track opt) {

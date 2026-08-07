@@ -1,5 +1,5 @@
-<div class="dynamic-form">
-  <form (ngSubmit)="onSubmit()" [formGroup]="form()">
+<div class="dynamic-form-wrapper">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form()" class="dynamic-form">
     @for (question of questions(); track question) {
       <div class="form-row">
         <app-dynamic-form-question [question]="question" [form]="form()" />
@@ -7,9 +7,11 @@
     }
     <div class="form-row form-actions">
       <button mat-raised-button color="primary" type="submit" [disabled]="!form().valid">Save</button>
+      <button mat-raised-button color="primary" [disabled]="!form().valid" (click)="onCancel()">Cancel</button>
     </div>
+    
   </form>
-  @if (payLoad) {
+  <!-- @if (payLoad) {
     <div class="form-row payload"><strong>Saved the following values</strong><br />{{ payLoad }}</div>
-  }
+  } -->
 </div>
