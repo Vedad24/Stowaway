@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { DynamicForm } from '../../../../shared/dynamic-form/dynamic-form';
@@ -20,6 +20,7 @@ export class EmployeeAddEdit{
   
   userService = inject(UserService);
   questions = signal<QuestionBase<string>[]>([]);
+  
   // dummy = [
   //   new TextboxQuestion({
   //     key: 'firstName',
@@ -67,5 +68,7 @@ export class EmployeeAddEdit{
       }
     )
   }
+  
+  
   
 }

@@ -18,13 +18,14 @@ export interface CreateUserCommand{
     password: string,
     firstName: string,
     lastName: string
+    role?: Role | null
 }
 export interface UpdateUserCommand{
     id : number,
     email: string | null,
     firstName: string | null,
     lastName: string | null
-    role : Role | null
+    role : null | Role,
     isEnabled : boolean | null
 }
 

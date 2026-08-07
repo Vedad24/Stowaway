@@ -23,9 +23,15 @@ export class DynamicForm {
   
   
   onSubmit() {
-    this.payLoad = JSON.stringify(this.form().getRawValue());
+    if(!this.form().invalid)
+    {
+      //get form value
+      this.payLoad = JSON.stringify(this.form().getRawValue());
+      
+      //close dialog while emitting payload <- works like throwing exception all the way to whoever subscribed to afterClosed()
+      this.dialogRef.close(this.payLoad);
+    }
     //console.log("payload:", this.payLoad);
-    this.dialogRef.close(this.payLoad);
   }
   onCancel() {
     this.dialogRef.close(false);

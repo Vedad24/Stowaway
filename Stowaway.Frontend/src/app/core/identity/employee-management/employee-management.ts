@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
-import { ListUserQuery, ListUserQueryDto, ListUserQueryResponse, RoleName } from '../../../services/identity/user/user-service.models';
+import { CreateUserCommand, ListUserQuery, ListUserQueryDto, ListUserQueryResponse, RoleName } from '../../../services/identity/user/user-service.models';
 import { UserService } from '../../../services/identity/user/user-service';
 import { PageRequest } from '../../../models/paging/page-request';
 import { MatPaginator } from '@angular/material/paginator';
@@ -88,7 +88,7 @@ export class EmployeeManagement implements AfterViewInit {
     const payload : ListUserQuery = {
       search: this.searchField,
       roleId: null,
-      paging: new PageRequest(pageNum, pageSize)
+      paging: new PageRequest()
     }
     this.userService.list(payload).subscribe(
       {
@@ -110,23 +110,40 @@ export class EmployeeManagement implements AfterViewInit {
   }
 
   onAddEmployee(): void {
+    //open dialog
     const dialogRef = this.dialog.open(EmployeeAddEdit, {
       width: '480px',
     });
-
+    //wait for when closed with payload(or false)
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        if(result !== false)
-        {
-          //Send data to backend to create user(idK)
-          this.AddEmployee(result);
-        }
-        
+        //Send data to backend to create user(idK)
+        this.AddEmployee(result);  
       }
     });
   }
-  AddEmployee(result: any) {
-    throw new Error('Function not implemented.');
+  AddEmployee(resultString: any) {
+    const result = JSON.parse(resultString);
+    console.log("form result:", result);
+    console.log("role from form", result["role"]);
+    const createPayload : CreateUserCommand =
+    {
+      email: result.email,
+      firstName: result.firstName,
+      lastName: result.lastName,
+      password: result.password,
+      role: {id: Number(result.role.key)}
+    }
+    console.log("create payload:", createPayload);  
+    this.userService.create(createPayload).subscribe(
+      {
+        next: (response) =>
+        {
+          console.log("User created with id:", response);
+          this.loadData();
+        }
+      }
+      )
   }
 
 }

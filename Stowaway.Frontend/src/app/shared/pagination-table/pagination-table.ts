@@ -36,6 +36,7 @@ export class PaginationTable<TDto>{
   
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    
   }
 
   getCellValue(row: TDto, column: TableColumnDef<TDto>): string {
