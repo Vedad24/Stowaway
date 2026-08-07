@@ -1,4 +1,4 @@
-<mat-form-field class="w-full">
+<mat-form-field class="w-full" subscriptSizing="dynamic">
     <mat-label>Pick:</mat-label>
     <input 
         matInput
@@ -8,7 +8,6 @@
         [value]="displayFn(value())"
         (input)="onInput($event.target.value)"
         (blur)="onTouched()"
-        subscriptSizing="dynamic"
         >
     <mat-autocomplete 
     requireSelection 
