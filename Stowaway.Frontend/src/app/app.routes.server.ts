@@ -13,6 +13,11 @@ export const serverRoutes: ServerRoute[] = [
     path: 'supplier/edit/:id',
     renderMode: RenderMode.Server
   },
+  //Any paths that require something from backend with auth should use RenderMode.Client
+  {
+    path: 'employee-management',
+    renderMode: RenderMode.Client
+  },
   {
     path: '**',
     renderMode: RenderMode.Prerender

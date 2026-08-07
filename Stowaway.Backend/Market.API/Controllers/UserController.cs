@@ -65,6 +65,8 @@ namespace Stowaway.API.Controllers
             return await sender.Send(new GetByMailQuery { Mail = mail }, ct);
         }
 
+
+        //User-Self commands
         [HttpGet("me")]
         [HasPermission(Permissions.UsersSelfRead)]
         public async Task<GetSelfQueryDto> GetSelf(CancellationToken ct)

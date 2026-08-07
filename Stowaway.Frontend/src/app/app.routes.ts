@@ -108,7 +108,7 @@ export const routes: Routes = [
     },
     {
         path: 'employee-management',
-        component: EmployeeManagement
+        component: EmployeeManagement, 
     }
     ,{
         path: "employee-management/add-edit",
