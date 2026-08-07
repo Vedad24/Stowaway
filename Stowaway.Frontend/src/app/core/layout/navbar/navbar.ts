@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ContainerAdd } from '../container-add/container-add';
+import { ItemAdd } from '../item-add/item-add';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 
 @Component({
@@ -30,6 +31,27 @@ export class Navbar {
       data: {
         warehouseId: warehouse.id,
         parentContainerId: this.currentContainer()?.id ?? null,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.canvasState.notifyLocationChanged();
+      }
+    });
+  }
+
+  openAddItemDialog(): void {
+    const warehouse = this.warehouse();
+    if (!warehouse) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ItemAdd, {
+      width: '420px',
+      data: {
+        warehouseId: warehouse.id,
+        containerId: this.currentContainer()?.id ?? null,
       },
     });
 

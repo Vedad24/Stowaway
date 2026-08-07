@@ -1,4 +1,5 @@
 ﻿using Stowaway.Application.Modules.Storage.Container.Commands.Create;
+using Stowaway.Application.Modules.Storage.Container.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Container.Commands.Move;
 using Stowaway.Application.Modules.Storage.Container.Commands.Update;
 using Stowaway.Application.Modules.Storage.Container.Commands.UpdateCanvasPosition;
@@ -49,6 +50,22 @@ namespace Stowaway.API.Controllers
         {
             payload.Id = id;
             await sender.Send(payload, cancellationToken);
+        }
+
+        [HttpDelete("{id:int}")]
+        [AllowAnonymous]
+        public async Task Delete(
+            int id,
+            [FromQuery] bool deleteContents,
+            [FromQuery] int? moveContentsToContainerId,
+            CancellationToken cancellationToken)
+        {
+            await sender.Send(new DeleteContainerCommand
+            {
+                Id = id,
+                DeleteContents = deleteContents,
+                MoveContentsToContainerId = moveContentsToContainerId,
+            }, cancellationToken);
         }
     }
 }

@@ -246,6 +246,35 @@
   flex-shrink: 0;
 }
 
+.card-delete {
+  position: absolute;
+  bottom: -0.4rem;
+  right: -0.4rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #b3261e;
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-delete:hover {
+  background: #7f180f;
+}
+
+.card-delete-inline {
+  position: static;
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+}
+
 .cdk-drag-preview {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 0.5rem;

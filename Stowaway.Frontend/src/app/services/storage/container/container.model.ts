@@ -41,3 +41,8 @@ export interface UpdateContainerCommand{
     containerTypeId: number,
 }
 
+export interface DeleteContainerRequest{
+    deleteContents?: boolean,
+    moveContentsToContainerId?: number | null,
+}
+

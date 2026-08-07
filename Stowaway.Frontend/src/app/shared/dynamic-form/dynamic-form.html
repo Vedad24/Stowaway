@@ -1,0 +1,46 @@
+<div class="dynamic-form">
+  @for (field of fields(); track field.key) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ field.label }}</mat-label>
+
+      @switch (field.type) {
+        @case ('textarea') {
+          <textarea
+            matInput
+            [name]="field.key"
+            [rows]="field.rows ?? 2"
+            [required]="!!field.required"
+            [disabled]="!!field.disabled"
+            [ngModel]="formValue()[field.key]"
+            (ngModelChange)="setValue(field.key, $event)"
+          ></textarea>
+        }
+        @case ('select') {
+          <mat-select
+            [name]="field.key"
+            [required]="!!field.required"
+            [disabled]="!!field.disabled"
+            [ngModel]="formValue()[field.key]"
+            (ngModelChange)="setValue(field.key, $event)"
+          >
+            @for (option of field.options ?? []; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        }
+        @default {
+          <input
+            matInput
+            [type]="field.type"
+            [name]="field.key"
+            [required]="!!field.required"
+            [disabled]="!!field.disabled"
+            [attr.min]="field.min ?? null"
+            [ngModel]="formValue()[field.key]"
+            (ngModelChange)="setValue(field.key, $event)"
+          />
+        }
+      }
+    </mat-form-field>
+  }
+</div>

@@ -56,6 +56,12 @@
               (click)="editContainer(container); $event.stopPropagation()"
               aria-label="Edit container"
             >✎</button>
+            <button
+              type="button"
+              class="card-delete card-delete-inline"
+              (click)="deleteContainer(container); $event.stopPropagation()"
+              aria-label="Delete container"
+            >🗑</button>
           </div>
         }
         @for (item of unplacedItems(); track item.id) {
@@ -68,6 +74,18 @@
           >
             <span class="card-icon">🏷️</span>
             <span class="card-label">{{ item.name }}</span>
+            <button
+              type="button"
+              class="card-edit card-edit-inline"
+              (click)="editItem(item); $event.stopPropagation()"
+              aria-label="Edit item"
+            >✎</button>
+            <button
+              type="button"
+              class="card-delete card-delete-inline"
+              (click)="deleteItem(item); $event.stopPropagation()"
+              aria-label="Delete item"
+            >🗑</button>
           </div>
         }
       </aside>
@@ -102,6 +120,12 @@
               (click)="editContainer(container); $event.stopPropagation()"
               aria-label="Edit container"
             >✎</button>
+            <button
+              type="button"
+              class="card-delete"
+              (click)="deleteContainer(container); $event.stopPropagation()"
+              aria-label="Delete container"
+            >🗑</button>
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
             @if (container.hasChildren) {
@@ -125,6 +149,18 @@
               (click)="unplace('item', item.id); $event.stopPropagation()"
               aria-label="Remove from canvas"
             >×</button>
+            <button
+              type="button"
+              class="card-edit"
+              (click)="editItem(item); $event.stopPropagation()"
+              aria-label="Edit item"
+            >✎</button>
+            <button
+              type="button"
+              class="card-delete"
+              (click)="deleteItem(item); $event.stopPropagation()"
+              aria-label="Delete item"
+            >🗑</button>
             <span class="card-icon">🏷️</span>
             <span class="card-label">{{ item.name }}</span>
             <span class="card-hint">qty {{ item.quantity }}</span>
