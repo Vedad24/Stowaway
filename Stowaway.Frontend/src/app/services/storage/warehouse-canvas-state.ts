@@ -8,6 +8,8 @@ export interface CanvasWarehouse {
 export interface CanvasContainerCrumb {
   id: number;
   name: string;
+  maxItems: number;
+  maxContainers: number;
 }
 
 @Injectable({

@@ -10,6 +10,7 @@ import { ContainerApiService } from '../../../services/storage/container/contain
 import { ContainerTreeService, ContainerOption } from '../../../services/storage/container/container-tree';
 import { ItemApiService } from '../../../services/storage/item/item';
 import { ListItemQuery } from '../../../services/storage/item/item.model';
+import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ContainerDeleteDialogData {
   id: number;
@@ -108,9 +109,9 @@ export class ContainerDelete implements OnInit {
         this.isSubmitting.set(false);
         this.dialogRef.close(true);
       },
-      error: () => {
+      error: (err) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set('Unable to delete the container. Please try again.');
+        this.errorMessage.set(extractErrorMessage(err, 'Unable to delete the container. Please try again.'));
       },
     });
   }

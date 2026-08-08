@@ -171,29 +171,35 @@ public static class DynamicDataSeeder
 
     private static async Task SeedContainerTypesAsync(DatabaseContext context)
     {
-        if(await context.ContainerTypes.AnyAsync())
-            return;
-        var SmallContainer = new ContainerTypeEntity
+        var existing = await context.ContainerTypes.ToListAsync();
+
+        void EnsureType(int maxContainers, int maxItems, decimal price)
         {
-            MaxContainers = 5,
-            MaxItems = 50,
-            Price = 1m
-        };
-        var MediumContainer = new ContainerTypeEntity
+            if (existing.Any(t => t.MaxContainers == maxContainers && t.MaxItems == maxItems))
+            {
+                return;
+            }
+
+            context.ContainerTypes.Add(new ContainerTypeEntity
+            {
+                MaxContainers = maxContainers,
+                MaxItems = maxItems,
+                Price = price,
+            });
+        }
+
+        // Tiny holds items only — it can't hold sub-containers at all (MaxContainers = 0),
+        // which makes it the floor of the size hierarchy: nothing can nest inside it.
+        EnsureType(maxContainers: 0, maxItems: 10, price: 0.5m);
+        EnsureType(maxContainers: 5, maxItems: 50, price: 1m);
+        EnsureType(maxContainers: 10, maxItems: 100, price: 2m);
+        EnsureType(maxContainers: 20, maxItems: 500, price: 3m);
+
+        if (context.ChangeTracker.HasChanges())
         {
-            MaxContainers = 10,
-            MaxItems = 100,
-            Price = 2m
-        };
-        var LargeContainer = new ContainerTypeEntity
-        {
-            MaxContainers = 20,
-            MaxItems = 500,
-            Price = 3m
-        };
-        context.ContainerTypes.AddRange(SmallContainer, MediumContainer, LargeContainer);
-        await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo container types added.");
+            await context.SaveChangesAsync();
+            Console.WriteLine("✅ Dynamic seed: demo container types added.");
+        }
     }
 
     private static async Task SeedSupplierAsync(DatabaseContext context)

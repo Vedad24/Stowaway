@@ -11,6 +11,7 @@ import { ContainerEdit } from '../container-edit/container-edit';
 import { ContainerDelete } from '../container-delete/container-delete';
 import { ItemEdit } from '../item-edit/item-edit';
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
+import { extractErrorMessage } from '../../../models/http-error';
 
 interface Position {
   x: number;
@@ -88,8 +89,30 @@ export class WarehouseCanvas {
     return this.nestTargetId() === containerId;
   }
 
+  // Bigger container types render bigger cards. Driven off maxContainers (the type's
+  // own advertised "c5"/"c10"/"c20" size) rather than the siblings currently on
+  // screen, so a given type always renders the same size regardless of what else
+  // happens to be visible. Clamped so extreme type configs can't blow up the layout.
+  containerScale(container: ListContainersQueryDto): number {
+    const scale = 0.75 + container.maxContainers * 0.025;
+    return Math.min(1.6, Math.max(0.75, scale));
+  }
+
+  itemsFullness(container: ListContainersQueryDto): number {
+    return container.maxItems > 0 ? Math.min(1, container.itemQuantityUsed / container.maxItems) : 0;
+  }
+
+  containersFullness(container: ListContainersQueryDto): number {
+    return container.maxContainers > 0 ? Math.min(1, container.containerCountUsed / container.maxContainers) : 0;
+  }
+
   enterContainer(container: ListContainersQueryDto): void {
-    this.canvasState.enterContainer({ id: container.id, name: container.name });
+    this.canvasState.enterContainer({
+      id: container.id,
+      name: container.name,
+      maxItems: container.maxItems,
+      maxContainers: container.maxContainers,
+    });
   }
 
   editContainer(container: ListContainersQueryDto): void {
@@ -99,6 +122,7 @@ export class WarehouseCanvas {
         id: container.id,
         name: container.name,
         containerTypeId: container.containerTypeId,
+        parentContainerId: container.parentContainerId,
       },
     });
 
@@ -148,7 +172,7 @@ export class WarehouseCanvas {
       }
       this.itemService.delete(item.id).subscribe({
         next: () => this.canvasState.notifyLocationChanged(),
-        error: () => this.errorMessage.set('Unable to delete the item.'),
+        error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to delete the item.')),
       });
     });
   }
@@ -296,7 +320,7 @@ export class WarehouseCanvas {
         this.layout.set(updated);
         this.canvasState.notifyLocationChanged();
       },
-      error: () => this.errorMessage.set(`Unable to move the ${kind} into the container.`),
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, `Unable to move the ${kind} into the container.`)),
     });
   }
 

@@ -16,6 +16,10 @@ export interface ListContainersQueryDto {
     hasChildren: boolean,
     canvasX: number | null,
     canvasY: number | null,
+    maxItems: number,
+    maxContainers: number,
+    itemQuantityUsed: number,
+    containerCountUsed: number,
 }
 
 export type ListContainersQueryResponse = ListContainersQueryDto[];

@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -8,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListContainerTypeQueryDto } from '../../../services/sales/product-page/product-page-service.models';
+import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ContainerAddDialogData {
   warehouseId: number;
@@ -31,19 +33,34 @@ export class ContainerAdd implements OnInit {
   containerTypeId: number | null = null;
   containerTypes = signal<ListContainerTypeQueryDto[]>([]);
   isLoadingTypes = signal(false);
-  isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
+  isSubmitting = signal(false);
 
   ngOnInit(): void {
     this.isLoadingTypes.set(true);
-    this.productPageService.getContainerTypes().subscribe({
-      next: (response) => {
-        this.containerTypes.set(response.items ?? []);
+
+    const parentContainerId = this.data.parentContainerId;
+    const parent$ = parentContainerId != null ? this.containerService.getById(parentContainerId) : of(null);
+
+    forkJoin([this.productPageService.getContainerTypes(), parent$]).subscribe({
+      next: ([typesResponse, parent]) => {
+        const allTypes = typesResponse.items ?? [];
+        // A container can only ever hold types strictly smaller than its own — same-size
+        // or bigger would let it indirectly hold more than its own capacity allows.
+        const available = parent
+          ? allTypes.filter(t => t.maxItems < parent.maxItems && t.maxContainers < parent.maxContainers)
+          : allTypes;
+
+        this.containerTypes.set(available);
         this.isLoadingTypes.set(false);
+
+        if (parent && available.length === 0) {
+          this.errorMessage.set('No container type is small enough to fit inside this container.');
+        }
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingTypes.set(false);
-        this.errorMessage.set('Unable to load container types.');
+        this.errorMessage.set(extractErrorMessage(err, 'Unable to load container types.'));
       },
     });
   }
@@ -66,9 +83,9 @@ export class ContainerAdd implements OnInit {
         this.isSubmitting.set(false);
         this.dialogRef.close(true);
       },
-      error: () => {
+      error: (err) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set('Unable to create container. Please try again.');
+        this.errorMessage.set(extractErrorMessage(err, 'Unable to create container. Please try again.'));
       },
     });
   }

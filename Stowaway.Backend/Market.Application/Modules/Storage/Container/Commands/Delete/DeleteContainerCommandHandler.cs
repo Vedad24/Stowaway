@@ -1,3 +1,5 @@
+using Stowaway.Application.Modules.Storage.Container.Shared;
+
 namespace Stowaway.Application.Modules.Storage.Container.Commands.Delete
 {
     public class DeleteContainerCommandHandler(IAppDbContext ctx) : IRequestHandler<DeleteContainerCommand, Unit>
@@ -45,6 +47,26 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Delete
                 {
                     throw new ValidationException("Cannot move contents into one of the container's own sub-containers.");
                 }
+
+                if (childContainers.Count > 0)
+                {
+                    var targetType = await ctx.ContainerTypes.FirstOrDefaultAsync(t => t.Id == target.ContainerTypeId, cancellationToken);
+                    if (targetType is not null)
+                    {
+                        var childTypeIds = childContainers.Select(c => c.ContainerTypeId).Distinct().ToList();
+                        var childTypes = await ctx.ContainerTypes.Where(t => childTypeIds.Contains(t.Id)).ToListAsync(cancellationToken);
+                        var oversizedChildType = childTypes.FirstOrDefault(t => t.MaxItems >= targetType.MaxItems || t.MaxContainers >= targetType.MaxContainers);
+                        if (oversizedChildType is not null)
+                        {
+                            throw new ValidationException(
+                                $"The target container (max {targetType.MaxItems} items / {targetType.MaxContainers} containers) isn't strictly larger than one of the sub-containers being moved (needs max {oversizedChildType.MaxItems} items / {oversizedChildType.MaxContainers} containers).");
+                        }
+                    }
+                }
+
+                // Covers items directly in `container` as well as anything nested inside the
+                // sub-containers being moved along with it — not just the direct child items.
+                await ContainerCapacityHelper.EnsureSubtreeFits(ctx, container.Id, target.Id, cancellationToken);
 
                 foreach (var child in childContainers)
                 {

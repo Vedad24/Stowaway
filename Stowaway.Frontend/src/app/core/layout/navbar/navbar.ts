@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,9 +20,31 @@ export class Navbar {
   readonly warehouse = this.canvasState.warehouse;
   readonly currentContainer = this.canvasState.currentContainer;
 
+  // A container whose type holds 0 sub-containers is the floor of the size
+  // hierarchy — nothing can ever nest inside it, so offering "Add container"
+  // while standing inside one would only ever end in a rejected request.
+  readonly canAddContainer = computed(() => {
+    if (!this.warehouse()) {
+      return false;
+    }
+    const current = this.currentContainer();
+    return current == null || current.maxContainers > 0;
+  });
+
+  readonly addContainerTooltip = computed(() => {
+    if (!this.warehouse()) {
+      return 'Select a warehouse first';
+    }
+    const current = this.currentContainer();
+    if (current && current.maxContainers === 0) {
+      return "This container can't hold sub-containers";
+    }
+    return '';
+  });
+
   openAddContainerDialog(): void {
     const warehouse = this.warehouse();
-    if (!warehouse) {
+    if (!warehouse || !this.canAddContainer()) {
       return;
     }
 

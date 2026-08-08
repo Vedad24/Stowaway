@@ -8,6 +8,7 @@ import { SupplierApiService } from '../../../services/storage/supplier/supplier'
 import { ListSupplierQueryDto } from '../../../services/storage/supplier/supplier.model';
 import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
 import { DynamicFieldConfig } from '../../../shared/dynamic-form/dynamic-form.models';
+import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ItemAddDialogData {
   warehouseId: number;
@@ -115,9 +116,9 @@ export class ItemAdd implements OnInit {
         this.isSubmitting.set(false);
         this.dialogRef.close(true);
       },
-      error: () => {
+      error: (err) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set('Unable to create item. Please try again.');
+        this.errorMessage.set(extractErrorMessage(err, 'Unable to create item. Please try again.'));
       },
     });
   }

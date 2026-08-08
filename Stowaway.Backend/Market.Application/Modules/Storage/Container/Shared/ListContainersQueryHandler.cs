@@ -35,9 +35,21 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 HasChildren = ctx.Containers.Any(child => child.ParentContainerId == x.Id),
                 CanvasX = x.CanvasX,
                 CanvasY = x.CanvasY,
+                MaxItems = x.ContainerType!.MaxItems,
+                MaxContainers = x.ContainerType!.MaxContainers,
+                ContainerCountUsed = ctx.Containers.Count(child => child.ParentContainerId == x.Id),
             });
 
-            return await projectedQuery.ToListAsync(cancellationToken);
+            var results = await projectedQuery.ToListAsync(cancellationToken);
+
+            // Recursive (self + nested sub-containers) — not translatable into the SQL
+            // projection above, so it's filled in per row once the base rows are materialized.
+            foreach (var result in results)
+            {
+                result.ItemQuantityUsed = await ContainerCapacityHelper.GetRecursiveItemQuantity(ctx, result.Id, cancellationToken);
+            }
+
+            return results;
         }
     }
 }

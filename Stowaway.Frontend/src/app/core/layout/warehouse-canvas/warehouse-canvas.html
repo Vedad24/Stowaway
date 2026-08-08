@@ -99,6 +99,7 @@
             class="canvas-card canvas-card-container"
             [class.canvas-card-nest-target]="isNestTarget(container.id)"
             [attr.data-container-id]="container.id"
+            [style.--card-scale]="containerScale(container)"
             cdkDrag
             #drag="cdkDrag"
             cdkDragBoundary=".canvas-grid"
@@ -128,6 +129,19 @@
             >🗑</button>
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
+            <div
+              class="card-fullness"
+              [title]="'Items: ' + container.itemQuantityUsed + ' / ' + container.maxItems + (container.maxContainers > 0 ? ', Containers: ' + container.containerCountUsed + ' / ' + container.maxContainers : '')"
+            >
+              <div class="fullness-bar">
+                <div class="fullness-fill fullness-items" [style.width.%]="itemsFullness(container) * 100"></div>
+              </div>
+              @if (container.maxContainers > 0) {
+                <div class="fullness-bar">
+                  <div class="fullness-fill fullness-containers" [style.width.%]="containersFullness(container) * 100"></div>
+                </div>
+              }
+            </div>
             @if (container.hasChildren) {
               <span class="card-hint">has sub-containers</span>
             }

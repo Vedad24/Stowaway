@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
 {
@@ -34,6 +35,8 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
             {
                 throw new Exception("Quantity cant be less than 1");
             }
+
+            await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, request.Quantity, cancellationToken, excludeItemIds: new[] { item.Id });
 
             item.Name = request.Name;
             item.Description = request.Description;

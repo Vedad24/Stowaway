@@ -3,6 +3,7 @@ using Stowaway.Application.Modules.Storage.Container.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Container.Commands.Move;
 using Stowaway.Application.Modules.Storage.Container.Commands.Update;
 using Stowaway.Application.Modules.Storage.Container.Commands.UpdateCanvasPosition;
+using Stowaway.Application.Modules.Storage.Container.Queries.GetById;
 using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Application.Modules.Storage.Items.Queries.List;
 
@@ -17,6 +18,14 @@ namespace Stowaway.API.Controllers
         public async Task<ActionResult<ListContainersDto>> ListNames([FromQuery] ListContainersQuery query, CancellationToken cancellationToken)
         {
             var result = await sender.Send(query, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("{id:int}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<ListContainersDto>> GetById(int id, CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(new GetContainerByIdQuery { Id = id }, cancellationToken);
             return Ok(result);
         }
 

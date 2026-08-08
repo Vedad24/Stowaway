@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Items.Commands.Move
 {
@@ -21,6 +22,8 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Move
             {
                 throw new Exception($"Container with id: {request.ContainerId} not found");
             }
+
+            await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, item.Quantity, cancellationToken, excludeItemIds: new[] { item.Id });
 
             item.ContainerId = container.Id;
             item.CanvasX = null;
