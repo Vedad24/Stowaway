@@ -9,6 +9,7 @@ import { CreateUserCommand, ListUserQuery, ListUserQueryDto, RoleName, UpdateUse
 import { UserService } from '../../../services/identity/user/user-service';
 import { EmployeeAddEdit } from './employee-add-edit/employee-add-edit';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-management',
@@ -22,6 +23,7 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
   private userService = inject(UserService);
   private dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   //Search field
   searchField = '';
@@ -67,9 +69,22 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
         icon: 'edit',
         color: '',
         action: (row: ListUserQueryDto) => this.onEdit(row)
-      }]
+      },
+      {
+        type: 'icon',
+        label: 'Warehouses',
+        icon: 'engineering',
+        color: '',
+        action: (row: ListUserQueryDto) => this.onWarehouseManage(row)
+      }
+    ]
     }
   ]
+  onWarehouseManage(row : ListUserQueryDto)
+  {
+    const id = row.id;
+    this.router.navigate(['/employee-management/warehouse-user-manage', id]);
+  }
 
   constructor() {
     super();

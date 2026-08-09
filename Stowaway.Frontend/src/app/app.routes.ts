@@ -22,6 +22,7 @@ import { Cart } from './core/sales/cart/cart';
 import { routeGuardGuard } from './services/route-guard-guard';
 import { EmployeeManagement } from './core/identity/employee-management/employee-management';
 import { EmployeeAddEdit } from './core/identity/employee-management/employee-add-edit/employee-add-edit';
+import { WarehouseUserManagement } from './core/identity/warehouse-user-management/warehouse-user-management';
 
 export const routes: Routes = [
     {
@@ -113,5 +114,9 @@ export const routes: Routes = [
     ,{
         path: "employee-management/add-edit",
         component: EmployeeAddEdit
+    },
+    {
+        path: "employee-management/warehouse-user-manage/:userId",
+        component: WarehouseUserManagement
     }
 ];
