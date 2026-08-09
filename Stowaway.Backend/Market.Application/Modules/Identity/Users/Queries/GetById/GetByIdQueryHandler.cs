@@ -17,6 +17,7 @@ namespace Stowaway.Application.Modules.Identity.Users.Queries.GetById
             }
             GetByIdQueryDto dto = new()
             {
+                Id = ur.Id,
                 Email = ur.Email,
                 FirstName = ur.FirstName ?? "[no_name]",
                 LastName = ur.LastName ?? "[no_name]",

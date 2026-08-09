@@ -1,1 +1,32 @@
-<p>warehouse-user-management works!</p>
+
+<div class="space-y-4">
+    @if (user) {
+        <div class="rounded-xl border border-gray-200 shadow-sm p-4 grid grid-cols-2 gap-2 text-sm">
+            <div><span class="font-semibold">Email:</span> {{ user.email }}</div>
+            <div><span class="font-semibold">First Name:</span> {{ user.firstName }}</div>
+            <div><span class="font-semibold">Last Name:</span> {{ user.lastName }}</div>
+            <div><span class="font-semibold">Role:</span> {{ RoleName[user.role.id] }}</div>
+        </div>
+    }
+
+    <!-- Add warehouse button ->
+    openMatDialog
+    (
+        Choose warehouse (autocomplete)
+        Choose priviledge group (autocomplete)
+    )
+    List warehouses of the user - Edit Priviledge Group button ->
+    opens MatDialog(
+        CURRENT PRIVILEDGE GROUP
+        Autocomplete component for available priviledge groups for that warehouse
+    ) -->
+
+    <app-pagination-table
+    [columns]="columnDef"
+    [items]="items()"
+    [totalItems]="totalItems()"
+    [pageIndex]="paging.page - 1"
+    [pageSize]="paging.pageSize"
+    (page)="onPage($event)"
+    > </app-pagination-table>
+</div>
