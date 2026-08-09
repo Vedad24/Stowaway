@@ -362,7 +362,13 @@ export class WarehouseCanvas {
   private loadLevel(warehouseId: number, containerId: number | null): void {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    // Cleared together: leaving stale containers/items in place while layout is
+    // already reset would make every entity from the level we just left look
+    // unplaced (nothing in the fresh, empty layout matches their keys), flashing
+    // the tray open with stale cards until the real response lands.
     this.layout.set({});
+    this.containers.set([]);
+    this.items.set([]);
 
     // Responses of a level we already navigated away from must not land in the current layout.
     const levelToken = ++this.loadToken;
