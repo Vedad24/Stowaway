@@ -1,15 +1,14 @@
-import { AfterViewInit, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
-import { CreateUserCommand, ListUserQuery, ListUserQueryDto, ListUserQueryResponse, RoleName } from '../../../services/identity/user/user-service.models';
+import { CreateUserCommand, ListUserQuery, ListUserQueryDto, RoleName } from '../../../services/identity/user/user-service.models';
 import { UserService } from '../../../services/identity/user/user-service';
-import { PageRequest } from '../../../models/paging/page-request';
-import { MatPaginator } from '@angular/material/paginator';
 import { EmployeeAddEdit } from './employee-add-edit/employee-add-edit';
+import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
 
 @Component({
   selector: 'app-employee-management',
@@ -17,13 +16,16 @@ import { EmployeeAddEdit } from './employee-add-edit/employee-add-edit';
   templateUrl: './employee-management.html',
   styleUrl: './employee-management.css',
 })
-export class EmployeeManagement implements AfterViewInit {
-  
+export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto, ListUserQuery> implements OnInit {
+
   //Services
-  userService = inject(UserService);
-  dialog = inject(MatDialog);
-  //Raw user data from backend
-  rawData = signal<ListUserQueryDto[]>([]); 
+  private userService = inject(UserService);
+  private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
+
+  //Search field
+  searchField = '';
+
   //Column definitions for the table
   /*
     First Name
@@ -68,45 +70,42 @@ export class EmployeeManagement implements AfterViewInit {
       }]
     }
   ]
+
+  constructor() {
+    super();
+    this.request = new ListUserQuery();
+    this.request.paging = { page: 1, pageSize: 10 };
+  }
+
+  ngOnInit(): void {
+    this.loadPagedData();
+  }
+
+  protected override loadPagedData(): void {
+    this.startLoading();
+
+    this.userService.list(this.request).subscribe({
+      next: (response) => {
+        this.handlePageResult(response);
+        this.stopLoading();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading data', error);
+        this.stopLoading();
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   onEdit(row: ListUserQueryDto) : void{
     console.error("Not implemented", row.email);
   }
-  //Search field
-  searchField : string = "";
-  //Paginator
-  @ViewChild(PaginationTable) paginationTable !: PaginationTable<ListUserQueryDto>
-  
-  ngAfterViewInit(): void {
-    this.loadData();
-  }
-
-  loadData(): void {
-    //Get data from backend
-    //Prepare payload
-    const pageNum = this.paginationTable.paginator.pageIndex + 1;
-    const pageSize = this.paginationTable.paginator.pageSize;
-    const payload : ListUserQuery = {
-      search: this.searchField,
-      roleId: null,
-      paging: new PageRequest()
-    }
-    this.userService.list(payload).subscribe(
-      {
-      next: (response) =>
-      {
-        this.rawData.set(response.items);
-      },
-      error: (error) =>
-      {
-        console.error("Error loading data", error);
-      }
-    }
-    )
-  }
 
   onSearch(): void {
-    this.paginationTable.paginator.pageIndex = 0;
-    this.loadData();
+    this.request.search = this.searchField || null;
+    this.paging.page = 1;
+    this.loadPagedData();
   }
 
   onAddEmployee(): void {
@@ -118,14 +117,13 @@ export class EmployeeManagement implements AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         //Send data to backend to create user(idK)
-        this.AddEmployee(result);  
+        this.addEmployee(result);
       }
     });
   }
-  AddEmployee(resultString: any) {
+
+  private addEmployee(resultString: any) {
     const result = JSON.parse(resultString);
-    console.log("form result:", result);
-    console.log("role from form", result["role"]);
     const createPayload : CreateUserCommand =
     {
       email: result.email,
@@ -134,17 +132,15 @@ export class EmployeeManagement implements AfterViewInit {
       password: result.password,
       role: {id: Number(result.role.key)}
     }
-    console.log("create payload:", createPayload);  
     this.userService.create(createPayload).subscribe(
       {
         next: (response) =>
         {
           console.log("User created with id:", response);
-          this.loadData();
+          this.loadPagedData();
         }
       }
       )
   }
 
 }
-

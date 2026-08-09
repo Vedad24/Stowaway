@@ -11,7 +11,11 @@
     </div>
     
     <app-pagination-table
-    [rawData]="rawData"
     [columns]="columnDef"
+    [items]="items()"
+    [totalItems]="totalItems()"
+    [pageIndex]="paging.page - 1"
+    [pageSize]="paging.pageSize"
+    (page)="onPage($event)"
     > </app-pagination-table>
 </div>
