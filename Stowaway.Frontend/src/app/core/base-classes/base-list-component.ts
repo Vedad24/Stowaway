@@ -1,9 +1,10 @@
 // src/app/core/components/base-list.component.ts
 
+import { signal } from '@angular/core';
 import {BaseComponent} from './base-component';
 
-export abstract class BaseListComponent<TItem> extends BaseComponent{
-  items: TItem[] = [];
+export abstract class BaseListComponent<TDto> extends BaseComponent{
+  items = signal<TDto[]>([]);
 
   /**
    * Konkretnu implementaciju punjenja podataka ostavljamo djeci.

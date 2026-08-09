@@ -1,6 +1,6 @@
-import { Component, effect, inject, Inject, Injectable, Input, signal, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 
 @Component({
@@ -10,37 +10,36 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
   styleUrl: './pagination-table.css',
 })
 export class PaginationTable<TDto>{
-  
-  
+
   //Input display columns and raw data
   @Input() columns : TableColumnDef<TDto>[] = [];
-  @Input() rawData = signal<TDto[]>([]); // <- Update in parent, it will be reflected here
-  //this will get populated on rawData change
+
+  @Input() set items(value: TDto[] | null | undefined) {
+    this.dataSource.data = value ?? [];
+  }
+
+  //Paging state, driven by the parent (e.g. BaseListPagedComponent)
+  @Input() totalItems = 0;
+  @Input() pageIndex = 0;
+  @Input() pageSize = 10;
+  @Input() pageSizeOptions = [5, 10, 20];
+
+  //Emits the raw MatPaginator page event; parent decides how to react (goToPage / changePageSize)
+  @Output() page = new EventEmitter<PageEvent>();
+
+  //this will get populated on items change
   dataSource = new MatTableDataSource<TDto>();
-  
+
   //This will get resolved for displaying the columns
   get displayColumns() : string[] {return this.columns.map(c => c.columnDef);}
-  
-  //Needed for pagination, just use paginator.pageSize and (paginator.PageIndex + 1) for pagination
-  @ViewChild(MatPaginator) paginator !: MatPaginator;
-
-  /**
-   *
-   */
-  constructor() {
-    //Wrapper for when data changes
-    effect(() => {
-      this.dataSource.data = this.rawData();
-    });
-  }
-  
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    
-  }
 
   getCellValue(row: TDto, column: TableColumnDef<TDto>): string {
     return column.cell?.(row) ?? '';
+  }
+
+  onPage(event: PageEvent): void {
+    console.log("Pagination table pageEvent", event);
+    this.page.emit(event);
   }
 }
 export interface TableColumnDef<TDto>{

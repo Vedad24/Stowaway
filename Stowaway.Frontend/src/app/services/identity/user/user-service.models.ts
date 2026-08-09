@@ -75,9 +75,9 @@ export interface GetUserByIdOrMailDto{
 }
 
 
-export interface ListUserQuery extends BasePagedQuery{
-    search: string | null,
-    roleId : number | null,
+export class ListUserQuery extends BasePagedQuery{
+    search: string | null = null;
+    roleId: number | null = null;
 }
 
 export interface ListUserQueryDto{
