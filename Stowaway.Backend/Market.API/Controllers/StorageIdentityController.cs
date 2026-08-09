@@ -1,6 +1,7 @@
 using Market.API.Authorization;
 using Market.Application.Modules.Storage.Priviledges.Queries.List;
 using Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Create;
+using Stowaway.Application.Modules.Storage.StorageIdentity.Commands.CreateUpdate;
 using Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Update;
 using Stowaway.Application.Modules.Storage.StorageIdentity.Queries.List;
 
@@ -39,6 +40,13 @@ namespace Stowaway.API.Controllers
         public async Task<ActionResult<List<ListPriviledgesQueryDto>>> ListPrivileges(CancellationToken ct)
         {
             var result = await sender.Send(new ListPriviledgesQuery(), ct);
+            return Ok(result);
+        }
+
+        [HttpPut("warehouse-users")]
+        public async Task<ActionResult<CreateUpdateWarehouseUserCommandDto>> CreateUpdateWarehouseUser(CreateUpdateWarehouseUserCommand command, CancellationToken ct)
+        {
+            var result = await sender.Send(command, ct);
             return Ok(result);
         }
     }
