@@ -35,11 +35,9 @@
     </div>
 
     <div class="canvas-body">
+      @if (hasUnplaced()) {
       <aside class="canvas-tray">
         <h3 class="tray-title">Unplaced</h3>
-        @if (!hasUnplaced()) {
-          <p class="tray-empty">Everything here is placed on the canvas.</p>
-        }
         @for (container of unplacedContainers(); track container.id) {
           <div
             class="tray-card tray-card-container"
@@ -89,6 +87,7 @@
           </div>
         }
       </aside>
+      }
 
       <div class="canvas-grid" #canvasGrid>
         @if (!isLoading() && containers().length === 0 && items().length === 0) {
