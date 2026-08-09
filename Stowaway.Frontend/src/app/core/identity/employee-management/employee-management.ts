@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
-import { CreateUserCommand, ListUserQuery, ListUserQueryDto, RoleName } from '../../../services/identity/user/user-service.models';
+import { CreateUserCommand, ListUserQuery, ListUserQueryDto, RoleName, UpdateUserCommand } from '../../../services/identity/user/user-service.models';
 import { UserService } from '../../../services/identity/user/user-service';
 import { EmployeeAddEdit } from './employee-add-edit/employee-add-edit';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
@@ -99,7 +99,18 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
   }
 
   onEdit(row: ListUserQueryDto) : void{
-    console.error("Not implemented", row.email);
+    //open dialog with existing employee data
+    const dialogRef = this.dialog.open(EmployeeAddEdit, {
+      width: '480px',
+      data: row,
+    });
+    //wait for when closed with payload(or false)
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        //Send data to backend to update user
+        this.updateEmployee(row.id, result);
+      }
+    });
   }
 
   onSearch(): void {
@@ -137,6 +148,28 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
         next: (response) =>
         {
           console.log("User created with id:", response);
+          this.loadPagedData();
+        }
+      }
+      )
+  }
+
+  private updateEmployee(id: number, resultString: any) {
+    const result = JSON.parse(resultString);
+    const updatePayload : UpdateUserCommand =
+    {
+      id: id,
+      email: result.email,
+      firstName: result.firstName,
+      lastName: result.lastName,
+      role: result.role ? {id: Number(result.role.key)} : null,
+      isEnabled: null
+    }
+    this.userService.update(updatePayload).subscribe(
+      {
+        next: () =>
+        {
+          console.log("User updated:", id);
           this.loadPagedData();
         }
       }
