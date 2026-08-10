@@ -16,5 +16,9 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
         public bool HasChildren { get; set; }
         public double? CanvasX { get; set; }
         public double? CanvasY { get; set; }
+        public int MaxItems { get; set; }
+        public int MaxContainers { get; set; }
+        public int ItemQuantityUsed { get; set; }
+        public int ContainerCountUsed { get; set; }
     }
 }

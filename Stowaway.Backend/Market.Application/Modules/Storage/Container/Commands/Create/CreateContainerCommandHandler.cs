@@ -37,6 +37,13 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Create
                 {
                     throw new Exception("Parent container belongs to a different warehouse");
                 }
+
+                var parentType = await ctx.ContainerTypes.FirstOrDefaultAsync(t => t.Id == parent.ContainerTypeId, cancellationToken);
+                if (parentType is not null && (containerType.MaxItems >= parentType.MaxItems || containerType.MaxContainers >= parentType.MaxContainers))
+                {
+                    throw new ValidationException(
+                        $"This container type (max {containerType.MaxItems} items / {containerType.MaxContainers} containers) must be strictly smaller than the parent container's capacity (max {parentType.MaxItems} items / {parentType.MaxContainers} containers) — same-size containers can't nest either.");
+                }
             }
 
             var container = new ContainerEntity

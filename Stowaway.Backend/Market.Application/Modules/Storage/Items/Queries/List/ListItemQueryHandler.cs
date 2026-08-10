@@ -46,7 +46,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 },
                 Container = new ListContainersDto
                 {
-                    Id = x.Id,
+                    Id = x.Container.Id,
                     Name = x.Container.Name
                 },
                 CanvasX = x.CanvasX,

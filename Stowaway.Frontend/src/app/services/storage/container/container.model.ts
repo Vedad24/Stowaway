@@ -16,6 +16,10 @@ export interface ListContainersQueryDto {
     hasChildren: boolean,
     canvasX: number | null,
     canvasY: number | null,
+    maxItems: number,
+    maxContainers: number,
+    itemQuantityUsed: number,
+    containerCountUsed: number,
 }
 
 export type ListContainersQueryResponse = ListContainersQueryDto[];
@@ -39,5 +43,10 @@ export interface CreateContainerCommand{
 export interface UpdateContainerCommand{
     name: string,
     containerTypeId: number,
+}
+
+export interface DeleteContainerRequest{
+    deleteContents?: boolean,
+    moveContentsToContainerId?: number | null,
 }
 

@@ -8,11 +8,22 @@
     mat-flat-button
     color="primary"
     type="button"
-    [disabled]="!warehouse()"
-    [matTooltip]="warehouse() ? '' : 'Select a warehouse first'"
+    [disabled]="!canAddContainer()"
+    [matTooltip]="addContainerTooltip()"
     (click)="openAddContainerDialog()"
   >
     <mat-icon>add</mat-icon>
     Add container
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!warehouse()"
+    [matTooltip]="warehouse() ? '' : 'Select a warehouse first'"
+    (click)="openAddItemDialog()"
+  >
+    <mat-icon>add</mat-icon>
+    Add item
   </button>
 </div>

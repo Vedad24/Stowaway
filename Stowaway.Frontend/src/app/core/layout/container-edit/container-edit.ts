@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -8,11 +9,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListContainerTypeQueryDto } from '../../../services/sales/product-page/product-page-service.models';
+import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ContainerEditDialogData {
   id: number;
   name: string;
   containerTypeId: number;
+  parentContainerId: number | null;
 }
 
 @Component({
@@ -37,14 +40,26 @@ export class ContainerEdit implements OnInit {
 
   ngOnInit(): void {
     this.isLoadingTypes.set(true);
-    this.productPageService.getContainerTypes().subscribe({
-      next: (response) => {
-        this.containerTypes.set(response.items ?? []);
+
+    const parentContainerId = this.data.parentContainerId;
+    const parent$ = parentContainerId != null ? this.containerService.getById(parentContainerId) : of(null);
+
+    forkJoin([this.productPageService.getContainerTypes(), parent$]).subscribe({
+      next: ([typesResponse, parent]) => {
+        const allTypes = typesResponse.items ?? [];
+        // Same strict-smaller-than-parent rule as creating a container, but the
+        // container's current type stays selectable even if it wouldn't otherwise
+        // pass — so editing an existing container never hides its own value.
+        const available = parent
+          ? allTypes.filter(t => t.id === this.data.containerTypeId || (t.maxItems < parent.maxItems && t.maxContainers < parent.maxContainers))
+          : allTypes;
+
+        this.containerTypes.set(available);
         this.isLoadingTypes.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.isLoadingTypes.set(false);
-        this.errorMessage.set('Unable to load container types.');
+        this.errorMessage.set(extractErrorMessage(err, 'Unable to load container types.'));
       },
     });
   }
@@ -65,9 +80,9 @@ export class ContainerEdit implements OnInit {
         this.isSubmitting.set(false);
         this.dialogRef.close(true);
       },
-      error: () => {
+      error: (err) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set('Unable to save changes. Please try again.');
+        this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes. Please try again.'));
       },
     });
   }

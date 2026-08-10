@@ -5,9 +5,7 @@ namespace Stowaway.Application.Modules.Sales.ProductPage.ListContainerTypes
     {
         public async Task<PageResult<ListContainerTypeQueryDto>> Handle(ListContainerTypeQuery request, CancellationToken cancellationToken)
         {
-            var query = ctx.ContainerTypes.AsNoTracking();
-
-            
+            var query = ctx.ContainerTypes.AsNoTracking().OrderBy(x => x.MaxItems);
 
             var projectedQuery = query.Select(x => new ListContainerTypeQueryDto
             {

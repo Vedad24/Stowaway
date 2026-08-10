@@ -1,0 +1,56 @@
+<div class="dialog-card">
+  <h2>Delete container</h2>
+
+  @if (isLoading()) {
+    <p>Checking what's inside "{{ data.name }}"…</p>
+  } @else {
+    @if (!hasContents()) {
+      <p>Are you sure you want to delete "{{ data.name }}"? This cannot be undone.</p>
+    } @else {
+      <p>
+        "{{ data.name }}" contains {{ childContainerCount() }} container{{ childContainerCount() === 1 ? '' : 's' }}
+        and {{ childItemCount() }} item{{ childItemCount() === 1 ? '' : 's' }}. What should happen to them?
+      </p>
+
+      <mat-radio-group [ngModel]="mode()" (ngModelChange)="selectMode($event)" class="mode-group">
+        <mat-radio-button value="deleteContents">Delete everything inside</mat-radio-button>
+        <mat-radio-button value="moveContents">Move contents to another container</mat-radio-button>
+      </mat-radio-group>
+
+      @if (mode() === 'moveContents') {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Move to</mat-label>
+          <mat-select
+            [ngModel]="moveTargetId()"
+            (ngModelChange)="moveTargetId.set($event)"
+            [disabled]="isLoadingMoveOptions()"
+          >
+            @for (option of moveOptions(); track option.id) {
+              <mat-option [value]="option.id">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+          @if (!isLoadingMoveOptions() && moveOptions().length === 0) {
+            <mat-hint>No other container is available in this warehouse.</mat-hint>
+          }
+        </mat-form-field>
+      }
+    }
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+  }
+
+  <div class="actions">
+    <button mat-button type="button" (click)="dialogRef.close(false)">Cancel</button>
+    <button
+      mat-flat-button
+      color="warn"
+      type="button"
+      [disabled]="isLoading() || isSubmitting() || !canConfirm()"
+      (click)="confirm()"
+    >
+      {{ isSubmitting() ? 'Deleting...' : 'Delete' }}
+    </button>
+  </div>
+</div>
