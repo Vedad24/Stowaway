@@ -1,29 +1,104 @@
+:host {
+  display: block;
+  padding: 8px 0;
+}
+
 .editor-shell {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) 1fr;
-  gap: 16px;
-  padding: 12px;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px 20px 20px;
+  align-items: start;
+}
+
+.name-and-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.warehouse-name-editor {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.warehouse-name-editor mat-form-field {
+  flex: 1;
+  margin-bottom: -1.25em;
+}
+
+.warehouse-name-editor button {
+  min-width: 92px;
+  margin-top: 4px;
 }
 
 .group-list-card,
 .privileges-card {
   height: 100%;
+  border-radius: 14px;
+}
+
+.group-list-card mat-card-title,
+.privileges-card mat-card-title {
+  padding: 16px 16px 0;
+}
+
+.group-list-card mat-card-content,
+.privileges-card mat-card-content {
+  padding: 8px 16px 16px;
+}
+
+.group-list-card mat-card-actions,
+.privileges-card mat-card-actions {
+  padding: 0 16px 16px;
+  margin: 0;
+}
+
+mat-nav-list {
+  padding-top: 4px;
+}
+
+mat-nav-list a[mat-list-item] {
+  border-radius: 10px;
+  margin: 4px 0;
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+mat-nav-list a.active {
+  background: rgba(63, 81, 181, 0.08);
+  color: #3f51b5;
+  font-weight: 500;
+}
+
+.privileges-card p {
+  margin: 0 0 12px;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .toggle-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 8px;
 }
 
 .toggle-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.015);
 }
 
-mat-nav-list a.active {
-  background: rgba(0, 0, 0, 0.06);
+.toggle-row span {
+  font-size: 0.96rem;
+}
+
+mat-slide-toggle {
+  margin-left: 12px;
 }

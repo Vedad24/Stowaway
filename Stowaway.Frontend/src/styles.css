@@ -9,7 +9,10 @@
   --gold: #c8a96b;
   --text-dark: #2f352f;
   --text-muted: #5c665d;
-
+  /*Global color pallette for angular material*/
+  --mat-sys-primary: var(--sage);
+  --mat-sys-primary-container: var(--gold);
+  
   /* mat-form-field (outline appearance) */
   --mat-form-field-outlined-outline-color: var(--sage-soft);
   --mat-form-field-outlined-hover-outline-color: var(--sage);
@@ -78,6 +81,9 @@
   /* mat icon button*/
   --mat-icon-button-icon-color: var(--sage);
   --mat-icon-button-icon-background-color: var(--cream);
+
+  /*Slide toggles*/
+  --mat-option-hover-state-layer-color: var(--gold);
 }
 
 html,
@@ -106,6 +112,14 @@ a:hover {
   color: var(--gold);
 }
 
+
+
+/* button:hover, */
+.mat-mdc-button:hover,
+.mat-mdc-icon-button:hover {
+  background-color: var(--gold) !important;
+}
+
 .mat-icon
 {
   color: var(--sage) !important;
@@ -113,12 +127,6 @@ a:hover {
 .mat-icon:hover
 {
   cursor: pointer;
-}
-
-/* button:hover, */
-.mat-mdc-button:hover,
-.mat-mdc-icon-button:hover {
-  background-color: var(--gold) !important;
 }
 
 .mat-mdc-form-field {

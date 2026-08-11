@@ -2,10 +2,11 @@ import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
   selector: 'app-pagination-table',
-  imports: [ MatPaginator, MatTableModule, MatIconModule],
+  imports: [MatPaginator, MatTableModule, MatIconModule, MatButtonModule],
   templateUrl: './pagination-table.html',
   styleUrl: './pagination-table.css',
 })
