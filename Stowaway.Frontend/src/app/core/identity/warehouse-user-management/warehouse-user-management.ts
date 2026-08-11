@@ -70,8 +70,9 @@ export class WarehouseUserManagement
       type: 'action',
       buttons:
       [{
-        type: 'text',
+        type: 'icon',
         label: 'Edit group',
+        icon: 'edit',
         color: '',
         action: (row: ListWarehouseQueryDto) => this.onEditGroup(row)
       }]

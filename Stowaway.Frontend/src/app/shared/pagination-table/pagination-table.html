@@ -14,7 +14,7 @@
                         <div class="flex gap-2">
                             @for(btn of column.buttons; track btn.label) {
                                 @if(btn.type === 'icon') {
-                                    <button mat-icon-button 
+                                    <button matIconButton 
                                             (click)="btn.action(row)">
                                         <mat-icon>{{ btn.icon }}</mat-icon>
                                     </button>

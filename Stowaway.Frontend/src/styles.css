@@ -52,6 +52,32 @@
   --mat-option-selected-state-layer-color: var(--sage-soft);
   --mat-option-hover-state-layer-color: rgba(143, 162, 138, 0.16);
   --mat-option-focus-state-layer-color: rgba(143, 162, 138, 0.24);
+
+  /* mat-mdc-raised-button */
+  --mat-button-protected-container-color: var(--sage);
+  --mat-button-protected-label-text-color: var(--cream);
+  --mat-button-protected-state-layer-color: var(--gold);
+  --mat-button-protected-hover-state-layer-opacity: 1;
+
+  /* mat-toolbar */
+  --mat-toolbar-container-background-color: var(--cream);
+  --mat-toolbar-container-text-color: var(--text-dark);
+
+  /* mat-sidenav-container */
+  --mat-sidenav-container-background-color: var(--cream);
+  --mat-sidenav-container-text-color: var(--text-dark);
+
+  /* mat-mdc-card (elevated appearance) */
+  --mat-card-elevated-container-color: var(--cream);
+
+  /* mat-mdc-snack-bar-container */
+  --mat-snack-bar-container-color: var(--cream);
+  --mat-snack-bar-supporting-text-color: var(--text-dark);
+  --mat-snack-bar-button-color: var(--sage);
+
+  /* mat icon button*/
+  --mat-icon-button-icon-color: var(--sage);
+  --mat-icon-button-icon-background-color: var(--cream);
 }
 
 html,
@@ -80,34 +106,29 @@ a:hover {
   color: var(--gold);
 }
 
-button,
-.mat-mdc-raised-button,
-.mat-mdc-button,
-.mat-mdc-icon-button {
-  background-color: var(--sage) !important;
-  color: var(--cream) !important;
-  border: none;
+.mat-icon
+{
+  color: var(--sage) !important;
+}
+.mat-icon:hover
+{
+  cursor: pointer;
 }
 
-button:hover,
-.mat-mdc-raised-button:hover,
+/* button:hover, */
 .mat-mdc-button:hover,
 .mat-mdc-icon-button:hover {
   background-color: var(--gold) !important;
 }
 
-.mat-toolbar,
-.mat-sidenav-container,
-.mat-mdc-card,
-.mat-mdc-form-field,
-.mat-mdc-snack-bar-container {
+.mat-mdc-form-field {
   background-color: var(--cream) !important;
   color: var(--text-dark) !important;
 }
 
 .mat-mdc-card {
-  border: 1px solid rgba(143, 162, 138, 0.25);
-  box-shadow: 0 8px 24px rgba(47, 53, 47, 0.08);
+  border: 1px solid color-mix(in srgb, var(--sage) 25%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text-dark) 8%, transparent);
 }
 
 .invalid-credentials-snackbar {
