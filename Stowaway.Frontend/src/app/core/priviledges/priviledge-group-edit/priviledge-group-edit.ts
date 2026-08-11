@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -12,6 +15,7 @@ import { ListPriviledgeGroupQueryDto, UpdatePriviledgeGroupCommand } from '../..
 import { ListPriviledgesQueryDto } from '../../../services/storage-identity/priviledges/priviledges-service.models';
 import { PriviledgeGroupAdd } from '../priviledge-group-add/priviledge-group-add';
 import { ActivatedRoute } from '@angular/router';
+import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 
 interface PrivilegeToggleOption {
   id: number;
@@ -22,13 +26,14 @@ interface PrivilegeToggleOption {
 @Component({
   selector: 'app-priviledge-group-edit',
   standalone: true,
-  imports: [CommonModule, MatListModule, MatCardModule, MatButtonModule, MatSlideToggleModule, MatDividerModule],
+  imports: [CommonModule, FormsModule, MatListModule, MatCardModule, MatButtonModule, MatSlideToggleModule, MatDividerModule, MatFormFieldModule, MatInputModule],
   templateUrl: './priviledge-group-edit.html',
   styleUrl: './priviledge-group-edit.css',
 })
 export class PriviledgeGroupEdit implements OnInit {
   private readonly priviledgeGroupService = inject(PriviledgeGroupService);
   private readonly priviledgesService = inject(PriviledgesService);
+  private readonly warehouseApiService = inject(WarehouseApiService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -40,11 +45,54 @@ export class PriviledgeGroupEdit implements OnInit {
   selectedPrivileges: PrivilegeToggleOption[] = [];
   isSaving = signal(false);
 
+  warehouseName = '';
+  isEditingName = false;
+  isSavingName = signal(false);
+
   ngOnInit(): void {
     this.loadGroups();
     this.loadPrivileges();
-    console.log(this.groups);
-    console.log(this.privileges);
+    this.loadWarehouseName();
+  }
+
+  loadWarehouseName(): void {
+    const warehouseId = this.warehouseId;
+    if (!warehouseId) {
+      return;
+    }
+    this.warehouseApiService.getById(warehouseId).subscribe({
+      next: (response) => {
+        this.warehouseName = response.name;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  toggleNameEdit(): void {
+    if (!this.isEditingName) {
+      this.isEditingName = true;
+      return;
+    }
+    this.saveWarehouseName();
+  }
+
+  saveWarehouseName(): void {
+    const warehouseId = this.warehouseId;
+    if (!warehouseId) {
+      return;
+    }
+
+    this.isSavingName.set(true);
+    this.warehouseApiService.updateName(warehouseId, { name: this.warehouseName }).subscribe({
+      next: (response) => {
+        this.warehouseName = response.name;
+        this.isEditingName = false;
+        this.isSavingName.set(false);
+      },
+      error: () => {
+        this.isSavingName.set(false);
+      },
+    });
   }
 
   get warehouseId(): number | null {

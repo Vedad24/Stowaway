@@ -44,3 +44,12 @@ export interface UpdateWarehouseCommand{
     capacity: number,
     isEnabled: boolean
 }
+
+export interface UpdateWarehouseNameCommand{
+    name: string
+}
+
+export interface UpdateWarehouseNameCommandDto{
+    id: number,
+    name: string
+}
