@@ -1,0 +1,27 @@
+.dynamic-form {
+  max-width: 480px;
+}
+.dynamic-form-wrapper
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.form-row {
+  margin-bottom: 8px;
+
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.payload {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container, #f5f5f5);
+}

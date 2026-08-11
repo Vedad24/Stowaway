@@ -1,40 +1,58 @@
-import { Component, inject, Inject, Injectable, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-pagination-table',
-  imports: [ MatPaginator, MatTableModule],
+  imports: [ MatPaginator, MatTableModule, MatIconModule],
   templateUrl: './pagination-table.html',
   styleUrl: './pagination-table.css',
 })
 export class PaginationTable<TDto>{
-  
-  initializeTable(displayColumns : any[]){
-    this.columns = displayColumns;
+
+  //Input display columns and raw data
+  @Input() columns : TableColumnDef<TDto>[] = [];
+
+  @Input() set items(value: TDto[] | null | undefined) {
+    this.dataSource.data = value ?? [];
   }
-  
-  columns : any[] = [
-    // {
-    //   columnDef: 'id',
-    //   header: 'ID',
-    //   cell: (user: ListUserQueryDto) => `${user.id}`,
-    // },
-  ]
-  displayColumns = this.columns.map(c => c.columnDef);
+
+  //Paging state, driven by the parent (e.g. BaseListPagedComponent)
+  @Input() totalItems = 0;
+  @Input() pageIndex = 0;
+  @Input() pageSize = 10;
+  @Input() pageSizeOptions = [5, 10, 20];
+
+  //Emits the raw MatPaginator page event; parent decides how to react (goToPage / changePageSize)
+  @Output() page = new EventEmitter<PageEvent>();
+
+  //this will get populated on items change
   dataSource = new MatTableDataSource<TDto>();
-  @ViewChild(MatPaginator) paginator !: MatPaginator;
 
-  ngOnInit() {
-      
+  //This will get resolved for displaying the columns
+  get displayColumns() : string[] {return this.columns.map(c => c.columnDef);}
+
+  getCellValue(row: TDto, column: TableColumnDef<TDto>): string {
+    return column.cell?.(row) ?? '';
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+  onPage(event: PageEvent): void {
+    console.log("Pagination table pageEvent", event);
+    this.page.emit(event);
   }
-
-  refreshUsers(newData : TDto[] = [])
-  {
-    this.dataSource.data = newData;
 }
+export interface TableColumnDef<TDto>{
+  columnDef: string,
+  header: string,
+  type?: 'text' | 'action'; // defaults to 'text'
+  cell?: (row: TDto) => string; // Used if type is 'text'
+  buttons?: {
+    type: 'icon' | 'text'; //uses matIcon if type is icon (default)
+    label?: string; //does nothing if type is icon
+    icon?: string; //does nothing if type is text
+    color?: string;
+    action: (row: TDto) => void;
+  }[]; // Used if type is 'action'
+
 }

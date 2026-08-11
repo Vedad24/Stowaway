@@ -1,17 +1,19 @@
 import { PageResult } from '../../models/paging/page-result';
 import {BaseListComponent} from './base-list-component';
 import {BasePagedQuery} from '../../models/paging/base-paged-query';
+import { signal } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 
-export abstract class BaseListPagedComponent<TItem, TRequest extends BasePagedQuery>
-  extends BaseListComponent<TItem> {
+export abstract class BaseListPagedComponent<TDto, TRequest extends BasePagedQuery>
+  extends BaseListComponent<TDto> {
 
   constructor() {
     super();
   }
 
   request!: TRequest;
-  totalItems = 0;
-  totalPages = 0;
+  totalItems = signal(0);
+  totalPages = signal(0);
 
   get paging(){
     return this.request.paging;
@@ -23,14 +25,14 @@ export abstract class BaseListPagedComponent<TItem, TRequest extends BasePagedQu
     this.loadPagedData();
   }
 
-  protected handlePageResult(result: PageResult<TItem>) {
-    this.items = result.items;
-    this.totalItems = result.totalItems;
-    this.totalPages = result.totalPages;
+  protected handlePageResult(result: PageResult<TDto>) {
+    this.items.set(result.items);
+    this.totalItems.set(result.total);
+    this.totalPages.set(result.totalPages);
   }
 
   goToPage(page: number): void {
-    if (page < 1 || (this.totalPages && page > this.totalPages)) return;
+    if (page < 1 || (this.totalPages() && page > this.totalPages())) return;
     this.paging.page = page;
     this.loadPagedData();
   }
@@ -42,5 +44,14 @@ export abstract class BaseListPagedComponent<TItem, TRequest extends BasePagedQu
     this.paging.pageSize = size;
     this.paging.page = 1;
     this.loadPagedData();
+  }
+
+  onPage(event: PageEvent): void {
+    console.log("Page event registered", event);
+    if (event.pageSize !== this.paging.pageSize) {
+      this.changePageSize(event.pageSize);
+    } else {
+      this.goToPage(event.pageIndex + 1);
+    }
   }
 }

@@ -12,6 +12,7 @@ namespace Stowaway.Domain.Entities.Identity
     {
         User,
         Admin,
+        Manager
     }
     [Table("Role", Schema = "Identity")]
 

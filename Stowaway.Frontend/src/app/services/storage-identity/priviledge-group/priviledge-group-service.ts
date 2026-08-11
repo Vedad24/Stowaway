@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   CreatePriviledgeGroupCommand,
+  CreateUpdateWarehouseUserCommand,
+  CreateUpdateWarehouseUserCommandDto,
   ListPriviledgeGroupQueryDto,
   UpdatePriviledgeGroupCommand,
 } from './priviledge-group-service.models';
@@ -14,6 +16,7 @@ import { Observable } from 'rxjs';
 export class PriviledgeGroupService {
   private readonly http = inject(HttpClient);
   private readonly priviledgeGroupURL = `${environment.apiUrl}/StorageIdentity/privilege-groups`;
+  private readonly warehouseUsersURL = `${environment.apiUrl}/StorageIdentity/warehouse-users`;
 
   public list(warehouseId: number): Observable<ListPriviledgeGroupQueryDto[]> {
     const params = { warehouseId: warehouseId.toString() };
@@ -26,6 +29,12 @@ export class PriviledgeGroupService {
 
   public update(id: number, payload: UpdatePriviledgeGroupCommand): Observable<{ id: number }> {
     return this.http.put<{ id: number }>(`${this.priviledgeGroupURL}/${id}`, payload);
+  }
+
+  public createUpdateWarehouseUser(
+    payload: CreateUpdateWarehouseUserCommand,
+  ): Observable<CreateUpdateWarehouseUserCommandDto> {
+    return this.http.put<CreateUpdateWarehouseUserCommandDto>(this.warehouseUsersURL, payload);
   }
 
   priviledgeGroupData: {
