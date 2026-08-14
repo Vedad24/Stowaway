@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { AutocompleteComponent } from '../../../shared/autocomplete-component/autocomplete-component';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { CartService } from '../../../services/sales/cart/cart-service';
 import {
@@ -17,7 +18,15 @@ import { CurrentUserService } from '../../../services/identity/auth/current-user
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    AutocompleteComponent,
+  ],
   templateUrl: './product-page.html',
   styleUrl: './product-page.css',
 })
@@ -29,7 +38,7 @@ export class ProductPage implements OnInit {
   containerTypes = signal<ListContainerTypeQueryDto[]>([]);
 
   productForm = new FormGroup({
-    warehouse: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
+    warehouse: new FormControl<ListWarehousesQueryDto | null>(null, [Validators.required]),
     containerType: new FormControl<number>(0, [Validators.required, Validators.min(1)]),
     quantity: new FormControl<number>(1, [Validators.required, Validators.min(1)]),
   });
@@ -46,8 +55,8 @@ export class ProductPage implements OnInit {
     this.productPageService.getUserWarehouses().subscribe({
       next: (response) => {
         this.warehouses.set(response.items ?? []);
-        if (this.warehouses().length && this.productForm.get('warehouse')?.value === 0) {
-          this.productForm.patchValue({ warehouse: this.warehouses()[0].id });
+        if (this.warehouses().length && !this.productForm.get('warehouse')?.value) {
+          this.productForm.patchValue({ warehouse: this.warehouses()[0] });
         }
       },
       error: () => {
@@ -77,7 +86,7 @@ export class ProductPage implements OnInit {
       return;
     }
 
-    const warehouseId = this.productForm.get('warehouse')?.value ?? 0;
+    const warehouseId = this.productForm.get('warehouse')?.value?.id ?? 0;
     const containerTypeId = this.productForm.get('containerType')?.value ?? 0;
     const quantity = this.productForm.get('quantity')?.value ?? 0;
 
