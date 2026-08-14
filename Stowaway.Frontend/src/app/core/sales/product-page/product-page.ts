@@ -1,6 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { CartService } from '../../../services/sales/cart/cart-service';
 import {
@@ -15,7 +19,7 @@ import { AuthService } from '../../../services/identity/auth/auth-service';
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
   templateUrl: './product-page.html',
   styleUrl: './product-page.css',
 })

@@ -8,17 +8,17 @@
     <p>Select a warehouse, choose a container type, and add the desired quantity to your cart.</p>
 
     <form class="product-page-form" (ngSubmit)="addToCart()">
-      <label>
-        Warehouse
-        <select [(ngModel)]="selectedWarehouseId" name="warehouse">
-          <option [ngValue]="null" disabled>Select warehouse</option>
+      <mat-form-field appearance="outline">
+        <mat-label>Warehouse</mat-label>
+        <mat-select [(ngModel)]="selectedWarehouseId" name="warehouse">
+          <mat-option [value]="null" disabled>Select warehouse</mat-option>
           @for (warehouse of warehouses(); track warehouse.id) {
-            <option [ngValue]="warehouse.id">
+            <mat-option [value]="warehouse.id">
               {{ warehouse.name }}
-            </option>
+            </mat-option>
           }
-        </select>
-      </label>
+        </mat-select>
+      </mat-form-field>
 
       <div class="container-type-group">
         <span class="field-label">Container type</span>
@@ -27,6 +27,7 @@
           @for (containerType of containerTypes(); track containerType.id) {
             <button
               type="button"
+              mat-stroked-button
               class="container-type-card"
               [class.selected]="selectedContainerTypeId === containerType.id"
               (click)="selectedContainerTypeId = containerType.id"
@@ -38,12 +39,12 @@
         </div>
       </div>
 
-      <label>
-        Quantity
-        <input type="number" min="1" [(ngModel)]="quantity" name="quantity" />
-      </label>
+      <mat-form-field appearance="outline">
+        <mat-label>Quantity</mat-label>
+        <input matInput type="number" min="1" [(ngModel)]="quantity" name="quantity" />
+      </mat-form-field>
 
-      <button type="submit" class="add-to-cart-button" [disabled]="isSubmitting()">
+      <button mat-flat-button color="primary" type="submit" class="add-to-cart-button" [disabled]="isSubmitting()">
         {{ isSubmitting() ? 'Adding...' : 'Add to cart' }}
       </button>
     </form>

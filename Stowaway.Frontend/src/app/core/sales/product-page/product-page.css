@@ -4,7 +4,7 @@
   padding: 1.5rem;
   border: 1px solid #d7dce5;
   border-radius: 20px;
-  background: #fff;
+  background: var(--cream);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
   display: grid;
   grid-template-columns: minmax(260px, 1fr) minmax(300px, 1.2fr);
@@ -53,7 +53,11 @@
   margin-top: 0.5rem;
 }
 
-.product-page-form label,
+.product-page-form mat-form-field,
+.product-page-form .container-type-group {
+  width: 100%;
+}
+
 .container-type-group {
   display: flex;
   flex-direction: column;
@@ -65,17 +69,6 @@
   font-weight: 600;
 }
 
-.product-page-form select,
-.product-page-form input {
-  width: 100%;
-  padding: 0.8rem 0.9rem;
-  border-radius: 10px;
-  border: 1px solid #cfd6e2;
-  font-size: 1rem;
-  background: #fff;
-  box-sizing: border-box;
-}
-
 .container-type-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -83,30 +76,37 @@
 }
 
 .container-type-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
   gap: 0.3rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid #d7dce5;
-  border-radius: 12px;
-  background: #f8fafc;
-  color: #0f172a;
+  width: 100%;
+  min-height: 72px;
+  padding: 0.9rem 1rem !important;
+  border-radius: 12px !important;
+  background: #f8fafc !important;
+  color: #0f172a !important;
   font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .container-type-card:hover {
-  border-color: #93c5fd;
+  border-color: #93c5fd !important;
   transform: translateY(-1px);
 }
 
 .container-type-card.selected {
-  background: #e0f2fe;
-  border-color: #0284c7;
+  background: #e0f2fe !important;
+  border-color: #0284c7 !important;
   box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
+.container-type-name,
+.container-type-price {
+  display: block;
+  width: 100%;
 }
 
 .container-type-name {
@@ -120,24 +120,12 @@
 
 .add-to-cart-button {
   width: 100%;
-  padding: 0.9rem 1rem;
-  border: none;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
-  font-size: 1rem;
+  min-height: 48px;
   font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-
-.add-to-cart-button:hover:not(:disabled) {
-  background: #1d4ed8;
 }
 
 .add-to-cart-button:disabled {
   opacity: 0.7;
-  cursor: not-allowed;
 }
 
 .message {
