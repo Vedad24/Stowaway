@@ -12,6 +12,11 @@ export interface CanvasContainerCrumb {
   maxContainers: number;
 }
 
+export interface SelectedEntity {
+  kind: 'item' | 'container';
+  id: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +24,7 @@ export class WarehouseCanvasState {
   readonly warehouse = signal<CanvasWarehouse | null>(null);
   readonly path = signal<CanvasContainerCrumb[]>([]);
   readonly locationChanged = signal(0);
+  readonly selectedEntity = signal<SelectedEntity | null>(null);
 
   readonly currentContainer = computed<CanvasContainerCrumb | null>(() => {
     const path = this.path();
@@ -49,5 +55,17 @@ export class WarehouseCanvasState {
 
   notifyLocationChanged(): void {
     this.locationChanged.update(v => v + 1);
+  }
+
+  selectItem(id: number): void {
+    this.selectedEntity.set({ kind: 'item', id });
+  }
+
+  selectContainer(id: number): void {
+    this.selectedEntity.set({ kind: 'container', id });
+  }
+
+  clearSelection(): void {
+    this.selectedEntity.set(null);
   }
 }

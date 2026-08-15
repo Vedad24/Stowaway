@@ -28,7 +28,11 @@ public static class DynamicDataSeeder
         await SeedSupplierAsync(context);
         await SeedWarehouseAsync(context);
         await SeedContainersAsync(context);
+        await SeedContainerStatusesAsync(context);
+        await SeedContainerStatusHistoryAsync(context);
         await SeedItemsAsync(context);
+        await SeedTagsAsync(context);
+        await SeedItemTagsAsync(context);
         await SeedOrdersAsync(context);
         await SeedStorageIdentityAsync(context);
         await SeedRolePermissionsAsync(context);
@@ -289,6 +293,61 @@ public static class DynamicDataSeeder
         Console.WriteLine("✅ Dynamic seed: demo containers added.");
     }
 
+    private static async Task SeedContainerStatusesAsync(DatabaseContext context)
+    {
+        if (await context.ContainerStatuses.AnyAsync())
+        {
+            return;
+        }
+
+        var statuses = new List<ContainerStatusEntity>
+        {
+            new() { Description = "Active" },
+            new() { Description = "Full" },
+            new() { Description = "Under maintenance" },
+            new() { Description = "Needs inspection" },
+            new() { Description = "Damaged" },
+        };
+
+        context.ContainerStatuses.AddRange(statuses);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo container statuses added.");
+    }
+
+    private static async Task SeedContainerStatusHistoryAsync(DatabaseContext context)
+    {
+        var active = await context.ContainerStatuses.FirstOrDefaultAsync(s => s.Description == "Active");
+        var admin = await context.Users.FirstOrDefaultAsync(u => u.Email == "admin@market.local");
+
+        if (active == null || admin == null)
+        {
+            return;
+        }
+
+        var containersWithoutStatus = await context.Containers
+            .Where(c => !context.ContainerStatusHistories.Any(h => h.ContainerId == c.Id))
+            .ToListAsync();
+
+        if (containersWithoutStatus.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var container in containersWithoutStatus)
+        {
+            context.ContainerStatusHistories.Add(new ContainerStatusHistoryEntity
+            {
+                ContainerId = container.Id,
+                StatusId = active.Id,
+                UserId = admin.Id,
+                Date = DateTime.Now,
+            });
+        }
+
+        await context.SaveChangesAsync();
+        Console.WriteLine($"✅ Dynamic seed: {containersWithoutStatus.Count} container status history entries added.");
+    }
+
     private static async Task SeedItemsAsync(DatabaseContext context)
     {
         if (await context.Item.AnyAsync())
@@ -319,6 +378,56 @@ public static class DynamicDataSeeder
         context.Item.AddRange(WaterBottle, CocktaBottle);
         await context.SaveChangesAsync();
         Console.WriteLine("✅ Dynamic seed: demo items added.");
+    }
+
+    private static async Task SeedTagsAsync(DatabaseContext context)
+    {
+        if (await context.Tags.AnyAsync())
+        {
+            return;
+        }
+
+        var tags = new List<TagEntity>
+        {
+            new() { Name = "Fragile" },
+            new() { Name = "Perishable" },
+            new() { Name = "Hazardous" },
+            new() { Name = "Popular" },
+            new() { Name = "Bestseller" },
+        };
+
+        context.Tags.AddRange(tags);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo tags added.");
+    }
+
+    private static async Task SeedItemTagsAsync(DatabaseContext context)
+    {
+        if (await context.ItemTags.AnyAsync())
+        {
+            return;
+        }
+
+        var waterBottle = await context.Item.FirstOrDefaultAsync(i => i.Name == "Natural water");
+        var cocktaBottle = await context.Item.FirstOrDefaultAsync(i => i.Name == "Cockta soda");
+        var perishable = await context.Tags.FirstOrDefaultAsync(t => t.Name == "Perishable");
+        var bestseller = await context.Tags.FirstOrDefaultAsync(t => t.Name == "Bestseller");
+        var popular = await context.Tags.FirstOrDefaultAsync(t => t.Name == "Popular");
+
+        if (waterBottle == null || cocktaBottle == null || perishable == null || bestseller == null || popular == null)
+        {
+            return;
+        }
+
+        context.ItemTags.AddRange(
+            new Item_TagEntity { ItemId = waterBottle.Id, TagId = perishable.Id },
+            new Item_TagEntity { ItemId = waterBottle.Id, TagId = bestseller.Id },
+            new Item_TagEntity { ItemId = cocktaBottle.Id, TagId = perishable.Id },
+            new Item_TagEntity { ItemId = cocktaBottle.Id, TagId = popular.Id }
+        );
+
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo item tags added.");
     }
 
 
