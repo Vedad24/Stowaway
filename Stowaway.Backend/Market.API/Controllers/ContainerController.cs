@@ -1,6 +1,7 @@
 using Stowaway.Application.Modules.Storage.Container.Commands.Create;
 using Stowaway.Application.Modules.Storage.Container.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Container.Commands.Move;
+using Stowaway.Application.Modules.Storage.Container.Commands.Update;
 using Stowaway.Application.Modules.Storage.Container.Commands.UpdateCanvasPosition;
 using Stowaway.Application.Modules.Storage.Container.Queries.GetById;
 using Stowaway.Application.Modules.Storage.Container.Shared;

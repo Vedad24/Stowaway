@@ -1,5 +1,5 @@
 using Stowaway.Domain.Entities.Storage;
-
+using Stowaway.Application.Modules.Storage.Container.Commands.Create;
 namespace Stowaway.Application.Modules.Storage.Container.Commands.Create
 {
     public class CreateContainerCommandHandler(IAppDbContext ctx) : IRequestHandler<CreateContainerCommand, int>
