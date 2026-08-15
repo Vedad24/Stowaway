@@ -1,6 +1,6 @@
 <aside class="detail-panel" [class.detail-panel-open]="isOpen()" aria-label="Container details">
   @if (isOpen()) {
-    <button type="button" class="panel-close" (click)="close()" aria-label="Close container details">×</button>
+    <button type="button" class="panel-close" (click)="close()" aria-label="Close container details"><span>X</span></button>
 
     @if (errorMessage()) {
       <p class="panel-error">{{ errorMessage() }}</p>
