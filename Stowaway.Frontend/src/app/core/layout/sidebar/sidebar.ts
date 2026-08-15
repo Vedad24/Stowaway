@@ -125,7 +125,12 @@ export class Sidebar implements OnInit {
   selectContainer(container: ContainerTreeNode, ancestors: ContainerTreeNode[], warehouse: WarehouseTreeNode): void {
     this.canvasState.navigateTo(
       { id: warehouse.id, name: warehouse.name },
-      [...ancestors, container].map(node => ({ id: node.id, name: node.name })),
+      [...ancestors, container].map(node => ({
+        id: node.id,
+        name: node.name,
+        maxItems: node.maxItems,
+        maxContainers: node.maxContainers,
+      })),
     );
   }
 

@@ -1,4 +1,37 @@
 <div class="logoName">
+  <button
+    mat-icon-button
+    type="button"
+    matTooltip="Back to modules"
+    routerLink="/choose-module"
+  >
+    <mat-icon>arrow_back</mat-icon>
+  </button>
   <img class="w-15 h-15" src="assets/icons/dolly.png" alt="" />
   <h1 class="text-2xl font-medium">Stowaway</h1>
+</div>
+
+<div class="buttons">
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!canAddContainer()"
+    [matTooltip]="addContainerTooltip()"
+    (click)="openAddContainerDialog()"
+  >
+    <mat-icon>add</mat-icon>
+    Add container
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    [disabled]="!warehouse()"
+    [matTooltip]="warehouse() ? '' : 'Select a warehouse first'"
+    (click)="openAddItemDialog()"
+  >
+    <mat-icon>add</mat-icon>
+    Add item
+  </button>
 </div>

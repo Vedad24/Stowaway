@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Stowaway.Application.Modules.Storage.Container.Shared;
+using Stowaway.Application.Modules.Storage.Items.Shared;
 using Stowaway.Application.Modules.Storage.Supplier.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
@@ -32,11 +33,15 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 },
-                Container = new ListContainersDto 
-                {    
-                    Id = x.Id,
+                Container = new ListContainersDto
+                {
+                    Id = x.Container.Id,
                     Name = x.Container.Name
-                }
+                },
+                Tags = ctx.ItemTags
+                    .Where(it => it.ItemId == x.Id)
+                    .Select(it => new SharedTagDto { Id = it.Tag.Id, Name = it.Tag.Name })
+                    .ToList(),
             }).FirstOrDefaultAsync(cancellationToken);
 
             if (item == null)

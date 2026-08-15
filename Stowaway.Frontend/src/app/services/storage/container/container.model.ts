@@ -7,14 +7,27 @@ export class ListContainersQuery{
     parentContainerId?: number | null;
 }
 
+export interface SharedContainerStatusDto{
+    id: number,
+    name: string
+}
+
 export interface ListContainersQueryDto {
     id: number,
     name: string,
+    containerTypeId: number,
+    containerTypeName: string,
     warehouseId: number,
+    warehouseName: string,
     parentContainerId: number | null,
     hasChildren: boolean,
     canvasX: number | null,
     canvasY: number | null,
+    maxItems: number,
+    maxContainers: number,
+    itemQuantityUsed: number,
+    containerCountUsed: number,
+    currentStatus: SharedContainerStatusDto | null,
 }
 
 export type ListContainersQueryResponse = ListContainersQueryDto[];
@@ -26,5 +39,22 @@ export interface UpdateCanvasPositionCommand{
 
 export interface MoveContainerCommand{
     parentContainerId: number,
+}
+
+export interface CreateContainerCommand{
+    name: string,
+    containerTypeId: number,
+    warehouseId: number,
+    parentContainerId?: number | null,
+}
+
+export interface UpdateContainerCommand{
+    name: string,
+    containerTypeId: number,
+}
+
+export interface DeleteContainerRequest{
+    deleteContents?: boolean,
+    moveContentsToContainerId?: number | null,
 }
 

@@ -35,16 +35,15 @@
     </div>
 
     <div class="canvas-body">
+      @if (hasUnplaced()) {
       <aside class="canvas-tray">
         <h3 class="tray-title">Unplaced</h3>
-        @if (!hasUnplaced()) {
-          <p class="tray-empty">Everything here is placed on the canvas.</p>
-        }
         @for (container of unplacedContainers(); track container.id) {
           <div
             class="tray-card tray-card-container"
             cdkDrag
             #drag="cdkDrag"
+            (click)="selectContainer(container)"
             (cdkDragMoved)="onDragMoved($event, 'container', container.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'container', container.id, canvasGrid, drag)"
           >
@@ -57,6 +56,7 @@
             class="tray-card tray-card-item"
             cdkDrag
             #drag="cdkDrag"
+            (click)="selectItem(item)"
             (cdkDragMoved)="onDragMoved($event, 'item', item.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'item', item.id, canvasGrid, drag)"
           >
@@ -65,6 +65,7 @@
           </div>
         }
       </aside>
+      }
 
       <div class="canvas-grid" #canvasGrid>
         @if (!isLoading() && containers().length === 0 && items().length === 0) {
@@ -75,12 +76,14 @@
             class="canvas-card canvas-card-container"
             [class.canvas-card-nest-target]="isNestTarget(container.id)"
             [attr.data-container-id]="container.id"
+            [style.--card-scale]="containerScale(container)"
             cdkDrag
             #drag="cdkDrag"
             cdkDragBoundary=".canvas-grid"
             [cdkDragFreeDragPosition]="positionOf('container', container.id)"
             (cdkDragMoved)="onDragMoved($event, 'container', container.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'container', container.id, canvasGrid, drag)"
+            (click)="selectContainer(container)"
             (dblclick)="enterContainer(container)"
             title="Double-click to open, or drag another item onto it to nest"
           >
@@ -92,6 +95,19 @@
             >×</button>
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
+            <div
+              class="card-fullness"
+              [title]="'Items: ' + container.itemQuantityUsed + ' / ' + container.maxItems + (container.maxContainers > 0 ? ', Containers: ' + container.containerCountUsed + ' / ' + container.maxContainers : '')"
+            >
+              <div class="fullness-bar">
+                <div class="fullness-fill fullness-items" [style.width.%]="itemsFullness(container) * 100"></div>
+              </div>
+              @if (container.maxContainers > 0) {
+                <div class="fullness-bar">
+                  <div class="fullness-fill fullness-containers" [style.width.%]="containersFullness(container) * 100"></div>
+                </div>
+              }
+            </div>
             @if (container.hasChildren) {
               <span class="card-hint">has sub-containers</span>
             }
@@ -104,6 +120,7 @@
             #drag="cdkDrag"
             cdkDragBoundary=".canvas-grid"
             [cdkDragFreeDragPosition]="positionOf('item', item.id)"
+            (click)="selectItem(item)"
             (cdkDragMoved)="onDragMoved($event, 'item', item.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'item', item.id, canvasGrid, drag)"
           >

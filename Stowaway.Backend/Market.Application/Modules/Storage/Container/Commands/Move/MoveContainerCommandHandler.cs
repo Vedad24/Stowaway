@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
 {
@@ -32,6 +33,15 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
                 throw new Exception("Cannot move a container into a different warehouse");
             }
 
+            var containerType = await ctx.ContainerTypes.FirstOrDefaultAsync(t => t.Id == container.ContainerTypeId, cancellationToken);
+            var targetType = await ctx.ContainerTypes.FirstOrDefaultAsync(t => t.Id == target.ContainerTypeId, cancellationToken);
+            if (containerType is not null && targetType is not null &&
+                (containerType.MaxItems >= targetType.MaxItems || containerType.MaxContainers >= targetType.MaxContainers))
+            {
+                throw new ValidationException(
+                    $"This container type (max {containerType.MaxItems} items / {containerType.MaxContainers} containers) must be strictly smaller than the target container's capacity (max {targetType.MaxItems} items / {targetType.MaxContainers} containers) — same-size containers can't nest either.");
+            }
+
             var ancestorId = target.ParentContainerId;
             while (ancestorId.HasValue)
             {
@@ -45,6 +55,8 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
                     .Select(x => x.ParentContainerId)
                     .FirstOrDefaultAsync(cancellationToken);
             }
+
+            await ContainerCapacityHelper.EnsureSubtreeFits(ctx, container.Id, target.Id, cancellationToken);
 
             container.ParentContainerId = target.Id;
             container.CanvasX = null;

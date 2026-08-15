@@ -1,4 +1,5 @@
 ﻿using Stowaway.Application.Modules.Storage.Container.Shared;
+using Stowaway.Domain.Entities.Storage;
 
 namespace Stowaway.Application.Modules.Storage.Items.Queries.List
 {
@@ -30,13 +31,33 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 Id = x.Id,
                 Name = x.Name,
                 WarehouseId = x.WarehouseId,
+                WarehouseName = x.Warehouse!.Name,
                 ParentContainerId = x.ParentContainerId,
                 HasChildren = ctx.Containers.Any(child => child.ParentContainerId == x.Id),
                 CanvasX = x.CanvasX,
                 CanvasY = x.CanvasY,
+                MaxItems = x.ContainerType!.MaxItems,
+                MaxContainers = x.ContainerType!.MaxContainers,
+                ContainerCountUsed = ctx.Containers.Count(child => child.ParentContainerId == x.Id),
+                CurrentStatus = ctx.ContainerStatusHistories
+                    .Where(h => h.ContainerId == x.Id)
+                    .OrderByDescending(h => h.Date)
+                    .Select(h => new SharedContainerStatusDto { Id = h.Status.Id, Name = h.Status.Description })
+                    .FirstOrDefault(),
             });
 
-            return await projectedQuery.ToListAsync(cancellationToken);
+            var results = await projectedQuery.ToListAsync(cancellationToken);
+
+            // Recursive (self + nested sub-containers) and the type's human-readable size
+            // label — not translatable into the SQL projection above, so filled in per row
+            // once the base rows are materialized.
+            foreach (var result in results)
+            {
+                result.ItemQuantityUsed = await ContainerCapacityHelper.GetRecursiveItemQuantity(ctx, result.Id, cancellationToken);
+                result.ContainerTypeName = ContainerTypeEntity.DescribeSize(result.MaxItems, result.MaxContainers);
+            }
+
+            return results;
         }
     }
 }

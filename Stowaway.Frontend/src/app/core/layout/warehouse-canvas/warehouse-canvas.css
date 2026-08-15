@@ -87,17 +87,16 @@
   overflow-y: auto;
 }
 
+.canvas-tray:has(.cdk-drag-dragging) {
+  overflow: visible;
+}
+
 .tray-title {
   margin: 0 0 0.5rem;
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #6b7280;
-}
-
-.tray-empty {
-  font-size: 0.85rem;
-  color: #9ca3af;
 }
 
 .tray-card {
@@ -112,6 +111,11 @@
   cursor: grab;
   font-size: 0.9rem;
   color: #1f2937;
+}
+
+.tray-card.cdk-drag-dragging {
+  position: relative;
+  z-index: 1000;
 }
 
 .tray-card:active {
@@ -165,6 +169,41 @@
 
 .canvas-card-container {
   border-top: 3px solid #8fa28a;
+  width: calc(112px * var(--card-scale, 1));
+  padding: calc(0.6rem * var(--card-scale, 1)) calc(0.5rem * var(--card-scale, 1)) calc(0.5rem * var(--card-scale, 1));
+}
+
+.canvas-card-container .card-icon {
+  font-size: calc(1.4rem * var(--card-scale, 1));
+}
+
+.card-fullness {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.fullness-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: #e7e9e2;
+  overflow: hidden;
+}
+
+.fullness-fill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.fullness-items {
+  background: #d9a441;
+}
+
+.fullness-containers {
+  background: #8fa28a;
 }
 
 .canvas-card-nest-target {
@@ -214,6 +253,65 @@
 
 .card-unplace:hover {
   background: #374151;
+}
+
+.card-edit {
+  position: absolute;
+  top: -0.4rem;
+  left: -0.4rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #8fa28a;
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-edit:hover {
+  background: #62775d;
+}
+
+.card-edit-inline {
+  position: static;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.card-delete {
+  position: absolute;
+  bottom: -0.4rem;
+  right: -0.4rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #b3261e;
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-delete:hover {
+  background: #7f180f;
+}
+
+.card-delete-inline {
+  position: static;
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
 }
 
 .cdk-drag-preview {

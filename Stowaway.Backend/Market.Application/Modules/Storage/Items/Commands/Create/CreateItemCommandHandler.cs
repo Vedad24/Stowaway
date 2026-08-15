@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Application.Modules.Storage.Items.Queries.GetById;
 using Stowaway.Domain.Entities.Storage;
 
@@ -44,6 +45,8 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
             {
                 throw new Exception("Quantity cant be less than 1");
             }
+
+            await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, request.Quantity, cancellationToken);
 
             var item = new ItemEntity
             {

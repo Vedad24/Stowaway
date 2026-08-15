@@ -1,0 +1,57 @@
+<aside class="detail-panel" [class.detail-panel-open]="isOpen()" aria-label="Item details">
+  @if (isOpen()) {
+    <button type="button" class="panel-close" (click)="close()" aria-label="Close item details"><span>X</span></button>
+
+    @if (errorMessage()) {
+      <p class="panel-error">{{ errorMessage() }}</p>
+    }
+
+    @if (item(); as data) {
+      <div class="panel-image">
+        @if (getImageSrc(data); as src) {
+          <img [src]="src" [alt]="data.name" />
+        } @else {
+          <span class="panel-image-placeholder">🏷️</span>
+        }
+      </div>
+
+      <h2 class="panel-title">{{ data.name }}</h2>
+
+      @if (data.tags.length) {
+        <div class="panel-tags">
+          @for (tag of data.tags; track tag.id) {
+            <span class="tag-pill" [style.background]="tagColor(tag.id)" [style.color]="tagTextColor(tag.id)">{{ tag.name }}</span>
+          }
+        </div>
+      } @else {
+        <p class="panel-no-tags">No tags</p>
+      }
+
+      <dl class="panel-fields">
+        <div class="panel-field">
+          <dt>Description</dt>
+          <dd>{{ data.description || '—' }}</dd>
+        </div>
+        <div class="panel-field">
+          <dt>Quantity</dt>
+          <dd>{{ data.quantity }}</dd>
+        </div>
+        <div class="panel-field">
+          <dt>Supplier</dt>
+          <dd>{{ data.supplier.name }}</dd>
+        </div>
+        <div class="panel-field">
+          <dt>Container</dt>
+          <dd>{{ data.container.name }}</dd>
+        </div>
+      </dl>
+
+      <div class="panel-actions">
+        <button mat-button type="button" (click)="edit()">Edit</button>
+        <button mat-flat-button color="warn" type="button" (click)="delete()">Delete</button>
+      </div>
+    } @else if (isLoading()) {
+      <p class="panel-loading">Loading…</p>
+    }
+  }
+</aside>
