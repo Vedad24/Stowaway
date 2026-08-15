@@ -14,6 +14,12 @@
   align-items: center;
 }
 
+.logoName button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .buttons {
   display: flex;
   gap: 2rem;

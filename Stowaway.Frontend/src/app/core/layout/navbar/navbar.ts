@@ -3,13 +3,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
 import { ContainerAdd } from '../container-add/container-add';
 import { ItemAdd } from '../item-add/item-add';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
