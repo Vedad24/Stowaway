@@ -8,6 +8,7 @@ export interface ContainerTypeEntity {
 
 export interface AddToCartCommand {
   userId: number;
+  warehouseId: number;
   containerType: ContainerTypeEntity;
   quantity: number;
 }
@@ -16,6 +17,7 @@ export interface AddToCartCommandDto {}
 
 export interface SaveForLaterCommand {
   userId: number;
+  warehouseId: number;
   containerType: ContainerTypeEntity;
   quantity: number;
 }

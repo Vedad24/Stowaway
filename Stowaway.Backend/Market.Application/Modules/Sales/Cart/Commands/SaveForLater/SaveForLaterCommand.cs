@@ -9,6 +9,7 @@ namespace Market.Application.Modules.Sales.Cart.Commands.SaveForLater
     public class SaveForLaterCommand : IRequest<SaveForLaterCommandDto>
     {
         public required int UserId { get; set; }
+        public required int WarehouseId { get; set; }
         public required ContainerTypeEntity ContainerType { get; set; }
         public required int Quantity { get; set; }
     }

@@ -95,6 +95,7 @@ export class ProductPage implements OnInit {
 
     const payload: AddToCartCommand = {
       userId: this.currentUserService.userId,
+      warehouseId,
       containerType: {
         id: containerTypeId,
       },
