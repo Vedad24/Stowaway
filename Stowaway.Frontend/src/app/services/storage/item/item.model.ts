@@ -16,6 +16,11 @@ export interface SharedContainerDto{
     name: string;
 }
 
+export interface SharedTagDto{
+    id: number,
+    name: string
+}
+
 export interface ListItemQueryDto {
     id: number,
     name: string,
@@ -24,6 +29,7 @@ export interface ListItemQueryDto {
     quantity: number,
     supplier: SharedSupplierDto,
     container: SharedContainerDto,
+    tags: SharedTagDto[],
     canvasX: number | null,
     canvasY: number | null
 }
@@ -37,7 +43,8 @@ export interface GetItemByIdDto{
     byteImage?: string,
     quantity: number,
     supplier: SharedSupplierDto,
-    container: SharedContainerDto
+    container: SharedContainerDto,
+    tags: SharedTagDto[]
 }
 
 export interface CreateItemCommand{

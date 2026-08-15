@@ -43,23 +43,12 @@
             class="tray-card tray-card-container"
             cdkDrag
             #drag="cdkDrag"
+            (click)="selectContainer(container)"
             (cdkDragMoved)="onDragMoved($event, 'container', container.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'container', container.id, canvasGrid, drag)"
           >
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
-            <button
-              type="button"
-              class="card-edit card-edit-inline"
-              (click)="editContainer(container); $event.stopPropagation()"
-              aria-label="Edit container"
-            >✎</button>
-            <button
-              type="button"
-              class="card-delete card-delete-inline"
-              (click)="deleteContainer(container); $event.stopPropagation()"
-              aria-label="Delete container"
-            >🗑</button>
           </div>
         }
         @for (item of unplacedItems(); track item.id) {
@@ -67,23 +56,12 @@
             class="tray-card tray-card-item"
             cdkDrag
             #drag="cdkDrag"
+            (click)="selectItem(item)"
             (cdkDragMoved)="onDragMoved($event, 'item', item.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'item', item.id, canvasGrid, drag)"
           >
             <span class="card-icon">🏷️</span>
             <span class="card-label">{{ item.name }}</span>
-            <button
-              type="button"
-              class="card-edit card-edit-inline"
-              (click)="editItem(item); $event.stopPropagation()"
-              aria-label="Edit item"
-            >✎</button>
-            <button
-              type="button"
-              class="card-delete card-delete-inline"
-              (click)="deleteItem(item); $event.stopPropagation()"
-              aria-label="Delete item"
-            >🗑</button>
           </div>
         }
       </aside>
@@ -105,6 +83,7 @@
             [cdkDragFreeDragPosition]="positionOf('container', container.id)"
             (cdkDragMoved)="onDragMoved($event, 'container', container.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'container', container.id, canvasGrid, drag)"
+            (click)="selectContainer(container)"
             (dblclick)="enterContainer(container)"
             title="Double-click to open, or drag another item onto it to nest"
           >
@@ -114,18 +93,6 @@
               (click)="unplace('container', container.id); $event.stopPropagation()"
               aria-label="Remove from canvas"
             >×</button>
-            <button
-              type="button"
-              class="card-edit"
-              (click)="editContainer(container); $event.stopPropagation()"
-              aria-label="Edit container"
-            >✎</button>
-            <button
-              type="button"
-              class="card-delete"
-              (click)="deleteContainer(container); $event.stopPropagation()"
-              aria-label="Delete container"
-            >🗑</button>
             <span class="card-icon">📦</span>
             <span class="card-label">{{ container.name }}</span>
             <div
@@ -153,6 +120,7 @@
             #drag="cdkDrag"
             cdkDragBoundary=".canvas-grid"
             [cdkDragFreeDragPosition]="positionOf('item', item.id)"
+            (click)="selectItem(item)"
             (cdkDragMoved)="onDragMoved($event, 'item', item.id, canvasGrid)"
             (cdkDragEnded)="onDragEnded($event, 'item', item.id, canvasGrid, drag)"
           >
@@ -162,18 +130,6 @@
               (click)="unplace('item', item.id); $event.stopPropagation()"
               aria-label="Remove from canvas"
             >×</button>
-            <button
-              type="button"
-              class="card-edit"
-              (click)="editItem(item); $event.stopPropagation()"
-              aria-label="Edit item"
-            >✎</button>
-            <button
-              type="button"
-              class="card-delete"
-              (click)="deleteItem(item); $event.stopPropagation()"
-              aria-label="Delete item"
-            >🗑</button>
             <span class="card-icon">🏷️</span>
             <span class="card-label">{{ item.name }}</span>
             <span class="card-hint">qty {{ item.quantity }}</span>

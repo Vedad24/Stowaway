@@ -1,4 +1,5 @@
 using Stowaway.Application.Modules.Storage.Container.Shared;
+using Stowaway.Domain.Entities.Storage;
 
 namespace Stowaway.Application.Modules.Storage.Container.Queries.GetById
 {
@@ -14,6 +15,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Queries.GetById
                     Name = x.Name,
                     ContainerTypeId = x.ContainerTypeId,
                     WarehouseId = x.WarehouseId,
+                    WarehouseName = x.Warehouse!.Name,
                     ParentContainerId = x.ParentContainerId,
                     HasChildren = ctx.Containers.Any(child => child.ParentContainerId == x.Id),
                     CanvasX = x.CanvasX,
@@ -21,6 +23,11 @@ namespace Stowaway.Application.Modules.Storage.Container.Queries.GetById
                     MaxItems = x.ContainerType!.MaxItems,
                     MaxContainers = x.ContainerType!.MaxContainers,
                     ContainerCountUsed = ctx.Containers.Count(child => child.ParentContainerId == x.Id),
+                    CurrentStatus = ctx.ContainerStatusHistories
+                        .Where(h => h.ContainerId == x.Id)
+                        .OrderByDescending(h => h.Date)
+                        .Select(h => new SharedContainerStatusDto { Id = h.Status.Id, Name = h.Status.Description })
+                        .FirstOrDefault(),
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -30,6 +37,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Queries.GetById
             }
 
             container.ItemQuantityUsed = await ContainerCapacityHelper.GetRecursiveItemQuantity(ctx, container.Id, cancellationToken);
+            container.ContainerTypeName = ContainerTypeEntity.DescribeSize(container.MaxItems, container.MaxContainers);
 
             return container;
         }

@@ -7,11 +7,18 @@ export class ListContainersQuery{
     parentContainerId?: number | null;
 }
 
+export interface SharedContainerStatusDto{
+    id: number,
+    name: string
+}
+
 export interface ListContainersQueryDto {
     id: number,
     name: string,
     containerTypeId: number,
+    containerTypeName: string,
     warehouseId: number,
+    warehouseName: string,
     parentContainerId: number | null,
     hasChildren: boolean,
     canvasX: number | null,
@@ -20,6 +27,7 @@ export interface ListContainersQueryDto {
     maxContainers: number,
     itemQuantityUsed: number,
     containerCountUsed: number,
+    currentStatus: SharedContainerStatusDto | null,
 }
 
 export type ListContainersQueryResponse = ListContainersQueryDto[];

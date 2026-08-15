@@ -1,16 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CdkDrag, CdkDragEnd, CdkDragMove, DragDropModule } from '@angular/cdk/drag-drop';
-import { MatDialog } from '@angular/material/dialog';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { ItemApiService } from '../../../services/storage/item/item';
 import { ListItemQuery, ListItemQueryDto } from '../../../services/storage/item/item.model';
-import { ContainerEdit } from '../container-edit/container-edit';
-import { ContainerDelete } from '../container-delete/container-delete';
-import { ItemEdit } from '../item-edit/item-edit';
-import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { extractErrorMessage } from '../../../models/http-error';
 
 interface Position {
@@ -41,7 +36,6 @@ export class WarehouseCanvas {
   private readonly canvasState = inject(WarehouseCanvasState);
   private readonly containerService = inject(ContainerApiService);
   private readonly itemService = inject(ItemApiService);
-  private readonly dialog = inject(MatDialog);
 
   readonly warehouse = this.canvasState.warehouse;
   readonly path = this.canvasState.path;
@@ -115,92 +109,12 @@ export class WarehouseCanvas {
     });
   }
 
-  editContainer(container: ListContainersQueryDto): void {
-    const dialogRef = this.dialog.open(ContainerEdit, {
-      width: '420px',
-      data: {
-        id: container.id,
-        name: container.name,
-        containerTypeId: container.containerTypeId,
-        parentContainerId: container.parentContainerId,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.canvasState.notifyLocationChanged();
-      }
-    });
+  selectItem(item: ListItemQueryDto): void {
+    this.canvasState.selectItem(item.id);
   }
 
-  deleteContainer(container: ListContainersQueryDto): void {
-    const warehouse = this.warehouse();
-    if (!warehouse) {
-      return;
-    }
-
-    const dialogRef = this.dialog.open(ContainerDelete, {
-      width: '440px',
-      data: {
-        id: container.id,
-        name: container.name,
-        warehouseId: warehouse.id,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.canvasState.notifyLocationChanged();
-      }
-    });
-  }
-
-  deleteItem(item: ListItemQueryDto): void {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      width: '380px',
-      data: {
-        title: 'Delete item',
-        message: `Are you sure you want to delete "${item.name}"? This cannot be undone.`,
-        confirmLabel: 'Delete',
-        danger: true,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) {
-        return;
-      }
-      this.itemService.delete(item.id).subscribe({
-        next: () => this.canvasState.notifyLocationChanged(),
-        error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to delete the item.')),
-      });
-    });
-  }
-
-  editItem(item: ListItemQueryDto): void {
-    const warehouse = this.warehouse();
-    if (!warehouse) {
-      return;
-    }
-
-    const dialogRef = this.dialog.open(ItemEdit, {
-      width: '420px',
-      data: {
-        id: item.id,
-        name: item.name,
-        description: item.description,
-        quantity: item.quantity,
-        supplierId: item.supplier.id,
-        containerId: item.container.id,
-        warehouseId: warehouse.id,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.canvasState.notifyLocationChanged();
-      }
-    });
+  selectContainer(container: ListContainersQueryDto): void {
+    this.canvasState.selectContainer(container.id);
   }
 
   goToRoot(): void {
