@@ -87,10 +87,20 @@ export class ContainerDetailPanel {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadContainer(container.id);
-        this.canvasState.notifyLocationChanged();
+      if (!result) {
+        return;
       }
+      const v = JSON.parse(result);
+      this.containerService.update(container.id, {
+        name: (v.name ?? '').trim(),
+        containerTypeId: Number(v.containerTypeId),
+      }).subscribe({
+        next: () => {
+          this.loadContainer(container.id);
+          this.canvasState.notifyLocationChanged();
+        },
+        error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
+      });
     });
   }
 

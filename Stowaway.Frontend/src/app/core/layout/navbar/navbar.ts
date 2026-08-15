@@ -7,6 +7,8 @@ import { RouterLink } from '@angular/router';
 import { ContainerAdd } from '../container-add/container-add';
 import { ItemAdd } from '../item-add/item-add';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
+import { ItemApiService } from '../../../services/storage/item/item';
+import { ContainerApiService } from '../../../services/storage/container/container';
 
 @Component({
   selector: 'app-navbar',
@@ -17,6 +19,8 @@ import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas
 export class Navbar {
   private readonly dialog = inject(MatDialog);
   private readonly canvasState = inject(WarehouseCanvasState);
+  private readonly itemService = inject(ItemApiService);
+  private readonly containerService = inject(ContainerApiService);
 
   readonly warehouse = this.canvasState.warehouse;
   readonly currentContainer = this.canvasState.currentContainer;
@@ -49,18 +53,30 @@ export class Navbar {
       return;
     }
 
+    const parentContainerId = this.currentContainer()?.id ?? null;
+
     const dialogRef = this.dialog.open(ContainerAdd, {
       width: '420px',
       data: {
         warehouseId: warehouse.id,
-        parentContainerId: this.currentContainer()?.id ?? null,
+        parentContainerId,
       },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.canvasState.notifyLocationChanged();
+      if (!result) {
+        return;
       }
+      const v = JSON.parse(result);
+      this.containerService.create({
+        name: (v.name ?? '').trim(),
+        containerTypeId: Number(v.containerTypeId),
+        warehouseId: warehouse.id,
+        parentContainerId,
+      }).subscribe({
+        next: () => this.canvasState.notifyLocationChanged(),
+        error: (err) => console.error('Unable to create container.', err),
+      });
     });
   }
 
@@ -79,9 +95,20 @@ export class Navbar {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.canvasState.notifyLocationChanged();
+      if (!result) {
+        return;
       }
+      const v = JSON.parse(result);
+      this.itemService.create({
+        name: (v.name ?? '').trim(),
+        description: (v.description ?? '').trim(),
+        quantity: Number(v.quantity),
+        supplierId: Number(v.supplierId),
+        containerId: Number(v.containerId),
+      }).subscribe({
+        next: () => this.canvasState.notifyLocationChanged(),
+        error: (err) => console.error('Unable to create item.', err),
+      });
     });
   }
 }
