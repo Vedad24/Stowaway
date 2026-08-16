@@ -4,6 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { AutocompleteComponent } from '../../autocomplete-component/autocomplete-component';
+import { TagPicker } from '../../tag-picker/tag-picker';
 import { QuestionBase } from '../question-service/question.models';
 
 @Component({
@@ -11,6 +12,7 @@ import { QuestionBase } from '../question-service/question.models';
   imports: [
     ReactiveFormsModule,
     AutocompleteComponent,
+    TagPicker,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,

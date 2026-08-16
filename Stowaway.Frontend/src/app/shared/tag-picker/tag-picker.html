@@ -1,0 +1,44 @@
+<div class="tag-picker">
+  @if (errorMessage()) {
+    <p class="tag-picker-error">{{ errorMessage() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p class="tag-picker-loading">Loading tags…</p>
+  } @else {
+    <div class="tag-picker-chips">
+      @for (tag of allTags(); track tag.id) {
+        <button
+          type="button"
+          class="tag-chip"
+          [class.tag-chip-selected]="isSelected(tag.id)"
+          [style.background]="isSelected(tag.id) ? tagColor(tag.id) : 'transparent'"
+          [style.color]="isSelected(tag.id) ? tagTextColor(tag.id) : tagColor(tag.id)"
+          [style.border-color]="tagColor(tag.id)"
+          (click)="toggleTag(tag.id)"
+        >
+          {{ tag.name }}
+        </button>
+      } @empty {
+        <p class="tag-picker-empty">No tags yet — add one below.</p>
+      }
+    </div>
+  }
+
+  <div class="tag-picker-add">
+    <mat-form-field appearance="outline" class="tag-picker-input" subscriptSizing="dynamic">
+      <mat-label>New tag</mat-label>
+      <input
+        matInput
+        [ngModel]="newTagName()"
+        (ngModelChange)="newTagName.set($event)"
+        [ngModelOptions]="{ standalone: true }"
+        (keydown.enter)="$event.preventDefault(); addCustomTag()"
+        placeholder="Type a tag name…"
+      />
+    </mat-form-field>
+    <button mat-stroked-button type="button" [disabled]="isCreating() || !newTagName().trim()" (click)="addCustomTag()">
+      Add
+    </button>
+  </div>
+</div>

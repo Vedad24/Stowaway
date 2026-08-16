@@ -53,6 +53,12 @@ export interface UpdateContainerCommand{
     containerTypeId: number,
 }
 
+export type ContainerStatusName = 'Incoming' | 'Outgoing';
+
+export interface UpdateContainerStatusCommand{
+    status: ContainerStatusName,
+}
+
 export interface DeleteContainerRequest{
     deleteContents?: boolean,
     moveContentsToContainerId?: number | null,

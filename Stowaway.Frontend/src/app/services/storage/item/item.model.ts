@@ -53,7 +53,8 @@ export interface CreateItemCommand{
     byteImage?: string,
     quantity: number,
     supplierId: number,
-    containerId: number
+    containerId: number,
+    tagIds?: number[]
 }
 
 export interface UpdateItemCommand{
@@ -62,7 +63,8 @@ export interface UpdateItemCommand{
     byteImage?: string,
     quantity: number,
     supplierId: number,
-    containerId: number
+    containerId: number,
+    tagIds?: number[]
 }
 
 export interface UpdateCanvasPositionCommand{

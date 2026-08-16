@@ -33,5 +33,9 @@
         <div class="error-message">{{ question().label }} is required</div>
       }
     }
+    @case ('tags') {
+      <label class="tags-label">{{ question().label }}</label>
+      <app-tag-picker [formControlName]="question().key" />
+    }
   }
 </div>
