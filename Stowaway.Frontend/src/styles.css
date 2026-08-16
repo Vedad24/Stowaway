@@ -129,6 +129,14 @@ a:hover {
   cursor: pointer;
 }
 
+/* Icons inside filled/raised buttons sit on a colored (sage) background,
+   so they must follow the button's own on-primary text color instead of
+   the blanket sage rule above, or they disappear into the background. */
+.mat-mdc-unelevated-button .mat-icon,
+.mat-mdc-raised-button .mat-icon {
+  color: inherit !important;
+}
+
 .mat-mdc-form-field {
   background-color: var(--cream) !important;
   color: var(--text-dark) !important;
