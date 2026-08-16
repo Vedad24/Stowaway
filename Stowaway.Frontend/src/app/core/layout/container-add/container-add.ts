@@ -1,14 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
-import { ListContainerTypeQueryDto } from '../../../services/sales/product-page/product-page-service.models';
+import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
+import { DropdownQuestion, QuestionBase, TextboxQuestion } from '../../../shared/dynamic-form/question-service/question.models';
 import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ContainerAddDialogData {
@@ -19,7 +15,7 @@ export interface ContainerAddDialogData {
 @Component({
   selector: 'app-container-add',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
+  imports: [MatDialogModule, DynamicForm],
   templateUrl: './container-add.html',
   styleUrl: './container-add.css',
 })
@@ -29,12 +25,9 @@ export class ContainerAdd implements OnInit {
   private readonly productPageService = inject(ProductPageService);
   private readonly data = inject(MAT_DIALOG_DATA) as ContainerAddDialogData;
 
-  name = '';
-  containerTypeId: number | null = null;
-  containerTypes = signal<ListContainerTypeQueryDto[]>([]);
+  questions = signal<QuestionBase<string>[]>([]);
   isLoadingTypes = signal(false);
   errorMessage = signal<string | null>(null);
-  isSubmitting = signal(false);
 
   ngOnInit(): void {
     this.isLoadingTypes.set(true);
@@ -51,41 +44,27 @@ export class ContainerAdd implements OnInit {
           ? allTypes.filter(t => t.maxItems < parent.maxItems && t.maxContainers < parent.maxContainers)
           : allTypes;
 
-        this.containerTypes.set(available);
         this.isLoadingTypes.set(false);
 
         if (parent && available.length === 0) {
           this.errorMessage.set('No container type is small enough to fit inside this container.');
+          return;
         }
+
+        this.questions.set([
+          new TextboxQuestion({ key: 'name', label: 'Name', required: true, type: 'text', order: 1 }),
+          new DropdownQuestion({
+            key: 'containerTypeId',
+            label: 'Container type',
+            required: true,
+            order: 2,
+            options: available.map(t => ({ key: String(t.id), value: t.displayName })),
+          }),
+        ]);
       },
       error: (err) => {
         this.isLoadingTypes.set(false);
         this.errorMessage.set(extractErrorMessage(err, 'Unable to load container types.'));
-      },
-    });
-  }
-
-  submit(): void {
-    if (!this.name.trim() || this.containerTypeId == null) {
-      return;
-    }
-
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
-    this.containerService.create({
-      name: this.name.trim(),
-      containerTypeId: this.containerTypeId,
-      warehouseId: this.data.warehouseId,
-      parentContainerId: this.data.parentContainerId,
-    }).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.dialogRef.close(true);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        this.errorMessage.set(extractErrorMessage(err, 'Unable to create container. Please try again.'));
       },
     });
   }

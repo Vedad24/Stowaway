@@ -84,10 +84,23 @@ export class ItemDetailPanel {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadItem(item.id);
-        this.canvasState.notifyLocationChanged();
+      if (!result) {
+        return;
       }
+      const v = JSON.parse(result);
+      this.itemService.update(item.id, {
+        name: (v.name ?? '').trim(),
+        description: (v.description ?? '').trim(),
+        quantity: Number(v.quantity),
+        supplierId: Number(v.supplierId),
+        containerId: Number(v.containerId),
+      }).subscribe({
+        next: () => {
+          this.loadItem(item.id);
+          this.canvasState.notifyLocationChanged();
+        },
+        error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
+      });
     });
   }
 

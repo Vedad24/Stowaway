@@ -60,6 +60,7 @@ export class WarehouseCanvas {
     effect(() => {
       const warehouse = this.warehouse();
       const container = this.canvasState.currentContainer();
+      this.canvasState.locationChanged();
       if (!warehouse) {
         this.containers.set([]);
         this.items.set([]);

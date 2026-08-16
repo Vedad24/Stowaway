@@ -1,14 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
-import { ListContainerTypeQueryDto } from '../../../services/sales/product-page/product-page-service.models';
+import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
+import { DropdownQuestion, QuestionBase, TextboxQuestion } from '../../../shared/dynamic-form/question-service/question.models';
 import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ContainerEditDialogData {
@@ -21,7 +17,7 @@ export interface ContainerEditDialogData {
 @Component({
   selector: 'app-container-edit',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
+  imports: [MatDialogModule, DynamicForm],
   templateUrl: './container-edit.html',
   styleUrl: './container-edit.css',
 })
@@ -31,11 +27,8 @@ export class ContainerEdit implements OnInit {
   private readonly productPageService = inject(ProductPageService);
   private readonly data = inject(MAT_DIALOG_DATA) as ContainerEditDialogData;
 
-  name = this.data.name;
-  containerTypeId: number | null = this.data.containerTypeId;
-  containerTypes = signal<ListContainerTypeQueryDto[]>([]);
+  questions = signal<QuestionBase<string>[]>([]);
   isLoadingTypes = signal(false);
-  isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
 
   ngOnInit(): void {
@@ -47,42 +40,27 @@ export class ContainerEdit implements OnInit {
     forkJoin([this.productPageService.getContainerTypes(), parent$]).subscribe({
       next: ([typesResponse, parent]) => {
         const allTypes = typesResponse.items ?? [];
-        // Same strict-smaller-than-parent rule as creating a container, but the
-        // container's current type stays selectable even if it wouldn't otherwise
-        // pass — so editing an existing container never hides its own value.
         const available = parent
           ? allTypes.filter(t => t.id === this.data.containerTypeId || (t.maxItems < parent.maxItems && t.maxContainers < parent.maxContainers))
           : allTypes;
 
-        this.containerTypes.set(available);
         this.isLoadingTypes.set(false);
+
+        this.questions.set([
+          new TextboxQuestion({ key: 'name', label: 'Name', required: true, type: 'text', order: 1, value: this.data.name }),
+          new DropdownQuestion({
+            key: 'containerTypeId',
+            label: 'Container type',
+            required: true,
+            order: 2,
+            value: String(this.data.containerTypeId),
+            options: available.map(t => ({ key: String(t.id), value: t.displayName })),
+          }),
+        ]);
       },
       error: (err) => {
         this.isLoadingTypes.set(false);
         this.errorMessage.set(extractErrorMessage(err, 'Unable to load container types.'));
-      },
-    });
-  }
-
-  submit(): void {
-    if (!this.name.trim() || this.containerTypeId == null) {
-      return;
-    }
-
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
-    this.containerService.update(this.data.id, {
-      name: this.name.trim(),
-      containerTypeId: this.containerTypeId,
-    }).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.dialogRef.close(true);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes. Please try again.'));
       },
     });
   }

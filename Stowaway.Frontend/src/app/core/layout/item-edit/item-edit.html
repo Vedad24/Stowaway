@@ -1,22 +1,9 @@
 <div class="dialog-card">
   <h2>Edit item</h2>
 
-  <app-dynamic-form [fields]="fields()" [(formValue)]="formValue" />
-
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
   }
 
-  <div class="actions">
-    <button mat-button type="button" (click)="dialogRef.close(false)">Cancel</button>
-    <button
-      mat-flat-button
-      color="primary"
-      type="button"
-      [disabled]="isSubmitting() || !isValid()"
-      (click)="submit()"
-    >
-      {{ isSubmitting() ? 'Saving...' : 'Save' }}
-    </button>
-  </div>
+  <app-dynamic-form [questions]="questions()" />
 </div>

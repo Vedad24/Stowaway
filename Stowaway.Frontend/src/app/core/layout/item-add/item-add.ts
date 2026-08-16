@@ -1,13 +1,10 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ItemApiService } from '../../../services/storage/item/item';
 import { ContainerTreeService } from '../../../services/storage/container/container-tree';
 import { SupplierApiService } from '../../../services/storage/supplier/supplier';
-import { ListSupplierQueryDto } from '../../../services/storage/supplier/supplier.model';
 import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
-import { DynamicFieldConfig } from '../../../shared/dynamic-form/dynamic-form.models';
+import { DropdownQuestion, QuestionBase, TextboxQuestion } from '../../../shared/dynamic-form/question-service/question.models';
 import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ItemAddDialogData {
@@ -15,68 +12,22 @@ export interface ItemAddDialogData {
   containerId: number | null;
 }
 
-interface ItemFormValue {
-  name: string;
-  description: string;
-  quantity: number;
-  supplierId: number | null;
-  containerId: number | null;
-}
-
 @Component({
   selector: 'app-item-add',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, DynamicForm],
+  imports: [MatDialogModule, DynamicForm],
   templateUrl: './item-add.html',
   styleUrl: './item-add.css',
 })
 export class ItemAdd implements OnInit {
   readonly dialogRef = inject(MatDialogRef<ItemAdd>);
-  private readonly itemService = inject(ItemApiService);
   private readonly containerTree = inject(ContainerTreeService);
   private readonly supplierService = inject(SupplierApiService);
   private readonly data = inject(MAT_DIALOG_DATA) as ItemAddDialogData;
 
-  formValue = signal<ItemFormValue>({
-    name: '',
-    description: '',
-    quantity: 1,
-    supplierId: null,
-    containerId: this.data.containerId,
-  });
-
-  containerOptions = signal<{ id: number; label: string }[]>([]);
-  suppliers = signal<ListSupplierQueryDto[]>([]);
+  questions = signal<QuestionBase<string>[]>([]);
   isLoadingOptions = signal(false);
-  isSubmitting = signal(false);
   errorMessage = signal<string | null>(null);
-
-  readonly fields = computed<DynamicFieldConfig[]>(() => [
-    { key: 'name', label: 'Name', type: 'text', required: true },
-    { key: 'description', label: 'Description', type: 'textarea', rows: 2 },
-    { key: 'quantity', label: 'Quantity', type: 'number', required: true, min: 0 },
-    {
-      key: 'supplierId',
-      label: 'Supplier',
-      type: 'select',
-      required: true,
-      disabled: this.isLoadingOptions(),
-      options: this.suppliers().map(s => ({ value: s.id, label: s.name })),
-    },
-    {
-      key: 'containerId',
-      label: 'Place (container)',
-      type: 'select',
-      required: true,
-      disabled: this.isLoadingOptions(),
-      options: this.containerOptions().map(c => ({ value: c.id, label: c.label })),
-    },
-  ]);
-
-  readonly isValid = computed(() => {
-    const v = this.formValue();
-    return !!v.name?.trim() && v.containerId != null && v.supplierId != null && v.quantity != null && v.quantity >= 0;
-  });
 
   ngOnInit(): void {
     this.isLoadingOptions.set(true);
@@ -84,42 +35,33 @@ export class ItemAdd implements OnInit {
       this.containerTree.loadOptions(this.data.warehouseId),
       firstValueFrom(this.supplierService.list()),
     ]).then(([containerOptions, supplierResponse]) => {
-      this.containerOptions.set(containerOptions);
-      this.suppliers.set(supplierResponse.items ?? []);
-      if (this.formValue().containerId == null && containerOptions.length) {
-        this.formValue.update(v => ({ ...v, containerId: containerOptions[0].id }));
-      }
+      const suppliers = supplierResponse.items ?? [];
+      const defaultContainerId = this.data.containerId ?? containerOptions[0]?.id ?? null;
+
+      this.questions.set([
+        new TextboxQuestion({ key: 'name', label: 'Name', required: true, type: 'text', order: 1 }),
+        new TextboxQuestion({ key: 'description', label: 'Description', type: 'text', order: 2 }),
+        new TextboxQuestion({ key: 'quantity', label: 'Quantity', required: true, type: 'number', value: '1', order: 3 }),
+        new DropdownQuestion({
+          key: 'supplierId',
+          label: 'Supplier',
+          required: true,
+          order: 4,
+          options: suppliers.map(s => ({ key: String(s.id), value: s.name })),
+        }),
+        new DropdownQuestion({
+          key: 'containerId',
+          label: 'Place (container)',
+          required: true,
+          order: 5,
+          value: defaultContainerId != null ? String(defaultContainerId) : undefined,
+          options: containerOptions.map(c => ({ key: String(c.id), value: c.label })),
+        }),
+      ]);
       this.isLoadingOptions.set(false);
-    }).catch(() => {
+    }).catch((err) => {
       this.isLoadingOptions.set(false);
-      this.errorMessage.set('Unable to load containers or suppliers.');
-    });
-  }
-
-  submit(): void {
-    if (!this.isValid()) {
-      return;
-    }
-
-    const v = this.formValue();
-    this.isSubmitting.set(true);
-    this.errorMessage.set(null);
-
-    this.itemService.create({
-      name: v.name.trim(),
-      description: (v.description ?? '').trim(),
-      quantity: v.quantity,
-      supplierId: v.supplierId!,
-      containerId: v.containerId!,
-    }).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.dialogRef.close(true);
-      },
-      error: (err) => {
-        this.isSubmitting.set(false);
-        this.errorMessage.set(extractErrorMessage(err, 'Unable to create item. Please try again.'));
-      },
+      this.errorMessage.set(extractErrorMessage(err, 'Unable to load containers or suppliers.'));
     });
   }
 }
