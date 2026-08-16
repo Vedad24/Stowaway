@@ -15,5 +15,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
         public int Quantity { get; set; }
         public int ContainerId { get; set; }
         public int SupplierId { get; set; }
+        public List<int> TagIds { get; set; } = new();
     }
 }

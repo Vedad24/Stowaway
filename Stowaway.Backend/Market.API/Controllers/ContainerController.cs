@@ -3,6 +3,7 @@ using Stowaway.Application.Modules.Storage.Container.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Container.Commands.Move;
 using Stowaway.Application.Modules.Storage.Container.Commands.Update;
 using Stowaway.Application.Modules.Storage.Container.Commands.UpdateCanvasPosition;
+using Stowaway.Application.Modules.Storage.Container.Commands.UpdateStatus;
 using Stowaway.Application.Modules.Storage.Container.Queries.GetById;
 using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Application.Modules.Storage.Items.Queries.List;
@@ -56,6 +57,14 @@ namespace Stowaway.API.Controllers
         [HttpPut("{id:int}/parent-container")]
         [AllowAnonymous]
         public async Task Move(int id, MoveContainerCommand payload, CancellationToken cancellationToken)
+        {
+            payload.Id = id;
+            await sender.Send(payload, cancellationToken);
+        }
+
+        [HttpPut("{id:int}/status")]
+        [AllowAnonymous]
+        public async Task UpdateStatus(int id, UpdateContainerStatusCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
             await sender.Send(payload, cancellationToken);

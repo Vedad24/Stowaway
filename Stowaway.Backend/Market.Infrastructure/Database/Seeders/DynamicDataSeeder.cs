@@ -323,6 +323,8 @@ public static class DynamicDataSeeder
             new() { Description = "Under maintenance" },
             new() { Description = "Needs inspection" },
             new() { Description = "Damaged" },
+            new() { Description = "Incoming" },
+            new() { Description = "Outgoing" },
         };
 
         context.ContainerStatuses.AddRange(statuses);

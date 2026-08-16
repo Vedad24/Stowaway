@@ -47,3 +47,8 @@ export class DropdownQuestion extends QuestionBase<string> {
 export class AutocompleteQuestion extends QuestionBase<string> {
   override controlType = 'autocomplete';
 }
+
+// value is a JSON-encoded array of selected tag ids, e.g. '[1,3,7]'
+export class TagsQuestion extends QuestionBase<string> {
+  override controlType = 'tags';
+}

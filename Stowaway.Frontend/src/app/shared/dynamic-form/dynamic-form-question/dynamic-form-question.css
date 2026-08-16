@@ -11,3 +11,10 @@
   font-size: 12px;
   margin-top: 4px;
 }
+
+.tags-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted, #5c665d);
+  margin-bottom: 4px;
+}

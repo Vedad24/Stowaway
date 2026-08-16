@@ -17,6 +17,25 @@
         <p class="panel-no-status">No status set</p>
       }
 
+      <div class="panel-status-actions">
+        <button
+          mat-button
+          type="button"
+          [disabled]="isUpdatingStatus() || data.currentStatus?.name === 'Incoming'"
+          (click)="setStatus('Incoming')"
+        >
+          Mark incoming
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="isUpdatingStatus() || data.currentStatus?.name === 'Outgoing'"
+          (click)="setStatus('Outgoing')"
+        >
+          Mark outgoing
+        </button>
+      </div>
+
       <dl class="panel-fields">
         <div class="panel-field">
           <dt>Type</dt>

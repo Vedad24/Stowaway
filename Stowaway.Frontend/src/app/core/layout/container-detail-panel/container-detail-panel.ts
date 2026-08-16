@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { ContainerApiService } from '../../../services/storage/container/container';
-import { ListContainersQueryDto } from '../../../services/storage/container/container.model';
+import { ContainerStatusName, ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { ContainerEdit } from '../container-edit/container-edit';
 import { ContainerDelete } from '../container-delete/container-delete';
 import { extractErrorMessage } from '../../../models/http-error';
@@ -27,6 +27,7 @@ export class ContainerDetailPanel {
   readonly container = signal<ListContainersQueryDto | null>(null);
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly isUpdatingStatus = signal(false);
 
   private readonly selectedContainerId = computed(() => {
     const entity = this.canvasState.selectedEntity();
@@ -99,6 +100,26 @@ export class ContainerDetailPanel {
         },
         error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
       });
+    });
+  }
+
+  setStatus(status: ContainerStatusName): void {
+    const container = this.container();
+    if (!container || container.currentStatus?.name === status) {
+      return;
+    }
+
+    this.isUpdatingStatus.set(true);
+    this.containerService.updateStatus(container.id, status).subscribe({
+      next: () => {
+        this.isUpdatingStatus.set(false);
+        this.loadContainer(container.id);
+        this.canvasState.notifyLocationChanged();
+      },
+      error: (err) => {
+        this.isUpdatingStatus.set(false);
+        this.errorMessage.set(extractErrorMessage(err, 'Unable to update status.'));
+      },
     });
   }
 
