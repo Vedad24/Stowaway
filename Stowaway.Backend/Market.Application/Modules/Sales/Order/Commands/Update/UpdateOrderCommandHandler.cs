@@ -48,6 +48,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
                     ContainerType = type,
                     Discount = discount,
                     Quantity = item.Quantity,
+                    WarehouseId = item.WarehouseId,
                     Subtotal = sub,
                     Total = total,
                     UnitPrice = type.Price,

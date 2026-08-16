@@ -12,6 +12,7 @@ namespace Market.Application.Modules.Sales.Cart.Queries.List
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public int WarehouseId { get; set; }
         public required ContainerTypeEntity ContainerType { get; set; }
         public int Quantity { get; set; }
         public required CartItemStatus CartItemStatus { get; set; }

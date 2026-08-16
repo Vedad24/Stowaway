@@ -25,6 +25,7 @@ namespace Market.Application.Modules.Sales.Cart.Commands.SaveForLater
                 {
                     UserId = request.UserId,
                     ContainerType = request.ContainerType,
+                    WarehouseId = request.WarehouseId,
                     Quantity = request.Quantity,
                     CartItemStatus = CartItemStatus.SavedForLater
                 };

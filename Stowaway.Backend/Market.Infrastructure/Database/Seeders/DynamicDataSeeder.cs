@@ -145,7 +145,7 @@ public static class DynamicDataSeeder
             User = context.Users.FirstOrDefault(),
         };
         context.Orders.Add(order);
-
+        var exampleWarehouse = context.Warehouses.First().Id;
         ContainerTypeEntity? containerTypeEntity = context.ContainerTypes.FirstOrDefault();
         var orderItems = new List<OrderItemEntity>
             {
@@ -153,6 +153,7 @@ public static class DynamicDataSeeder
                 {
                     Order = order,
                     ContainerType = containerTypeEntity,
+                    WarehouseId = exampleWarehouse,
                     Discount = 0.05m,
                     Subtotal = containerTypeEntity.Price * 10,
                     Total = containerTypeEntity.Price * (1m-0.05m) * 10,

@@ -1,4 +1,5 @@
 ﻿using Market.Domain.Entities.Identity;
+using Stowaway.Domain.Entities.Storage;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;

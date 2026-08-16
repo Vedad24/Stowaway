@@ -17,6 +17,8 @@ namespace Stowaway.Domain.Entities.Sales
         public OrderEntity? Order { get; set; }
         public int ContainerTypeId { get; set; }
         public ContainerTypeEntity? ContainerType { get; set; }
+        public required int WarehouseId {get; set;}
+        public WarehouseEntity? Warehouse {get; set;}
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Subtotal { get; set; }
