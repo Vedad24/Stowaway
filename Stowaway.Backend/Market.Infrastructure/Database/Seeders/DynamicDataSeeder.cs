@@ -452,27 +452,38 @@ public static class DynamicDataSeeder
     /// </summary>
 
     private static async Task SeedRolesAsync(DatabaseContext context)
+{
+    var requiredRoles = new[]
     {
-        if (await context.Roles.AnyAsync())
-            return;
-        var roleAdmin = new RoleEntity
-        {
-            Id = Role.Admin
-        };
-        var roleUser = new RoleEntity
-        {
-            Id = Role.User
-        };
-        var roleManager = new RoleEntity
-        {
-            Id = Role.Manager
-        };
-        context.Roles.AddRange(roleAdmin, roleUser, roleManager);
-        await context.SaveChangesAsync();
+        Role.Admin,
+        Role.User,
+        Role.Manager
+    };
 
+    var existingRoleIds = await context.Roles
+        .Where(r => requiredRoles.Contains(r.Id))
+        .Select(r => r.Id)
+        .ToListAsync();
 
-        Console.WriteLine("✅ Dynamic seed: demo roles added.");
+    var missingRoles = requiredRoles
+        .Where(roleId => !existingRoleIds.Contains(roleId))
+        .Select(roleId => new RoleEntity
+        {
+            Id = roleId
+        })
+        .ToList();
+
+    if (missingRoles.Count == 0)
+    {
+        Console.WriteLine("✅ Dynamic seed: roles already exist.");
+        return;
     }
+
+    context.Roles.AddRange(missingRoles);
+    await context.SaveChangesAsync();
+
+    Console.WriteLine($"✅ Dynamic seed: {missingRoles.Count} roles added.");
+}
     private static async Task SeedUsersAsync(DatabaseContext context)
     {
         if (await context.Users.AnyAsync())
