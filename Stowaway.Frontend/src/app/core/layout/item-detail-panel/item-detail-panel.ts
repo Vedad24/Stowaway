@@ -80,6 +80,7 @@ export class ItemDetailPanel {
         supplierId: item.supplier.id,
         containerId: item.container.id,
         warehouseId: warehouse.id,
+        tagIds: item.tags.map((t) => t.id),
       },
     });
 
@@ -94,6 +95,7 @@ export class ItemDetailPanel {
         quantity: Number(v.quantity),
         supplierId: Number(v.supplierId),
         containerId: Number(v.containerId),
+        tagIds: v.tagIds ? JSON.parse(v.tagIds) : [],
       }).subscribe({
         next: () => {
           this.loadItem(item.id);

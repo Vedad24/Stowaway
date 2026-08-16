@@ -17,6 +17,7 @@ public interface IAppDbContext
     DbSet<ContainerStatusHistoryEntity> ContainerStatusHistories { get; }
     DbSet<ItemEntity> Item { get; }
     DbSet<Item_TagEntity> ItemTags { get; }
+    DbSet<TagEntity> Tags { get; }
     DbSet<SupplierEntity> Suppliers { get; }
     //StorageIdentity
     DbSet<PriviledgeEntity> Priviledges { get; }

@@ -4,7 +4,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { ContainerTreeService } from '../../../services/storage/container/container-tree';
 import { SupplierApiService } from '../../../services/storage/supplier/supplier';
 import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
-import { DropdownQuestion, QuestionBase, TextboxQuestion } from '../../../shared/dynamic-form/question-service/question.models';
+import { DropdownQuestion, QuestionBase, TagsQuestion, TextboxQuestion } from '../../../shared/dynamic-form/question-service/question.models';
 import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ItemEditDialogData {
@@ -15,6 +15,7 @@ export interface ItemEditDialogData {
   supplierId: number;
   containerId: number;
   warehouseId: number;
+  tagIds: number[];
 }
 
 @Component({
@@ -62,6 +63,7 @@ export class ItemEdit implements OnInit {
           value: String(this.data.containerId),
           options: containerOptions.map(c => ({ key: String(c.id), value: c.label })),
         }),
+        new TagsQuestion({ key: 'tagIds', label: 'Tags', order: 6, value: JSON.stringify(this.data.tagIds ?? []) }),
       ]);
       this.isLoadingOptions.set(false);
     }).catch((err) => {
