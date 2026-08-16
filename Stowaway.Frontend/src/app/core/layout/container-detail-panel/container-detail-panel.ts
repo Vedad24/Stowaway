@@ -56,8 +56,6 @@ export class ContainerDetailPanel {
     return tagTextColor(tagColor(id));
   }
 
-  // Items fullness always applies; sub-container fullness only means something
-  // for types that can nest other containers at all.
   itemsFullness(container: ListContainersQueryDto): number {
     return container.maxItems > 0 ? Math.min(1, container.itemQuantityUsed / container.maxItems) : 0;
   }
@@ -87,10 +85,20 @@ export class ContainerDetailPanel {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadContainer(container.id);
-        this.canvasState.notifyLocationChanged();
+      if (!result) {
+        return;
       }
+      const v = JSON.parse(result);
+      this.containerService.update(container.id, {
+        name: (v.name ?? '').trim(),
+        containerTypeId: Number(v.containerTypeId),
+      }).subscribe({
+        next: () => {
+          this.loadContainer(container.id);
+          this.canvasState.notifyLocationChanged();
+        },
+        error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
+      });
     });
   }
 
