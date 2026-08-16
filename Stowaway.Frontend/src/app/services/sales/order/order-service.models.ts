@@ -2,6 +2,7 @@ import { BasePagedQuery } from "../../../models/paging/base-paged-query";
 
 export interface SharedOrderCommandContainerType {
   containerTypeId: number;
+  warehouseId : number;
   quantity: number;
 }
 
@@ -38,6 +39,7 @@ export interface GetOrderByIdQueryDto {
 
 export interface GetOrderByIdQueryDtoOrderItem {
   containerType: string;
+  warehouseId : number;
   quantity: number;
   unitPrice: number;
   total: number;

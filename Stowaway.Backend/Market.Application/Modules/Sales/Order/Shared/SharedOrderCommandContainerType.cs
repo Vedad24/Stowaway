@@ -9,6 +9,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Shared
     public class SharedOrderCommandContainerType
     {
         public int ContainerTypeId { get; set; }
+        public required int WarehouseId { get; set; }
         public int Quantity { get; set; }
 
     }

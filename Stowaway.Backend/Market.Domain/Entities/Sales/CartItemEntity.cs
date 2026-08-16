@@ -10,6 +10,7 @@ namespace Market.Domain.Entities.Sales
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public required int WarehouseId { get; set; }
         public ContainerTypeEntity ContainerType { get; set; }
         public int Quantity { get; set; }
         public CartItemStatus CartItemStatus { get; set; }
