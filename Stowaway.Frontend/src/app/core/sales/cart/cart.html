@@ -16,12 +16,13 @@
       @for (item of inCartItems; track item.id) {
         <div class="cart-item">
           <div>
+            <h3>{{ item.warehouseName || 'Unknown warehouse' }}</h3>
             <h3>{{ item.containerType.displayName || 'Container' }}</h3>
             <p>Qty: {{ item.quantity }}</p>
             <p class="price">{{ (item.containerType.price ?? 0) * item.quantity | currency }}</p>
           </div>
-          <button type="button" class="secondary-btn" (click)="toggleStatus(item, 1)">
-            Save for later
+          <button type="button" class="secondary-btn" (click)="toggleStatus(item)">
+            {{item.cartItemStatus == enum.InCart ? "Save for later" : "Return to cart "}}
           </button>
         </div>
       }
@@ -40,12 +41,13 @@
       @for (item of savedForLaterItems; track item.id) {
         <div class="cart-item">
           <div>
+            <h3>{{ item.warehouseName || 'Unknown warehouse' }}</h3>
             <h3>{{ item.containerType.displayName || 'Container' }}</h3>
             <p>Qty: {{ item.quantity }}</p>
             <p class="price">{{ (item.containerType.price ?? 0) * item.quantity | currency }}</p>
           </div>
-          <button type="button" class="primary-btn" (click)="toggleStatus(item, 0)">
-            Move to cart
+          <button type="button" class="primary-btn" (click)="toggleStatus(item)">
+            {{item.cartItemStatus == enum.InCart ? "Save for later" : "Return to cart "}}
           </button>
         </div>
       }
