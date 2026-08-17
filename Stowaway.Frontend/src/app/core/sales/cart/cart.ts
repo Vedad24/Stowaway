@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../services/sales/cart/cart-service';
 import { AddToCartCommand, CartItemDto, CartItemStatus } from '../../../services/sales/cart/cart-service.models';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
+import { OrderService } from '../../../services/sales/order/order-service';
+import { CreateOrderCommand, SharedOrderCommandContainerType } from '../../../services/sales/order/order-service.models';
+import { PaymentService } from '../../../services/sales/payment/payment-service';
+import { CreatePaymentCommand } from '../../../services/sales/payment/payment-service.models';
 
 
 @Component({
@@ -14,8 +18,13 @@ import { CurrentUserService } from '../../../services/identity/auth/current-user
   styleUrl: './cart.css',
 })
 export class Cart implements OnInit {
+
   private readonly cartService = inject(CartService);
   private readonly currentUserService = inject(CurrentUserService)
+  private readonly orderService = inject(OrderService);
+  private readonly paymentService = inject(PaymentService);
+  
+
   private get userId() { return this.currentUserService.userId}
   public cartItems = signal<CartItemDto[]>([]);
   isLoading = signal(false);
@@ -56,7 +65,7 @@ export class Cart implements OnInit {
       userId: item.userId,
       containerType: item.containerType,
       quantity: item.quantity,
-      warehouseId: 0 //change later please.
+      warehouseId: item.warehouseId
     };
     
     if (targetStatus === CartItemStatus.InCart) {
@@ -94,6 +103,36 @@ export class Cart implements OnInit {
           {...item, cartItemStatus : newStatus} 
           : item
         )
+    )
+  }
+
+  goToCheckout() {
+    
+    const orderItems : SharedOrderCommandContainerType[] = 
+      this.inCartItems.map<SharedOrderCommandContainerType>(
+        (item) => {return {containerTypeId : item.id, quantity : item.quantity, warehouseId: item.warehouseId};}
+      );
+    
+    const createOrderCommand : CreateOrderCommand = 
+    {
+      userId : this.userId,
+      orderItems : orderItems
+    };
+    this.orderService.create(createOrderCommand).subscribe(
+      (createOrderResponse) => 
+        {
+          console.log(createOrderResponse);
+          const paymentRequest : CreatePaymentCommand = {orderId:createOrderResponse.orderId}
+          this.paymentService.pay(paymentRequest).subscribe(
+            (paymentResponse) => 
+            {
+              window.location.href = paymentResponse.checkoutUrl;
+              //this.router.navigate([paymentResponse.checkoutUrl]);
+              
+            }
+
+          );
+        } 
     )
   }
 }

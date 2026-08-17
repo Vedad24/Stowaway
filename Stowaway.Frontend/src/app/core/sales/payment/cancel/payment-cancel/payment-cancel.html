@@ -1,0 +1,15 @@
+<div class="payment-status-page">
+  <div class="status-card cancel-card">
+    <div class="icon-circle cancel-icon">
+      <span class="icon">✕</span>
+    </div>
+
+    <h1>Payment Cancelled</h1>
+    <p class="order-text">Your payment was not completed.</p>
+
+    <div class="notification">
+      <p class="redirect-title">Redirecting to main page</p>
+      <p class="countdown">You will be redirected in <strong>{{ countdownDuration() }}</strong> second{{ countdownDuration() === 1 ? '' : 's' }}.</p>
+    </div>
+  </div>
+</div>

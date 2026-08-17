@@ -25,7 +25,7 @@ namespace Market.API.Controllers
 
         [HttpPost("pay")]
         public async Task<IActionResult> MakePayment(
-        CreatePaymentCommand command,
+        [FromBody]CreatePaymentCommand command,
         CancellationToken cancellationToken)
         {
             var result = await sender.Send(command, cancellationToken);

@@ -23,6 +23,8 @@ import { routeGuardGuard } from './services/route-guard-guard';
 import { EmployeeManagement } from './core/identity/employee-management/employee-management';
 import { EmployeeAddEdit } from './core/identity/employee-management/employee-add-edit/employee-add-edit';
 import { WarehouseUserManagement } from './core/identity/warehouse-user-management/warehouse-user-management';
+import { PaymentSuccess } from './core/sales/payment/success/payment-success/payment-success';
+import { PaymentCancel } from './core/sales/payment/cancel/payment-cancel/payment-cancel';
 
 export const routes: Routes = [
     {
@@ -106,6 +108,14 @@ export const routes: Routes = [
     {
         path: 'cart',
         component: Cart
+    },
+    {
+        path: "payment/success/:orderId",
+        component: PaymentSuccess
+    },
+    {
+        path: "payment/cancel/:orderId",
+        component: PaymentCancel
     },
     {
         path: 'employee-management',

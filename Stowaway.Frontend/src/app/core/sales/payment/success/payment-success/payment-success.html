@@ -1,0 +1,15 @@
+<div class="payment-success-page">
+  <div class="success-card">
+    <div class="icon-circle">
+      <span class="icon">✓</span>
+    </div>
+
+    <h1>Payment Successful</h1>
+    <p class="order-text">Order <strong>#{{ orderId() }}</strong> has been processed.</p>
+
+    <div class="notification">
+      <p class="redirect-title">Redirecting to main page</p>
+      <p class="countdown">You will be redirected in <strong>{{ countdownDuration() }}</strong> second{{ countdownDuration() === 1 ? '' : 's' }}.</p>
+    </div>
+  </div>
+</div>

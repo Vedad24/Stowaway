@@ -29,8 +29,8 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
             Currency = "usd",
 
             // temporary placeholders
-            SuccessUrl = "http://localhost:4200/payment/success",
-            CancelUrl = "http://localhost:4200/payment/cancel"
+            SuccessUrl = $"http://localhost:4200/payment/success/{order.Id}",
+            CancelUrl = $"http://localhost:4200/payment/cancel/{order.Id}"
         };
 
         var paymentResponse =
