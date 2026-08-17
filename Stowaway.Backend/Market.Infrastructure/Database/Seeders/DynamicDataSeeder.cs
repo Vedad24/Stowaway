@@ -28,31 +28,51 @@ public static class DynamicDataSeeder
         await SeedSupplierAsync(context);
         await SeedWarehouseAsync(context);
         await SeedContainersAsync(context);
+        await SeedContainerStatusesAsync(context);
+        await SeedContainerStatusHistoryAsync(context);
         await SeedItemsAsync(context);
+        await SeedTagsAsync(context);
+        await SeedItemTagsAsync(context);
         await SeedOrdersAsync(context);
         await SeedStorageIdentityAsync(context);
         await SeedRolePermissionsAsync(context);
     }
     private static async Task SeedPermissionsAsync(DatabaseContext context)
     {
-        if (await context.Permissions.AnyAsync())
-            return;
-
-        var permissions = new List<PermissionEntity>
+        var permissionDescriptions = new[]
         {
-            new() { Description = Permissions.UsersRead },
-            new() { Description = Permissions.UsersCreate },
-            new() { Description = Permissions.UsersUpdate },
-            new() { Description = Permissions.UsersDelete },
-            new() { Description = Permissions.RolesRead },
-            new() { Description = Permissions.RolesCreate },
-            new() { Description = Permissions.RolesUpdate },
-            new() { Description = Permissions.RolesDelete }
+            Permissions.UsersRead,
+            Permissions.UsersCreate,
+            Permissions.UsersUpdate,
+            Permissions.UsersDelete,
+            Permissions.UsersSelfRead,
+            Permissions.UsersSelfUpdate,
+            Permissions.UsersSelfDelete,
+            Permissions.RolesRead,
+            Permissions.RolesCreate,
+            Permissions.RolesUpdate,
+            Permissions.RolesDelete
         };
 
-        context.Permissions.AddRange(permissions);
+        var existingDescriptions = await context.Permissions
+            .Where(p => permissionDescriptions.Contains(p.Description))
+            .Select(p => p.Description)
+            .ToListAsync();
+
+        var missingPermissions = permissionDescriptions
+            .Where(d => !existingDescriptions.Contains(d))
+            .Select(d => new PermissionEntity { Description = d })
+            .ToList();
+
+        if (missingPermissions.Count == 0)
+        {
+            Console.WriteLine("✅ Dynamic seed: permissions already exist.");
+            return;
+        }
+
+        context.Permissions.AddRange(missingPermissions);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: permissions added.");
+        Console.WriteLine($"✅ Dynamic seed: {missingPermissions.Count} permissions added.");
     }
 
     private static async Task SeedPrivilegesAsync(DatabaseContext context)
@@ -125,7 +145,7 @@ public static class DynamicDataSeeder
             User = context.Users.FirstOrDefault(),
         };
         context.Orders.Add(order);
-
+        var exampleWarehouse = context.Warehouses.First().Id;
         ContainerTypeEntity? containerTypeEntity = context.ContainerTypes.FirstOrDefault();
         var orderItems = new List<OrderItemEntity>
             {
@@ -133,6 +153,7 @@ public static class DynamicDataSeeder
                 {
                     Order = order,
                     ContainerType = containerTypeEntity,
+                    WarehouseId = exampleWarehouse,
                     Discount = 0.05m,
                     Subtotal = containerTypeEntity.Price * 10,
                     Total = containerTypeEntity.Price * (1m-0.05m) * 10,
@@ -171,29 +192,35 @@ public static class DynamicDataSeeder
 
     private static async Task SeedContainerTypesAsync(DatabaseContext context)
     {
-        if(await context.ContainerTypes.AnyAsync())
-            return;
-        var SmallContainer = new ContainerTypeEntity
+        var existing = await context.ContainerTypes.ToListAsync();
+
+        void EnsureType(int maxContainers, int maxItems, decimal price)
         {
-            MaxContainers = 5,
-            MaxItems = 50,
-            Price = 1m
-        };
-        var MediumContainer = new ContainerTypeEntity
+            if (existing.Any(t => t.MaxContainers == maxContainers && t.MaxItems == maxItems))
+            {
+                return;
+            }
+
+            context.ContainerTypes.Add(new ContainerTypeEntity
+            {
+                MaxContainers = maxContainers,
+                MaxItems = maxItems,
+                Price = price,
+            });
+        }
+
+        // Tiny holds items only — it can't hold sub-containers at all (MaxContainers = 0),
+        // which makes it the floor of the size hierarchy: nothing can nest inside it.
+        EnsureType(maxContainers: 0, maxItems: 10, price: 0.5m);
+        EnsureType(maxContainers: 5, maxItems: 50, price: 1m);
+        EnsureType(maxContainers: 10, maxItems: 100, price: 2m);
+        EnsureType(maxContainers: 20, maxItems: 500, price: 3m);
+
+        if (context.ChangeTracker.HasChanges())
         {
-            MaxContainers = 10,
-            MaxItems = 100,
-            Price = 2m
-        };
-        var LargeContainer = new ContainerTypeEntity
-        {
-            MaxContainers = 20,
-            MaxItems = 500,
-            Price = 3m
-        };
-        context.ContainerTypes.AddRange(SmallContainer, MediumContainer, LargeContainer);
-        await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo container types added.");
+            await context.SaveChangesAsync();
+            Console.WriteLine("✅ Dynamic seed: demo container types added.");
+        }
     }
 
     private static async Task SeedSupplierAsync(DatabaseContext context)
@@ -283,6 +310,63 @@ public static class DynamicDataSeeder
         Console.WriteLine("✅ Dynamic seed: demo containers added.");
     }
 
+    private static async Task SeedContainerStatusesAsync(DatabaseContext context)
+    {
+        if (await context.ContainerStatuses.AnyAsync())
+        {
+            return;
+        }
+
+        var statuses = new List<ContainerStatusEntity>
+        {
+            new() { Description = "Active" },
+            new() { Description = "Full" },
+            new() { Description = "Under maintenance" },
+            new() { Description = "Needs inspection" },
+            new() { Description = "Damaged" },
+            new() { Description = "Incoming" },
+            new() { Description = "Outgoing" },
+        };
+
+        context.ContainerStatuses.AddRange(statuses);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo container statuses added.");
+    }
+
+    private static async Task SeedContainerStatusHistoryAsync(DatabaseContext context)
+    {
+        var active = await context.ContainerStatuses.FirstOrDefaultAsync(s => s.Description == "Active");
+        var admin = await context.Users.FirstOrDefaultAsync(u => u.Email == "admin@market.local");
+
+        if (active == null || admin == null)
+        {
+            return;
+        }
+
+        var containersWithoutStatus = await context.Containers
+            .Where(c => !context.ContainerStatusHistories.Any(h => h.ContainerId == c.Id))
+            .ToListAsync();
+
+        if (containersWithoutStatus.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var container in containersWithoutStatus)
+        {
+            context.ContainerStatusHistories.Add(new ContainerStatusHistoryEntity
+            {
+                ContainerId = container.Id,
+                StatusId = active.Id,
+                UserId = admin.Id,
+                Date = DateTime.Now,
+            });
+        }
+
+        await context.SaveChangesAsync();
+        Console.WriteLine($"✅ Dynamic seed: {containersWithoutStatus.Count} container status history entries added.");
+    }
+
     private static async Task SeedItemsAsync(DatabaseContext context)
     {
         if (await context.Item.AnyAsync())
@@ -315,29 +399,94 @@ public static class DynamicDataSeeder
         Console.WriteLine("✅ Dynamic seed: demo items added.");
     }
 
+    private static async Task SeedTagsAsync(DatabaseContext context)
+    {
+        if (await context.Tags.AnyAsync())
+        {
+            return;
+        }
+
+        var tags = new List<TagEntity>
+        {
+            new() { Name = "Fragile" },
+            new() { Name = "Perishable" },
+            new() { Name = "Hazardous" },
+            new() { Name = "Popular" },
+            new() { Name = "Bestseller" },
+        };
+
+        context.Tags.AddRange(tags);
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo tags added.");
+    }
+
+    private static async Task SeedItemTagsAsync(DatabaseContext context)
+    {
+        if (await context.ItemTags.AnyAsync())
+        {
+            return;
+        }
+
+        var waterBottle = await context.Item.FirstOrDefaultAsync(i => i.Name == "Natural water");
+        var cocktaBottle = await context.Item.FirstOrDefaultAsync(i => i.Name == "Cockta soda");
+        var perishable = await context.Tags.FirstOrDefaultAsync(t => t.Name == "Perishable");
+        var bestseller = await context.Tags.FirstOrDefaultAsync(t => t.Name == "Bestseller");
+        var popular = await context.Tags.FirstOrDefaultAsync(t => t.Name == "Popular");
+
+        if (waterBottle == null || cocktaBottle == null || perishable == null || bestseller == null || popular == null)
+        {
+            return;
+        }
+
+        context.ItemTags.AddRange(
+            new Item_TagEntity { ItemId = waterBottle.Id, TagId = perishable.Id },
+            new Item_TagEntity { ItemId = waterBottle.Id, TagId = bestseller.Id },
+            new Item_TagEntity { ItemId = cocktaBottle.Id, TagId = perishable.Id },
+            new Item_TagEntity { ItemId = cocktaBottle.Id, TagId = popular.Id }
+        );
+
+        await context.SaveChangesAsync();
+        Console.WriteLine("✅ Dynamic seed: demo item tags added.");
+    }
+
 
     /// <summary>
     /// Kreira demo korisnike ako ih još nema u bazi.
     /// </summary>
 
     private static async Task SeedRolesAsync(DatabaseContext context)
+{
+    var requiredRoles = new[]
     {
-        if (await context.Roles.AnyAsync())
-            return;
-        var roleAdmin = new RoleEntity
-        {
-            Id = Role.Admin
-        };
-        var roleUser = new RoleEntity
-        {
-            Id = Role.User
-        };
-        context.Roles.AddRange(roleAdmin, roleUser);
-        await context.SaveChangesAsync();
+        Role.Admin,
+        Role.User,
+        Role.Manager
+    };
 
+    var existingRoleIds = await context.Roles
+        .Where(r => requiredRoles.Contains(r.Id))
+        .Select(r => r.Id)
+        .ToListAsync();
 
-        Console.WriteLine("✅ Dynamic seed: demo roles added.");
+    var missingRoles = requiredRoles
+        .Where(roleId => !existingRoleIds.Contains(roleId))
+        .Select(roleId => new RoleEntity
+        {
+            Id = roleId
+        })
+        .ToList();
+
+    if (missingRoles.Count == 0)
+    {
+        Console.WriteLine("✅ Dynamic seed: roles already exist.");
+        return;
     }
+
+    context.Roles.AddRange(missingRoles);
+    await context.SaveChangesAsync();
+
+    Console.WriteLine($"✅ Dynamic seed: {missingRoles.Count} roles added.");
+}
     private static async Task SeedUsersAsync(DatabaseContext context)
     {
         if (await context.Users.AnyAsync())
@@ -353,9 +502,17 @@ public static class DynamicDataSeeder
             IsEnabled = true,
         };
 
-        var user = new UserEntity
+        var manager = new UserEntity
         {
             Email = "manager@market.local",
+            PasswordHash = hasher.HashPassword(null!, "Manager123!"),
+            RoleId = Role.Manager,
+            IsEnabled = true,
+        };
+
+        var user = new UserEntity
+        {
+            Email = "user@market.local",
             PasswordHash = hasher.HashPassword(null!, "User123!"),
             RoleId = Role.User,
             IsEnabled = true,
@@ -375,7 +532,7 @@ public static class DynamicDataSeeder
             RoleId = Role.User,
             IsEnabled = true,
         };
-        context.Users.AddRange(admin, user, dummyForSwagger, dummyForTests);
+        context.Users.AddRange(admin, manager, user, dummyForSwagger, dummyForTests);
         await context.SaveChangesAsync();
 
         Console.WriteLine("✅ Dynamic seed: demo users added.");
@@ -565,6 +722,13 @@ public static class DynamicDataSeeder
         var existingSet = new HashSet<(Role RoleId, int PermissionId)>(
             existingAssignments.Select(item => (item.RoleId, item.PermissionId)));
 
+        var selfPermissionDescriptions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            Permissions.UsersSelfRead,
+            Permissions.UsersSelfUpdate,
+            Permissions.UsersSelfDelete,
+        };
+
         var permissionRoleAssignments = new List<Permission_RoleEntity>();
 
         foreach (var permission in permissions)
@@ -578,12 +742,27 @@ public static class DynamicDataSeeder
                 });
             }
 
-            if (permission.Description.EndsWith(".Read", StringComparison.OrdinalIgnoreCase) &&
-                !existingSet.Contains((Role.User, permission.Id)))
+            var grantToUser = permission.Description.EndsWith(".Read", StringComparison.OrdinalIgnoreCase)
+                || selfPermissionDescriptions.Contains(permission.Description);
+
+            var grantToManager = permission.Description.StartsWith("Users.", StringComparison.OrdinalIgnoreCase)
+                || permission.Description.StartsWith("Warehouse.", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(permission.Description, Permissions.RolesRead, StringComparison.OrdinalIgnoreCase);
+
+            if (grantToUser && !existingSet.Contains((Role.User, permission.Id)))
             {
                 permissionRoleAssignments.Add(new Permission_RoleEntity
                 {
                     RoleId = Role.User,
+                    PermissionId = permission.Id,
+                });
+            }
+
+            if (grantToManager && !existingSet.Contains((Role.Manager, permission.Id)))
+            {
+                permissionRoleAssignments.Add(new Permission_RoleEntity
+                {
+                    RoleId = Role.Manager,
                     PermissionId = permission.Id,
                 });
             }

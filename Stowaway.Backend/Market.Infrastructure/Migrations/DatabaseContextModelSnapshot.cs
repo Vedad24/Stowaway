@@ -144,6 +144,9 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ContainerTypeId");
@@ -266,11 +269,16 @@ namespace Stowaway.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ContainerTypeId");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("WarehouseId");
 
                     b.ToTable("OrderItem", "Sales");
                 });
@@ -296,6 +304,12 @@ namespace Stowaway.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double?>("CanvasX")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("CanvasY")
+                        .HasColumnType("float");
 
                     b.Property<int>("ContainerTypeId")
                         .HasColumnType("int");
@@ -402,6 +416,12 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.Property<byte[]>("ByteImage")
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<double?>("CanvasX")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("CanvasY")
+                        .HasColumnType("float");
 
                     b.Property<int>("ContainerId")
                         .HasColumnType("int");
@@ -714,9 +734,17 @@ namespace Stowaway.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Stowaway.Domain.Entities.Storage.WarehouseEntity", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ContainerType");
 
                     b.Navigation("Order");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ContainerEntity", b =>

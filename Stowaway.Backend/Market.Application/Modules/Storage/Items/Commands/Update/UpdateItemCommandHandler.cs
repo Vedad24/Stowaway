@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Application.Modules.Storage.Container.Shared;
+using Stowaway.Domain.Entities.Storage;
 
 namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
 {
@@ -35,12 +37,32 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
                 throw new Exception("Quantity cant be less than 1");
             }
 
+            await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, request.Quantity, cancellationToken, excludeItemIds: new[] { item.Id });
+
             item.Name = request.Name;
             item.Description = request.Description;
             item.ByteImage = request.ByteImage;
             item.Quantity = request.Quantity;
             item.SupplierId = request.SupplierId;
             item.ContainerId = request.ContainerId;
+
+            var validTagIds = await ctx.Tags
+                .Where(t => request.TagIds.Contains(t.Id))
+                .Select(t => t.Id)
+                .ToListAsync(cancellationToken);
+
+            var existingTags = await ctx.ItemTags
+                .Where(it => it.ItemId == item.Id)
+                .ToListAsync(cancellationToken);
+
+            var tagsToRemove = existingTags.Where(it => !validTagIds.Contains(it.TagId));
+            ctx.ItemTags.RemoveRange(tagsToRemove);
+
+            var existingTagIds = existingTags.Select(it => it.TagId).ToHashSet();
+            foreach (var tagId in validTagIds.Where(id => !existingTagIds.Contains(id)))
+            {
+                ctx.ItemTags.Add(new Item_TagEntity { ItemId = item.Id, TagId = tagId });
+            }
 
             await ctx.SaveChangesAsync(cancellationToken);
 

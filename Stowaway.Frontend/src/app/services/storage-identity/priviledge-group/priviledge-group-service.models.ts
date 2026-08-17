@@ -17,3 +17,15 @@ export interface ListPriviledgeGroupQueryDto {
   warehouseId: number;
   priviledgeIds: number[];
 }
+
+export interface CreateUpdateWarehouseUserCommand {
+  userId: number;
+  warehouseId: number;
+  priviledgeGroupId: number;
+}
+
+export interface CreateUpdateWarehouseUserCommandDto {
+  userId: number;
+  warehouseId: number;
+  priviledgeGroupId: number;
+}

@@ -1,0 +1,20 @@
+.dynamic-form-question {
+  display: block;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.error-message {
+  color: var(--mat-sys-error, #b3261e);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.tags-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted, #5c665d);
+  margin-bottom: 4px;
+}

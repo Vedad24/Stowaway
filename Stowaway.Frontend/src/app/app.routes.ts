@@ -20,6 +20,9 @@ import { PriviledgeGroupEdit } from './core/priviledges/priviledge-group-edit/pr
 import { ProductPage } from './core/sales/product-page/product-page';
 import { Cart } from './core/sales/cart/cart';
 import { routeGuardGuard } from './services/route-guard-guard';
+import { EmployeeManagement } from './core/identity/employee-management/employee-management';
+import { EmployeeAddEdit } from './core/identity/employee-management/employee-add-edit/employee-add-edit';
+import { WarehouseUserManagement } from './core/identity/warehouse-user-management/warehouse-user-management';
 import { PaymentSuccess } from './core/sales/payment/success/payment-success/payment-success';
 import { PaymentCancel } from './core/sales/payment/cancel/payment-cancel/payment-cancel';
 
@@ -113,5 +116,17 @@ export const routes: Routes = [
     {
         path: "payment/cancel/:orderId",
         component: PaymentCancel
+    },
+    {
+        path: 'employee-management',
+        component: EmployeeManagement, 
+    }
+    ,{
+        path: "employee-management/add-edit",
+        component: EmployeeAddEdit
+    },
+    {
+        path: "employee-management/warehouse-user-manage/:userId",
+        component: WarehouseUserManagement
     }
 ];

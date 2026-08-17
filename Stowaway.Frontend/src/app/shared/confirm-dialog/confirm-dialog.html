@@ -1,0 +1,16 @@
+<div class="dialog-card">
+  <h2>{{ data.title }}</h2>
+  <p>{{ data.message }}</p>
+
+  <div class="actions">
+    <button mat-button type="button" (click)="dialogRef.close(false)">{{ data.cancelLabel ?? 'Cancel' }}</button>
+    <button
+      mat-flat-button
+      [color]="data.danger ? 'warn' : 'primary'"
+      type="button"
+      (click)="dialogRef.close(true)"
+    >
+      {{ data.confirmLabel ?? 'Delete' }}
+    </button>
+  </div>
+</div>

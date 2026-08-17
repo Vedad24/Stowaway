@@ -3,6 +3,7 @@ import { PageResult } from "../../../models/paging/page-result";
 
 export class ListItemQuery extends BasePagedQuery{
     search?: string | null;
+    containerId?: number | null;
 }
 
 export interface SharedSupplierDto{
@@ -15,6 +16,11 @@ export interface SharedContainerDto{
     name: string;
 }
 
+export interface SharedTagDto{
+    id: number,
+    name: string
+}
+
 export interface ListItemQueryDto {
     id: number,
     name: string,
@@ -22,7 +28,10 @@ export interface ListItemQueryDto {
     byteImage?: string,
     quantity: number,
     supplier: SharedSupplierDto,
-    container: SharedContainerDto
+    container: SharedContainerDto,
+    tags: SharedTagDto[],
+    canvasX: number | null,
+    canvasY: number | null
 }
 
 export interface ListItemQueryResponse extends PageResult<ListItemQueryDto>{ }
@@ -34,7 +43,8 @@ export interface GetItemByIdDto{
     byteImage?: string,
     quantity: number,
     supplier: SharedSupplierDto,
-    container: SharedContainerDto
+    container: SharedContainerDto,
+    tags: SharedTagDto[]
 }
 
 export interface CreateItemCommand{
@@ -43,7 +53,8 @@ export interface CreateItemCommand{
     byteImage?: string,
     quantity: number,
     supplierId: number,
-    containerId: number
+    containerId: number,
+    tagIds?: number[]
 }
 
 export interface UpdateItemCommand{
@@ -52,5 +63,15 @@ export interface UpdateItemCommand{
     byteImage?: string,
     quantity: number,
     supplierId: number,
+    containerId: number,
+    tagIds?: number[]
+}
+
+export interface UpdateCanvasPositionCommand{
+    canvasX: number | null,
+    canvasY: number | null
+}
+
+export interface MoveItemCommand{
     containerId: number
 }

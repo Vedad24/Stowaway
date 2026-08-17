@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../services/sales/cart/cart-service';
-import { CartItemDto, CartItemStatus } from '../../../services/sales/cart/cart-service.models';
+import { AddToCartCommand, CartItemDto, CartItemStatus } from '../../../services/sales/cart/cart-service.models';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 import { OrderService } from '../../../services/sales/order/order-service';
 import { CreateOrderCommand, SharedOrderCommandContainerType } from '../../../services/sales/order/order-service.models';
@@ -61,10 +61,11 @@ export class Cart implements OnInit {
   }
 
   toggleStatus(item: CartItemDto, targetStatus: CartItemStatus): void {
-    const payload = {
+    const payload : AddToCartCommand = {
       userId: item.userId,
       containerType: item.containerType,
       quantity: item.quantity,
+      warehouseId: 0 //change later please.
     };
     
     if (targetStatus === CartItemStatus.InCart) {

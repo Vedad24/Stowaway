@@ -1,11 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ResolveStart, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { catchError, tap, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service'; 
 import { UserService } from '../../../services/identity/user/user-service';
-import { GetUserByIdOrMailDto, UpdateUserCommand, Role, RoleName } from '../../../services/identity/user/user-service.models';
+import { GetSelfDto, UpdateSelfCommand, RoleName } from '../../../services/identity/user/user-service.models';
+import { resolveSoa } from 'node:dns';
 
 @Component({
   selector: 'app-user-settings',
@@ -21,32 +22,32 @@ export class UserSettings implements OnInit {
   fb = inject(FormBuilder);
 
   form = this.fb.group({
-    email: [''],
+    email: [{value: '', disabled: true}],
     firstName: [''],
     lastName: [''],
-    role : ['']
+    role : [{value: '', disabled : true}],
   });
 
-  user?: GetUserByIdOrMailDto;
-  isSubmitting = false;
+  user?: GetSelfDto;
+  isSubmitting = signal(false);
   message = '';
   errorMessage = '';
 
   ngOnInit(): void {
-    
-    if (!this.currentUserService.userEmail) {
-      this.errorMessage = 'Unable to load current user information.';
-      return;
-    }
-
-    this.userService.getByMail(this.currentUserService.userEmail).subscribe({
+    this.loadUserData();
+  }
+  loadUserData() : void {
+    this.userService.getSelf().subscribe({
       next: (response) => {
         this.user = response;
+        console.log('User data loaded:', response);
+        console.log("Reponse role id", response.role.id);
+        console.log("role", RoleName[response.role.id]);
         this.form.patchValue({
           email: response.email,
           firstName: response.firstName,
           lastName: response.lastName,
-          role: RoleName[response.role.id] ?? 'Unknown',
+          role: RoleName[response.role.id]
         });
       },
       error: () => {
@@ -54,7 +55,6 @@ export class UserSettings implements OnInit {
       },
     });
   }
-
   save(): void {
     this.errorMessage = '';
     this.message = '';
@@ -64,18 +64,15 @@ export class UserSettings implements OnInit {
       return;
     }
 
-    this.isSubmitting = true;
-    const payload: UpdateUserCommand = {
-      id: this.user.id,
+    this.isSubmitting.set(true);
+    const payload: UpdateSelfCommand = {
       email: this.form.value.email ?? null,
       firstName: this.form.value.firstName ?? null,
       lastName: this.form.value.lastName ?? null,
-      role: this.user.role ?? null,
-      isEnabled: this.user.isEnabled ?? null,
     };
-
+    console.log("Update self payload", payload);
     this.userService
-      .update(payload)
+      .updateSelf(payload)
       .pipe(
         tap(() => {
           this.message = 'Your settings have been saved successfully.';
@@ -87,7 +84,7 @@ export class UserSettings implements OnInit {
       )
       .subscribe({
         complete: () => {
-          this.isSubmitting = false;
+          this.isSubmitting.set(false);
         },
       });
   }
@@ -96,3 +93,5 @@ export class UserSettings implements OnInit {
     this.router.navigate(['/main']);
   }
 }
+
+

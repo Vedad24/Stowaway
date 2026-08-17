@@ -31,7 +31,8 @@
               <button type="button" class="tree-toggle" (click)="toggleWarehouse(warehouse)">
                 <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
               </button>
-              <span class="tree-label">{{ warehouse.name }}</span>
+              <span class="tree-label" (click)="selectWarehouse(warehouse)">{{ warehouse.name }}</span>
+              <button matButton (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
             </div>
             @if (warehouse.loading) {
               <div class="tree-loading">Loading containers…</div>
@@ -42,7 +43,7 @@
                   @if (container.visible !== false) {
                     <ng-container
                       [ngTemplateOutlet]="containerNode"
-                      [ngTemplateOutletContext]="{ $implicit: container }"
+                      [ngTemplateOutletContext]="{ $implicit: container, ancestors: [], warehouse: warehouse }"
                     ></ng-container>
                   }
                 }
@@ -58,7 +59,7 @@
   }
 </nav>
 
-<ng-template #containerNode let-container>
+<ng-template #containerNode let-container let-ancestors="ancestors" let-warehouse="warehouse">
   <li class="tree-node">
     <div class="tree-row tree-container-row" [class.tree-row-match]="container.searchMatch">
       <button
@@ -71,7 +72,7 @@
           {{ container.expanded ? '▾' : '▸' }}
         </span>
       </button>
-      <span class="tree-label">{{ container.name }}</span>
+      <span class="tree-label" (click)="selectContainer(container, ancestors, warehouse)">{{ container.name }}</span>
     </div>
     @if (container.loading) {
       <div class="tree-loading">Loading containers…</div>
@@ -81,7 +82,7 @@
         @for (child of container.children; track child.id) {
           <ng-container
             [ngTemplateOutlet]="containerNode"
-            [ngTemplateOutletContext]="{ $implicit: child }"
+            [ngTemplateOutletContext]="{ $implicit: child, ancestors: withAncestor(ancestors, container), warehouse: warehouse }"
           ></ng-container>
         }
         @if (container.children.length === 0) {

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Stowaway.Application.Modules.Storage.Container.Shared;
+using Stowaway.Application.Modules.Storage.Items.Shared;
 using Stowaway.Application.Modules.Storage.Supplier.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Items.Queries.List
@@ -23,6 +24,11 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 query = query.Where(x => x.Name.ToLower().Contains(searchTerm));
             }
 
+            if (request.ContainerId.HasValue)
+            {
+                query = query.Where(x => x.ContainerId == request.ContainerId.Value);
+            }
+
             var projectedQuery = query.Select(x => new ListItemQueryDto
             {
                 Id = x.Id,
@@ -39,11 +45,17 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     FailedDeliveries = x.Supplier.FailedDeliveries,
                     TotalDeliveries = x.Supplier.TotalDeliveries,
                 },
-                Container = new ListContainersDto 
+                Container = new ListContainersDto
                 {
-                    Id = x.Id,
+                    Id = x.Container.Id,
                     Name = x.Container.Name
-                }
+                },
+                Tags = ctx.ItemTags
+                    .Where(it => it.ItemId == x.Id)
+                    .Select(it => new SharedTagDto { Id = it.Tag.Id, Name = it.Tag.Name })
+                    .ToList(),
+                CanvasX = x.CanvasX,
+                CanvasY = x.CanvasY,
             });
 
             return await PageResult<ListItemQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);

@@ -21,6 +21,7 @@ namespace Market.Application.Modules.Sales.Cart.Queries.List
                     Id = x.Id,
                     UserId = x.UserId,
                     ContainerType = x.ContainerType,
+                    WarehouseId = x.WarehouseId,
                     Quantity = x.Quantity,
                     CartItemStatus = x.CartItemStatus
                 }).ToListAsync()

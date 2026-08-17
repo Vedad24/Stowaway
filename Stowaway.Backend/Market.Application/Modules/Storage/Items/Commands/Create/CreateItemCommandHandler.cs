@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Application.Modules.Storage.Items.Queries.GetById;
 using Stowaway.Domain.Entities.Storage;
 
@@ -45,6 +46,8 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
                 throw new Exception("Quantity cant be less than 1");
             }
 
+            await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, request.Quantity, cancellationToken);
+
             var item = new ItemEntity
             {
                 Name = normalizedName,
@@ -57,6 +60,21 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
 
             ctx.Item.Add(item);
             await ctx.SaveChangesAsync(cancellationToken);
+
+            if (request.TagIds.Count > 0)
+            {
+                var validTagIds = await ctx.Tags
+                    .Where(t => request.TagIds.Contains(t.Id))
+                    .Select(t => t.Id)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var tagId in validTagIds)
+                {
+                    ctx.ItemTags.Add(new Item_TagEntity { ItemId = item.Id, TagId = tagId });
+                }
+
+                await ctx.SaveChangesAsync(cancellationToken);
+            }
 
             return item.Id;
         }

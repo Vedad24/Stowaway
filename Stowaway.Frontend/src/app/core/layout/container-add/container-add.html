@@ -1,0 +1,9 @@
+<div class="dialog-card">
+  <h2>Create container</h2>
+
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+
+  <app-dynamic-form [questions]="questions()" />
+</div>

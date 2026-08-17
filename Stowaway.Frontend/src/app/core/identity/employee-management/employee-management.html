@@ -1,0 +1,21 @@
+<div>
+    <div class="flex justify-between items-center mb-4">
+        <div class="flex gap-2 items-center">
+            <mat-form-field class="flex justify-center items-center" subscriptSizing="dynamic">
+                <mat-label>Search</mat-label>
+                <input matInput [(ngModel)]="searchField" (keyup.enter)="onSearch()" />
+            </mat-form-field>
+            <button mat-raised-button (click)="onSearch()">Search</button>
+        </div>
+        <button mat-raised-button color="primary" (click)="onAddEmployee()">Add Employee</button>
+    </div>
+    
+    <app-pagination-table
+    [columns]="columnDef"
+    [items]="items()"
+    [totalItems]="totalItems()"
+    [pageIndex]="paging.page - 1"
+    [pageSize]="paging.pageSize"
+    (page)="onPage($event)"
+    > </app-pagination-table>
+</div>

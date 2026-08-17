@@ -20,6 +20,6 @@ export class ChooseModule {
   }
 
   openWorkerManagement(): void {
-    this.router.navigate(['/test-users']);
+    this.router.navigate(['/employee-management']);
   }
 }

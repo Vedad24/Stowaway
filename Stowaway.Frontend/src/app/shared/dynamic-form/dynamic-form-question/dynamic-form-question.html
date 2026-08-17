@@ -1,0 +1,41 @@
+<div [formGroup]="form()" class="dynamic-form-question">
+  @switch (question().controlType) {
+    @case ('textbox') {
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+        <mat-label>{{ question().label }}</mat-label>
+        <input matInput [formControlName]="question().key" [id]="question().key" [type]="question().type" />
+        @if (!isValid) {
+          <mat-error>{{ question().label }} is required</mat-error>
+        }
+      </mat-form-field>
+    }
+    @case ('dropdown') {
+      <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+        <mat-label>{{ question().label }}</mat-label>
+        <mat-select [id]="question().key" [formControlName]="question().key">
+          @for (opt of question().options; track opt) {
+            <mat-option [value]="opt.key">{{ opt.value }}</mat-option>
+          }
+        </mat-select>
+        @if (!isValid) {
+          <mat-error>{{ question().label }} is required</mat-error>
+        }
+      </mat-form-field>
+    }
+    @case ('autocomplete') {
+      <app-autocomplete-component
+        class="full-width"
+        [formControlName]="question().key"
+        [options]="question().options ?? []"
+        [optionInfo]="question().optionInfo">
+      </app-autocomplete-component>
+      @if (!isValid) {
+        <div class="error-message">{{ question().label }} is required</div>
+      }
+    }
+    @case ('tags') {
+      <label class="tags-label">{{ question().label }}</label>
+      <app-tag-picker [formControlName]="question().key" />
+    }
+  }
+</div>

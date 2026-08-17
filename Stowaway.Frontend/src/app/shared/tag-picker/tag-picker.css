@@ -1,0 +1,48 @@
+.tag-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tag-picker-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag-chip {
+  border: 1.5px solid;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tag-chip:hover {
+  opacity: 0.85;
+}
+
+.tag-picker-add {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tag-picker-input {
+  flex: 1;
+}
+
+.tag-picker-loading,
+.tag-picker-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.tag-picker-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #b3261e;
+}

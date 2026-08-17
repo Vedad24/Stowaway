@@ -1,0 +1,84 @@
+<aside class="detail-panel" [class.detail-panel-open]="isOpen()" aria-label="Container details">
+  @if (isOpen()) {
+    <button type="button" class="panel-close" (click)="close()" aria-label="Close container details"><span>X</span></button>
+
+    @if (errorMessage()) {
+      <p class="panel-error">{{ errorMessage() }}</p>
+    }
+
+    @if (container(); as data) {
+      <div class="panel-icon">📦</div>
+
+      <h2 class="panel-title">{{ data.name }}</h2>
+
+      @if (data.currentStatus; as status) {
+        <span class="status-pill" [style.background]="statusColor(status.id)" [style.color]="statusTextColor(status.id)">{{ status.name }}</span>
+      } @else {
+        <p class="panel-no-status">No status set</p>
+      }
+
+      <div class="panel-status-actions">
+        <button
+          mat-button
+          type="button"
+          [disabled]="isUpdatingStatus() || data.currentStatus?.name === 'Incoming'"
+          (click)="setStatus('Incoming')"
+        >
+          Mark incoming
+        </button>
+        <button
+          mat-button
+          type="button"
+          [disabled]="isUpdatingStatus() || data.currentStatus?.name === 'Outgoing'"
+          (click)="setStatus('Outgoing')"
+        >
+          Mark outgoing
+        </button>
+      </div>
+
+      <dl class="panel-fields">
+        <div class="panel-field">
+          <dt>Type</dt>
+          <dd>{{ data.containerTypeName }}</dd>
+        </div>
+        <div class="panel-field">
+          <dt>Warehouse</dt>
+          <dd>{{ data.warehouseName }}</dd>
+        </div>
+      </dl>
+
+      <div class="panel-capacity">
+        <div class="capacity-row">
+          <div class="capacity-label">
+            <span>Items</span>
+            <span>{{ data.itemQuantityUsed }} / {{ data.maxItems }}</span>
+          </div>
+          <div class="fullness-bar">
+            <div class="fullness-fill fullness-items" [style.width.%]="itemsFullness(data) * 100"></div>
+          </div>
+          <p class="capacity-hint">How full this container is with items, including items in any nested sub-containers.</p>
+        </div>
+
+        @if (data.maxContainers > 0) {
+          <div class="capacity-row">
+            <div class="capacity-label">
+              <span>Sub-containers</span>
+              <span>{{ data.containerCountUsed }} / {{ data.maxContainers }}</span>
+            </div>
+            <div class="fullness-bar">
+              <div class="fullness-fill fullness-containers" [style.width.%]="containersFullness(data) * 100"></div>
+            </div>
+            <p class="capacity-hint">How many of this container's direct sub-container slots are used.</p>
+          </div>
+        }
+      </div>
+
+      <div class="panel-actions">
+        <button mat-button type="button" (click)="edit()">Edit</button>
+        <button mat-flat-button color="warn" type="button" (click)="delete()">Delete</button>
+      </div>
+    } @else if (isLoading()) {
+      <p class="panel-loading">Loading…</p>
+    }
+  }
+</aside>

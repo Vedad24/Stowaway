@@ -10,6 +10,11 @@ namespace Market.Application.Modules.Sales.Cart.Commands.AddToCart
     {
         public async Task<AddToCartCommandDto> Handle(AddToCartCommand request, CancellationToken cancellationToken)
         {
+            if (await db.Warehouses.AnyAsync(w => w.Id == request.WarehouseId) == false)
+            {
+                throw new StowawayNotFoundException($"Warehouse with id {request.WarehouseId} not found.");
+            }
+
             //find item
             var existingItem = await db.CartItems.Where(x => x.UserId == request.UserId && x.ContainerType.Id == request.ContainerType.Id).FirstOrDefaultAsync();
             //if not found add to cart 
@@ -20,6 +25,7 @@ namespace Market.Application.Modules.Sales.Cart.Commands.AddToCart
                 {
                     UserId = request.UserId,
                     ContainerType = request.ContainerType,
+                    WarehouseId = request.WarehouseId,
                     Quantity = request.Quantity,
                     CartItemStatus = CartItemStatus.InCart
                 };

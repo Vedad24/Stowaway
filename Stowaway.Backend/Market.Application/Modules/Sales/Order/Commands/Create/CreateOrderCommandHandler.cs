@@ -68,6 +68,8 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
                     //ContainerTypeId = item.ContainerTypeId, // auto
                     ContainerType = containerType,
 
+                    WarehouseId = item.WarehouseId,
+
                     UnitPrice = containerType.Price,
                     Quantity = item.Quantity,
 

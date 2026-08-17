@@ -17,10 +17,11 @@ namespace Stowaway.Application.Modules.Identity.Users.Queries.GetById
             }
             GetByIdQueryDto dto = new()
             {
+                Id = ur.Id,
                 Email = ur.Email,
                 FirstName = ur.FirstName ?? "[no_name]",
                 LastName = ur.LastName ?? "[no_name]",
-                Role = ur.RoleId.ToString() ?? "[no_role]"
+                Role = new GetByIdQueryDtoRoleDto{Id = (int) (ur.RoleId ?? Domain.Entities.Identity.Role.User) }
             };
             return dto;
         }

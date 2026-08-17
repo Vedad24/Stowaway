@@ -13,7 +13,11 @@ public interface IAppDbContext
     //DbSet<ContainerEntity> Containers { get; }
     DbSet<WarehouseEntity> Warehouses { get; }
     DbSet<ContainerEntity> Containers { get; }
+    DbSet<ContainerStatusEntity> ContainerStatuses { get; }
+    DbSet<ContainerStatusHistoryEntity> ContainerStatusHistories { get; }
     DbSet<ItemEntity> Item { get; }
+    DbSet<Item_TagEntity> ItemTags { get; }
+    DbSet<TagEntity> Tags { get; }
     DbSet<SupplierEntity> Suppliers { get; }
     //StorageIdentity
     DbSet<PriviledgeEntity> Priviledges { get; }

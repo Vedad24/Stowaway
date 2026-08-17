@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Stowaway.Application.Modules.Storage.Items.Commands.Create;
 using Stowaway.Application.Modules.Storage.Items.Commands.Delete;
+using Stowaway.Application.Modules.Storage.Items.Commands.Move;
 using Stowaway.Application.Modules.Storage.Items.Commands.Update;
+using Stowaway.Application.Modules.Storage.Items.Commands.UpdateCanvasPosition;
 using Stowaway.Application.Modules.Storage.Items.Queries.GetById;
 using Stowaway.Application.Modules.Storage.Items.Queries.List;
 
@@ -46,6 +48,22 @@ namespace Stowaway.API.Controllers
         [HttpPut("{id:int}")]
         [AllowAnonymous]
         public async Task Update(int id, UpdateItemCommand payload, CancellationToken cancellationToken)
+        {
+            payload.Id = id;
+            await sender.Send(payload, cancellationToken);
+        }
+
+        [HttpPut("{id:int}/canvas-position")]
+        [AllowAnonymous]
+        public async Task UpdateCanvasPosition(int id, UpdateItemCanvasPositionCommand payload, CancellationToken cancellationToken)
+        {
+            payload.Id = id;
+            await sender.Send(payload, cancellationToken);
+        }
+
+        [HttpPut("{id:int}/container")]
+        [AllowAnonymous]
+        public async Task Move(int id, MoveItemCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
             await sender.Send(payload, cancellationToken);
