@@ -15,7 +15,7 @@ import {
 import { AddToCartCommand } from '../../../services/sales/cart/cart-service.models';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 import { AuthService } from '../../../services/identity/auth/auth-service';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { Router } from '@angular/router';
 
 @Component({

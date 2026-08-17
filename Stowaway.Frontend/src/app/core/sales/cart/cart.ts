@@ -65,7 +65,7 @@ export class Cart implements OnInit {
       userId: item.userId,
       containerType: item.containerType,
       quantity: item.quantity,
-      warehouseId: 0 //change later please.
+      warehouseId: item.warehouseId
     };
     
     if (targetStatus === CartItemStatus.InCart) {
@@ -107,9 +107,10 @@ export class Cart implements OnInit {
   }
 
   goToCheckout() {
+    
     const orderItems : SharedOrderCommandContainerType[] = 
       this.inCartItems.map<SharedOrderCommandContainerType>(
-        (item) => {return {containerTypeId : item.id, quantity : item.quantity};}
+        (item) => {return {containerTypeId : item.id, quantity : item.quantity, warehouseId: item.warehouseId};}
       );
     
     const createOrderCommand : CreateOrderCommand = 
