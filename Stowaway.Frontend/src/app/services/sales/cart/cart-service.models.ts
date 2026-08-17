@@ -38,6 +38,7 @@ export interface CartItemDto {
   userId: number;
   containerType: ContainerTypeEntity;
   warehouseId : number;
+  warehouseName: string;
   quantity: number;
   cartItemStatus: CartItemStatus;
 }

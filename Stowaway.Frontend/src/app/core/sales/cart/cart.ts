@@ -18,7 +18,7 @@ import { CreatePaymentCommand } from '../../../services/sales/payment/payment-se
   styleUrl: './cart.css',
 })
 export class Cart implements OnInit {
-
+  enum: typeof CartItemStatus = CartItemStatus
   private readonly cartService = inject(CartService);
   private readonly currentUserService = inject(CurrentUserService)
   private readonly orderService = inject(OrderService);
@@ -60,14 +60,14 @@ export class Cart implements OnInit {
     return this.inCartItems.reduce((sum, item) => sum + (item.quantity * (item.containerType?.price ?? 0)), 0);
   }
 
-  toggleStatus(item: CartItemDto, targetStatus: CartItemStatus): void {
+  toggleStatus(item: CartItemDto): void {
     const payload : AddToCartCommand = {
       userId: item.userId,
       containerType: item.containerType,
       quantity: item.quantity,
       warehouseId: item.warehouseId
     };
-    
+    const targetStatus: CartItemStatus = item.cartItemStatus == this.enum.InCart ? this.enum.SavedForLater : this.enum.InCart;
     if (targetStatus === CartItemStatus.InCart) {
       this.cartService.addToCart(payload).subscribe({
         next: () => {
