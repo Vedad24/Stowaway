@@ -5,6 +5,7 @@ import { environment } from '../../../../enviroments/enivroment';
 import {
   AddToCartCommand,
   AddToCartCommandDto,
+  ClearCartCommandDto,
   ListCartItemsQueryDto,
   SaveForLaterCommand,
   SaveForLaterCommandDto,
@@ -27,5 +28,9 @@ export class CartService {
 
   public saveForLater(payload: SaveForLaterCommand): Observable<SaveForLaterCommandDto> {
     return this.http.post<SaveForLaterCommandDto>(`${this.baseUrl}/save-for-later`, payload);
+  }
+
+  public clearCart(userId: number): Observable<ClearCartCommandDto> {
+    return this.http.delete<ClearCartCommandDto>(`${this.baseUrl}/clear-cart/${userId}`);
   }
 }

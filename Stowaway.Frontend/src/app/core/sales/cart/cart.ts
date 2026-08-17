@@ -5,9 +5,11 @@ import { CartService } from '../../../services/sales/cart/cart-service';
 import { AddToCartCommand, CartItemDto, CartItemStatus } from '../../../services/sales/cart/cart-service.models';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 import { OrderService } from '../../../services/sales/order/order-service';
-import { CreateOrderCommand, SharedOrderCommandContainerType } from '../../../services/sales/order/order-service.models';
+import { CreateOrderCommand, CreateOrderCommandDto, SharedOrderCommandContainerType } from '../../../services/sales/order/order-service.models';
 import { PaymentService } from '../../../services/sales/payment/payment-service';
 import { CreatePaymentCommand } from '../../../services/sales/payment/payment-service.models';
+import { firstValueFrom } from 'rxjs';
+import { response } from 'express';
 
 
 @Component({
@@ -108,31 +110,46 @@ export class Cart implements OnInit {
 
   goToCheckout() {
     
-    const orderItems : SharedOrderCommandContainerType[] = 
-      this.inCartItems.map<SharedOrderCommandContainerType>(
-        (item) => {return {containerTypeId : item.id, quantity : item.quantity, warehouseId: item.warehouseId};}
-      );
     
-    const createOrderCommand : CreateOrderCommand = 
-    {
-      userId : this.userId,
-      orderItems : orderItems
-    };
+    const createOrderCommand : CreateOrderCommand = this.prepareOrder();
+    
     this.orderService.create(createOrderCommand).subscribe(
       (createOrderResponse) => 
         {
           console.log(createOrderResponse);
-          const paymentRequest : CreatePaymentCommand = {orderId:createOrderResponse.orderId}
-          this.paymentService.pay(paymentRequest).subscribe(
-            (paymentResponse) => 
+          this.clearCart().subscribe(
+            (response) => 
             {
-              window.location.href = paymentResponse.checkoutUrl;
-              //this.router.navigate([paymentResponse.checkoutUrl]);
-              
+              this.pay(createOrderResponse).subscribe(
+                (paymentResponse) => 
+                {
+                  window.location.href = paymentResponse.checkoutUrl;
+                  //this.router.navigate([paymentResponse.checkoutUrl]);
+                }
+              );
             }
-
-          );
+          )
+          
         } 
     )
+  }
+  pay(createOrderResponse: CreateOrderCommandDto) {
+    const paymentRequest : CreatePaymentCommand = {orderId:createOrderResponse.orderId}
+    return this.paymentService.pay(paymentRequest)
+  }
+  prepareOrder(): CreateOrderCommand {
+    const orderItems : SharedOrderCommandContainerType[] = 
+      this.inCartItems.map<SharedOrderCommandContainerType>(
+        (item) => {return {containerTypeId : item.id, quantity : item.quantity, warehouseId: item.warehouseId};}
+      );
+    return {
+      userId : this.userId,
+      orderItems : orderItems
+    };
+
+  }
+  clearCart()
+  {
+    return this.cartService.clearCart(this.userId);
   }
 }
