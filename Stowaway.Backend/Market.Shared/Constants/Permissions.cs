@@ -28,4 +28,37 @@ public static class Permissions
     public const string WarehouseUpdate = "Warehouse.Update";
     public const string WarehouseDelete = "Warehouse.Delete";
 
+    //Container Permissions
+    public const string ContainerRead = "Container.Read";
+    public const string ContainerCreate = "Container.Create";
+    public const string ContainerUpdate = "Container.Update";
+    public const string ContainerDelete = "Container.Delete";
+
+    //Item Permissions
+    public const string ItemRead = "Item.Read";
+    public const string ItemCreate = "Item.Create";
+    public const string ItemUpdate = "Item.Update";
+    public const string ItemDelete = "Item.Delete";
+
+    //Tag Permissions
+    public const string TagRead = "Tag.Read";
+    public const string TagCreate = "Tag.Create";
+
+    //Order Permissions
+    public const string OrderRead = "Order.Read";
+    public const string OrderCreate = "Order.Create";
+    public const string OrderUpdate = "Order.Update";
+    public const string OrderDelete = "Order.Delete";
+
+    //Supplier Permissions
+    public const string SupplierRead = "Supplier.Read";
+    public const string SupplierCreate = "Supplier.Create";
+    public const string SupplierUpdate = "Supplier.Update";
+    public const string SupplierDelete = "Supplier.Delete";
+
+    //Cart Permissions (self-scoped)
+    public const string CartManage = "Cart.Manage";
+
+    //Warehouse users / priviledge group management
+    public const string WarehouseUsersManage = "WarehouseUsers.Manage";
 }

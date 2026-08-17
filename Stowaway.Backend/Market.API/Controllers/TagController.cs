@@ -1,3 +1,5 @@
+using Market.API.Authorization;
+using Market.Shared.Constants;
 using Stowaway.Application.Modules.Storage.Items.Shared;
 using Stowaway.Application.Modules.Storage.Tags.Commands.Create;
 using Stowaway.Application.Modules.Storage.Tags.Queries.List;
@@ -6,10 +8,11 @@ namespace Stowaway.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class TagController(ISender sender) : ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
+        [HasPermission(Permissions.TagRead)]
         public async Task<ActionResult<List<SharedTagDto>>> List(CancellationToken cancellationToken)
         {
             var result = await sender.Send(new ListTagsQuery(), cancellationToken);
@@ -17,7 +20,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [HasPermission(Permissions.TagCreate)]
         public async Task<ActionResult<SharedTagDto>> Create(CreateTagCommand command, CancellationToken cancellationToken)
         {
             var result = await sender.Send(command, cancellationToken);

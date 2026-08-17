@@ -51,7 +51,31 @@ public static class DynamicDataSeeder
             Permissions.RolesRead,
             Permissions.RolesCreate,
             Permissions.RolesUpdate,
-            Permissions.RolesDelete
+            Permissions.RolesDelete,
+            Permissions.WarehouseCreate,
+            Permissions.WarehouseRead,
+            Permissions.WarehouseUpdate,
+            Permissions.WarehouseDelete,
+            Permissions.ContainerRead,
+            Permissions.ContainerCreate,
+            Permissions.ContainerUpdate,
+            Permissions.ContainerDelete,
+            Permissions.ItemRead,
+            Permissions.ItemCreate,
+            Permissions.ItemUpdate,
+            Permissions.ItemDelete,
+            Permissions.TagRead,
+            Permissions.TagCreate,
+            Permissions.OrderRead,
+            Permissions.OrderCreate,
+            Permissions.OrderUpdate,
+            Permissions.OrderDelete,
+            Permissions.SupplierRead,
+            Permissions.SupplierCreate,
+            Permissions.SupplierUpdate,
+            Permissions.SupplierDelete,
+            Permissions.CartManage,
+            Permissions.WarehouseUsersManage,
         };
 
         var existingDescriptions = await context.Permissions
@@ -80,30 +104,15 @@ public static class DynamicDataSeeder
         var privilegeNames = new[]
         {
             Priviledges.WarehouseRead,
-            Priviledges.WarehouseCreate,
             Priviledges.WarehouseUpdate,
-            Priviledges.WarehouseDelete,
-            Priviledges.InventoryRead,
-            Priviledges.InventoryCreate,
-            Priviledges.InventoryUpdate,
-            Priviledges.InventoryDelete,
-            Priviledges.ProductRead,
-            Priviledges.ProductCreate,
-            Priviledges.ProductUpdate,
-            Priviledges.ProductDelete,
-            Priviledges.OrderRead,
-            Priviledges.OrderCreate,
-            Priviledges.OrderUpdate,
-            Priviledges.OrderDelete,
-            Priviledges.SupplierRead,
-            Priviledges.SupplierCreate,
-            Priviledges.SupplierUpdate,
-            Priviledges.SupplierDelete,
-            Priviledges.UsersManage,
-            Priviledges.RolesManage,
-            Priviledges.WarehouseUsersManage,
-            Priviledges.ReportsRead,
-            Priviledges.ReportsExport,
+            Priviledges.ContainerRead,
+            Priviledges.ContainerCreate,
+            Priviledges.ContainerUpdate,
+            Priviledges.ContainerDelete,
+            Priviledges.ItemRead,
+            Priviledges.ItemCreate,
+            Priviledges.ItemUpdate,
+            Priviledges.ItemDelete,
         };
 
         var existingPrivileges = await context.Priviledges
@@ -553,30 +562,15 @@ public static class DynamicDataSeeder
         var privilegeCodes = new[]
         {
             Priviledges.WarehouseRead,
-            Priviledges.WarehouseCreate,
             Priviledges.WarehouseUpdate,
-            Priviledges.WarehouseDelete,
-            Priviledges.InventoryRead,
-            Priviledges.InventoryCreate,
-            Priviledges.InventoryUpdate,
-            Priviledges.InventoryDelete,
-            Priviledges.ProductRead,
-            Priviledges.ProductCreate,
-            Priviledges.ProductUpdate,
-            Priviledges.ProductDelete,
-            Priviledges.OrderRead,
-            Priviledges.OrderCreate,
-            Priviledges.OrderUpdate,
-            Priviledges.OrderDelete,
-            Priviledges.SupplierRead,
-            Priviledges.SupplierCreate,
-            Priviledges.SupplierUpdate,
-            Priviledges.SupplierDelete,
-            Priviledges.UsersManage,
-            Priviledges.RolesManage,
-            Priviledges.WarehouseUsersManage,
-            Priviledges.ReportsRead,
-            Priviledges.ReportsExport,
+            Priviledges.ContainerRead,
+            Priviledges.ContainerCreate,
+            Priviledges.ContainerUpdate,
+            Priviledges.ContainerDelete,
+            Priviledges.ItemRead,
+            Priviledges.ItemCreate,
+            Priviledges.ItemUpdate,
+            Priviledges.ItemDelete,
         };
 
         var existingPrivileges = await context.Priviledges
@@ -649,62 +643,86 @@ public static class DynamicDataSeeder
             }
         }
 
-        var readerPrivilegeId = privilegeMap[Priviledges.WarehouseRead];
-        var readerLinkExists = await context.PriviledgeGroupsPriviledges.AnyAsync(link =>
-            link.PriviledgeGroupId == readerGroup.Id && link.PriviledgeId == readerPrivilegeId);
-
-        if (!readerLinkExists)
+        var readerPrivilegeCodes = new[] { Priviledges.WarehouseRead, Priviledges.ContainerRead, Priviledges.ItemRead };
+        foreach (var readerPrivilegeCode in readerPrivilegeCodes)
         {
-            context.PriviledgeGroupsPriviledges.Add(new PriviledgeGroup_PriviledgeEntity
+            var readerPrivilegeId = privilegeMap[readerPrivilegeCode];
+            var readerLinkExists = await context.PriviledgeGroupsPriviledges.AnyAsync(link =>
+                link.PriviledgeGroupId == readerGroup.Id && link.PriviledgeId == readerPrivilegeId);
+
+            if (!readerLinkExists)
             {
-                PriviledgeGroupId = readerGroup.Id,
-                PriviledgeId = readerPrivilegeId,
-            });
+                context.PriviledgeGroupsPriviledges.Add(new PriviledgeGroup_PriviledgeEntity
+                {
+                    PriviledgeGroupId = readerGroup.Id,
+                    PriviledgeId = readerPrivilegeId,
+                });
+            }
         }
 
         await context.SaveChangesAsync();
 
-        var admin = await context.Users.SingleOrDefaultAsync(user => user.Email == "admin@market.local");
-        if (admin != null)
+        // Admin and Manager both get full (Owner) warehouse access — nothing in the business
+        // rules restricts Manager within a warehouse. User demonstrates the Reader restriction.
+        async Task EnsureAssignment(string email, PriviledgeGroupEntity group)
         {
-            var adminAssignmentExists = await context.WarehouseUsers.AnyAsync(link =>
-                link.WarehouseId == warehouse.Id &&
-                link.UserId == admin.Id &&
-                link.PriviledgeGroupId == ownerGroup.Id);
+            var user = await context.Users.SingleOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return;
 
-            if (!adminAssignmentExists)
+            var assignmentExists = await context.WarehouseUsers.AnyAsync(link =>
+                link.WarehouseId == warehouse.Id &&
+                link.UserId == user.Id &&
+                link.PriviledgeGroupId == group.Id);
+
+            if (!assignmentExists)
             {
                 context.WarehouseUsers.Add(new Warehouse_UserEntity
                 {
                     WarehouseId = warehouse.Id,
-                    UserId = admin.Id,
-                    PriviledgeGroupId = ownerGroup.Id,
+                    UserId = user.Id,
+                    PriviledgeGroupId = group.Id,
                 });
             }
         }
 
-        var readerUser = await context.Users.SingleOrDefaultAsync(user => user.Email == "manager@market.local");
-        if (readerUser != null)
-        {
-            var readerAssignmentExists = await context.WarehouseUsers.AnyAsync(link =>
-                link.WarehouseId == warehouse.Id &&
-                link.UserId == readerUser.Id &&
-                link.PriviledgeGroupId == readerGroup.Id);
-
-            if (!readerAssignmentExists)
-            {
-                context.WarehouseUsers.Add(new Warehouse_UserEntity
-                {
-                    WarehouseId = warehouse.Id,
-                    UserId = readerUser.Id,
-                    PriviledgeGroupId = readerGroup.Id,
-                });
-            }
-        }
+        await EnsureAssignment("admin@market.local", ownerGroup);
+        await EnsureAssignment("manager@market.local", ownerGroup);
+        await EnsureAssignment("user@market.local", readerGroup);
 
         await context.SaveChangesAsync();
         Console.WriteLine("✅ Dynamic seed: warehouse identity groups and assignments added.");
     }
+
+    // Explicit per-role permission matrix. Admin gets every permission that exists.
+    // Manager gets everything except Roles.Create/Update/Delete.
+    // User only gets its own module access (Self, Warehouse.Read, Container/Item/Tag/Supplier.Read, Cart).
+    private static readonly string[] ManagerOnlyPermissions =
+    {
+        Permissions.UsersRead, Permissions.UsersCreate, Permissions.UsersUpdate, Permissions.UsersDelete,
+        Permissions.RolesRead,
+        Permissions.WarehouseCreate, Permissions.WarehouseUpdate, Permissions.WarehouseDelete,
+        Permissions.OrderRead, Permissions.OrderCreate,
+        Permissions.SupplierCreate, Permissions.SupplierUpdate, Permissions.SupplierDelete,
+        Permissions.WarehouseUsersManage,
+    };
+
+    private static readonly string[] AdminOnlyPermissions =
+    {
+        Permissions.RolesCreate, Permissions.RolesUpdate, Permissions.RolesDelete,
+        Permissions.OrderUpdate, Permissions.OrderDelete,
+    };
+
+    private static readonly string[] SharedByAllRolesPermissions =
+    {
+        Permissions.UsersSelfRead, Permissions.UsersSelfUpdate, Permissions.UsersSelfDelete,
+        Permissions.WarehouseRead,
+        Permissions.ContainerRead, Permissions.ContainerCreate, Permissions.ContainerUpdate, Permissions.ContainerDelete,
+        Permissions.ItemRead, Permissions.ItemCreate, Permissions.ItemUpdate, Permissions.ItemDelete,
+        Permissions.TagRead, Permissions.TagCreate,
+        Permissions.SupplierRead,
+        Permissions.CartManage,
+    };
 
     private static async Task SeedRolePermissionsAsync(DatabaseContext context)
     {
@@ -715,68 +733,62 @@ public static class DynamicDataSeeder
             .AsNoTracking()
             .ToListAsync();
 
-        var existingAssignments = await context.PermissionRoles
-            .Select(permissionRole => new { permissionRole.RoleId, permissionRole.PermissionId })
-            .ToListAsync();
+        var userPermissions = new HashSet<string>(SharedByAllRolesPermissions, StringComparer.OrdinalIgnoreCase);
+        var managerPermissions = new HashSet<string>(SharedByAllRolesPermissions, StringComparer.OrdinalIgnoreCase);
+        managerPermissions.UnionWith(ManagerOnlyPermissions);
+        var adminPermissions = new HashSet<string>(managerPermissions, StringComparer.OrdinalIgnoreCase);
+        adminPermissions.UnionWith(AdminOnlyPermissions);
 
-        var existingSet = new HashSet<(Role RoleId, int PermissionId)>(
-            existingAssignments.Select(item => (item.RoleId, item.PermissionId)));
-
-        var selfPermissionDescriptions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        var desiredByRole = new Dictionary<Role, HashSet<string>>
         {
-            Permissions.UsersSelfRead,
-            Permissions.UsersSelfUpdate,
-            Permissions.UsersSelfDelete,
+            [Role.User] = userPermissions,
+            [Role.Manager] = managerPermissions,
+            [Role.Admin] = adminPermissions,
         };
 
-        var permissionRoleAssignments = new List<Permission_RoleEntity>();
+        var existingAssignments = await context.PermissionRoles
+            .Include(permissionRole => permissionRole.Permission)
+            .ToListAsync();
 
-        foreach (var permission in permissions)
+        var toAdd = new List<Permission_RoleEntity>();
+
+        foreach (var (role, desiredPermissions) in desiredByRole)
         {
-            if (!existingSet.Contains((Role.Admin, permission.Id)))
+            var alreadyGranted = existingAssignments
+                .Where(a => a.RoleId == role)
+                .Select(a => a.Permission.Description)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var permission in permissions.Where(p => desiredPermissions.Contains(p.Description) && !alreadyGranted.Contains(p.Description)))
             {
-                permissionRoleAssignments.Add(new Permission_RoleEntity
-                {
-                    RoleId = Role.Admin,
-                    PermissionId = permission.Id,
-                });
-            }
-
-            var grantToUser = permission.Description.EndsWith(".Read", StringComparison.OrdinalIgnoreCase)
-                || selfPermissionDescriptions.Contains(permission.Description);
-
-            var grantToManager = permission.Description.StartsWith("Users.", StringComparison.OrdinalIgnoreCase)
-                || permission.Description.StartsWith("Warehouse.", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(permission.Description, Permissions.RolesRead, StringComparison.OrdinalIgnoreCase);
-
-            if (grantToUser && !existingSet.Contains((Role.User, permission.Id)))
-            {
-                permissionRoleAssignments.Add(new Permission_RoleEntity
-                {
-                    RoleId = Role.User,
-                    PermissionId = permission.Id,
-                });
-            }
-
-            if (grantToManager && !existingSet.Contains((Role.Manager, permission.Id)))
-            {
-                permissionRoleAssignments.Add(new Permission_RoleEntity
-                {
-                    RoleId = Role.Manager,
-                    PermissionId = permission.Id,
-                });
+                toAdd.Add(new Permission_RoleEntity { RoleId = role, PermissionId = permission.Id });
             }
         }
 
-        if (permissionRoleAssignments.Count == 0)
+        // Reconcile: drop any previously-granted row (e.g. from the old heuristic seeder)
+        // that the new explicit matrix no longer grants.
+        var toRemove = existingAssignments
+            .Where(a => !desiredByRole.TryGetValue(a.RoleId, out var desired) || !desired.Contains(a.Permission.Description))
+            .ToList();
+
+        if (toRemove.Count > 0)
         {
-            Console.WriteLine("✅ Dynamic seed: role permissions already exist.");
+            context.PermissionRoles.RemoveRange(toRemove);
+        }
+
+        if (toAdd.Count > 0)
+        {
+            context.PermissionRoles.AddRange(toAdd);
+        }
+
+        if (toAdd.Count == 0 && toRemove.Count == 0)
+        {
+            Console.WriteLine("✅ Dynamic seed: role permissions already up to date.");
             return;
         }
 
-        context.PermissionRoles.AddRange(permissionRoleAssignments);
         await context.SaveChangesAsync();
 
-        Console.WriteLine($"✅ Dynamic seed: {permissionRoleAssignments.Count} role permissions added.");
+        Console.WriteLine($"✅ Dynamic seed: {toAdd.Count} role permissions added, {toRemove.Count} stale role permissions removed.");
     }
 }
