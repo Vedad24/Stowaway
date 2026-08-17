@@ -24,6 +24,8 @@ export interface SaveForLaterCommand {
 
 export interface SaveForLaterCommandDto {}
 
+export interface ClearCartCommandDto {}
+
 export interface ListCartItemsQueryDto {
   cartItems: CartItemDto[];
 }

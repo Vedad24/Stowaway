@@ -1,4 +1,5 @@
 using Market.Application.Modules.Sales.Cart.Commands.AddToCart;
+using Market.Application.Modules.Sales.Cart.Commands.ClearCart;
 using Market.Application.Modules.Sales.Cart.Commands.SaveForLater;
 using Market.Application.Modules.Sales.Cart.Queries.List;
 
@@ -25,6 +26,12 @@ namespace Stowaway.API.Controllers
         public async Task<SaveForLaterCommandDto> SaveForLater([FromBody] SaveForLaterCommand command, CancellationToken ct)
         {
             return await sender.Send(command, ct);
+        }
+
+        [HttpDelete("clear-cart/{userId:int}")]
+        public async Task<ClearCartCommandDto> ClearCart(int userId, CancellationToken ct)
+        {
+            return await sender.Send(new ClearCartCommand { UserId = userId }, ct);
         }
     }
 }
