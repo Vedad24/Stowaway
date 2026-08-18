@@ -18,127 +18,16 @@ public static class DynamicDataSeeder
     {
         // Osiguraj da baza postoji (bez migracija)
         await context.Database.EnsureCreatedAsync();
-        //await SeedProductCategoriesAsync(context);
-        await SeedContainerTypesAsync(context);
-        await SeedOrderStatusAsync(context);
-        await SeedPermissionsAsync(context);
-        await SeedPrivilegesAsync(context);
-        await SeedRolesAsync(context);
         await SeedUsersAsync(context);
         await SeedSupplierAsync(context);
         await SeedWarehouseAsync(context);
         await SeedContainersAsync(context);
-        await SeedContainerStatusesAsync(context);
         await SeedContainerStatusHistoryAsync(context);
         await SeedItemsAsync(context);
         await SeedTagsAsync(context);
         await SeedItemTagsAsync(context);
         await SeedOrdersAsync(context);
         await SeedStorageIdentityAsync(context);
-        await SeedRolePermissionsAsync(context);
-    }
-    private static async Task SeedPermissionsAsync(DatabaseContext context)
-    {
-        var permissionDescriptions = new[]
-        {
-            Permissions.UsersRead,
-            Permissions.UsersCreate,
-            Permissions.UsersUpdate,
-            Permissions.UsersDelete,
-            Permissions.UsersSelfRead,
-            Permissions.UsersSelfUpdate,
-            Permissions.UsersSelfDelete,
-            Permissions.RolesRead,
-            Permissions.RolesCreate,
-            Permissions.RolesUpdate,
-            Permissions.RolesDelete,
-            Permissions.WarehouseCreate,
-            Permissions.WarehouseRead,
-            Permissions.WarehouseUpdate,
-            Permissions.WarehouseDelete,
-            Permissions.ContainerRead,
-            Permissions.ContainerCreate,
-            Permissions.ContainerUpdate,
-            Permissions.ContainerDelete,
-            Permissions.ItemRead,
-            Permissions.ItemCreate,
-            Permissions.ItemUpdate,
-            Permissions.ItemDelete,
-            Permissions.TagRead,
-            Permissions.TagCreate,
-            Permissions.OrderRead,
-            Permissions.OrderCreate,
-            Permissions.OrderUpdate,
-            Permissions.OrderDelete,
-            Permissions.SupplierRead,
-            Permissions.SupplierCreate,
-            Permissions.SupplierUpdate,
-            Permissions.SupplierDelete,
-            Permissions.CartManage,
-            Permissions.WarehouseUsersManage,
-        };
-
-        var existingDescriptions = await context.Permissions
-            .Where(p => permissionDescriptions.Contains(p.Description))
-            .Select(p => p.Description)
-            .ToListAsync();
-
-        var missingPermissions = permissionDescriptions
-            .Where(d => !existingDescriptions.Contains(d))
-            .Select(d => new PermissionEntity { Description = d })
-            .ToList();
-
-        if (missingPermissions.Count == 0)
-        {
-            Console.WriteLine("✅ Dynamic seed: permissions already exist.");
-            return;
-        }
-
-        context.Permissions.AddRange(missingPermissions);
-        await context.SaveChangesAsync();
-        Console.WriteLine($"✅ Dynamic seed: {missingPermissions.Count} permissions added.");
-    }
-
-    private static async Task SeedPrivilegesAsync(DatabaseContext context)
-    {
-        var privilegeNames = new[]
-        {
-            Priviledges.WarehouseRead,
-            Priviledges.WarehouseUpdate,
-            Priviledges.ContainerRead,
-            Priviledges.ContainerCreate,
-            Priviledges.ContainerUpdate,
-            Priviledges.ContainerDelete,
-            Priviledges.ItemRead,
-            Priviledges.ItemCreate,
-            Priviledges.ItemUpdate,
-            Priviledges.ItemDelete,
-        };
-
-        var existingPrivileges = await context.Priviledges
-            .Where(permission => privilegeNames.Contains(permission.Code))
-            .Select(permission => permission.Code)
-            .ToListAsync();
-
-        var missingPrivileges = privilegeNames
-            .Where(name => !existingPrivileges.Contains(name))
-            .Select((name, index) => new PriviledgeEntity
-            {
-                Code = name,
-                Description = name
-            })
-            .ToList();
-
-        if (missingPrivileges.Count == 0)
-        {
-            Console.WriteLine("✅ Dynamic seed: warehouse privileges already exist.");
-            return;
-        }
-
-        context.Priviledges.AddRange(missingPrivileges);
-
-        await context.SaveChangesAsync();
-        Console.WriteLine($"✅ Dynamic seed: {missingPrivileges.Count} warehouse privileges added.");
     }
 
     private static async Task SeedOrdersAsync(DatabaseContext context)
@@ -176,60 +65,6 @@ public static class DynamicDataSeeder
         context.SaveChanges();
         Console.WriteLine("✅ Dynamic seed: demo orders added.");
 
-    }
-
-    private static async Task SeedOrderStatusAsync(DatabaseContext context)
-    {
-        if (await context.OrderStatuses.AnyAsync())
-            return;
-        var OrderStatusNames = Enum.GetNames(typeof(OrderStatus));
-        for (var i = 1; i <= OrderStatusNames.Length; i++)
-        {
-
-            OrderStatusEntity status = new OrderStatusEntity()
-            {
-                Id = (OrderStatus) i,
-                Description = OrderStatusNames[i - 1]
-            };
-            context.OrderStatuses.Add(status);
-            //context.OrderStatuses.Add(new OrderStatusEntity { Description = OrderStatusNames[i-1] });
-            context.SaveChanges();
-        }
-        //await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo order status added.");
-    }
-
-    private static async Task SeedContainerTypesAsync(DatabaseContext context)
-    {
-        var existing = await context.ContainerTypes.ToListAsync();
-
-        void EnsureType(int maxContainers, int maxItems, decimal price)
-        {
-            if (existing.Any(t => t.MaxContainers == maxContainers && t.MaxItems == maxItems))
-            {
-                return;
-            }
-
-            context.ContainerTypes.Add(new ContainerTypeEntity
-            {
-                MaxContainers = maxContainers,
-                MaxItems = maxItems,
-                Price = price,
-            });
-        }
-
-        // Tiny holds items only — it can't hold sub-containers at all (MaxContainers = 0),
-        // which makes it the floor of the size hierarchy: nothing can nest inside it.
-        EnsureType(maxContainers: 0, maxItems: 10, price: 0.5m);
-        EnsureType(maxContainers: 5, maxItems: 50, price: 1m);
-        EnsureType(maxContainers: 10, maxItems: 100, price: 2m);
-        EnsureType(maxContainers: 20, maxItems: 500, price: 3m);
-
-        if (context.ChangeTracker.HasChanges())
-        {
-            await context.SaveChangesAsync();
-            Console.WriteLine("✅ Dynamic seed: demo container types added.");
-        }
     }
 
     private static async Task SeedSupplierAsync(DatabaseContext context)
@@ -317,29 +152,6 @@ public static class DynamicDataSeeder
         context.Containers.AddRange(CardboardBox, WoodenPallet);
         await context.SaveChangesAsync();
         Console.WriteLine("✅ Dynamic seed: demo containers added.");
-    }
-
-    private static async Task SeedContainerStatusesAsync(DatabaseContext context)
-    {
-        if (await context.ContainerStatuses.AnyAsync())
-        {
-            return;
-        }
-
-        var statuses = new List<ContainerStatusEntity>
-        {
-            new() { Description = "Active" },
-            new() { Description = "Full" },
-            new() { Description = "Under maintenance" },
-            new() { Description = "Needs inspection" },
-            new() { Description = "Damaged" },
-            new() { Description = "Incoming" },
-            new() { Description = "Outgoing" },
-        };
-
-        context.ContainerStatuses.AddRange(statuses);
-        await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo container statuses added.");
     }
 
     private static async Task SeedContainerStatusHistoryAsync(DatabaseContext context)
@@ -462,40 +274,6 @@ public static class DynamicDataSeeder
     /// <summary>
     /// Kreira demo korisnike ako ih još nema u bazi.
     /// </summary>
-
-    private static async Task SeedRolesAsync(DatabaseContext context)
-{
-    var requiredRoles = new[]
-    {
-        Role.Admin,
-        Role.User,
-        Role.Manager
-    };
-
-    var existingRoleIds = await context.Roles
-        .Where(r => requiredRoles.Contains(r.Id))
-        .Select(r => r.Id)
-        .ToListAsync();
-
-    var missingRoles = requiredRoles
-        .Where(roleId => !existingRoleIds.Contains(roleId))
-        .Select(roleId => new RoleEntity
-        {
-            Id = roleId
-        })
-        .ToList();
-
-    if (missingRoles.Count == 0)
-    {
-        Console.WriteLine("✅ Dynamic seed: roles already exist.");
-        return;
-    }
-
-    context.Roles.AddRange(missingRoles);
-    await context.SaveChangesAsync();
-
-    Console.WriteLine($"✅ Dynamic seed: {missingRoles.Count} roles added.");
-}
     private static async Task SeedUsersAsync(DatabaseContext context)
     {
         if (await context.Users.AnyAsync())
@@ -692,104 +470,5 @@ public static class DynamicDataSeeder
 
         await context.SaveChangesAsync();
         Console.WriteLine("✅ Dynamic seed: warehouse identity groups and assignments added.");
-    }
-
-    // Explicit per-role permission matrix. Admin gets every permission that exists.
-    // Manager gets everything except Roles.Create/Update/Delete.
-    // User only gets its own module access (Self, Warehouse.Read, Container/Item/Tag/Supplier.Read, Cart).
-    private static readonly string[] ManagerOnlyPermissions =
-    {
-        Permissions.UsersRead, Permissions.UsersCreate, Permissions.UsersUpdate, Permissions.UsersDelete,
-        Permissions.RolesRead,
-        Permissions.WarehouseCreate, Permissions.WarehouseUpdate, Permissions.WarehouseDelete,
-        Permissions.OrderRead, Permissions.OrderCreate,
-        Permissions.SupplierCreate, Permissions.SupplierUpdate, Permissions.SupplierDelete,
-        Permissions.WarehouseUsersManage,
-        Permissions.CartManage
-    };
-
-    private static readonly string[] AdminOnlyPermissions =
-    {
-        Permissions.RolesCreate, Permissions.RolesUpdate, Permissions.RolesDelete,
-        Permissions.OrderUpdate, Permissions.OrderDelete,
-        Permissions.CartManage
-    };
-
-    private static readonly string[] SharedByAllRolesPermissions =
-    {
-        Permissions.UsersSelfRead, Permissions.UsersSelfUpdate, Permissions.UsersSelfDelete,
-        Permissions.WarehouseRead,
-        Permissions.ContainerRead, Permissions.ContainerCreate, Permissions.ContainerUpdate, Permissions.ContainerDelete,
-        Permissions.ItemRead, Permissions.ItemCreate, Permissions.ItemUpdate, Permissions.ItemDelete,
-        Permissions.TagRead, Permissions.TagCreate,
-        Permissions.SupplierRead,
-    };
-
-    private static async Task SeedRolePermissionsAsync(DatabaseContext context)
-    {
-        if (!await context.Permissions.AnyAsync())
-            return;
-
-        var permissions = await context.Permissions
-            .AsNoTracking()
-            .ToListAsync();
-
-        var userPermissions = new HashSet<string>(SharedByAllRolesPermissions, StringComparer.OrdinalIgnoreCase);
-        var managerPermissions = new HashSet<string>(SharedByAllRolesPermissions, StringComparer.OrdinalIgnoreCase);
-        managerPermissions.UnionWith(ManagerOnlyPermissions);
-        var adminPermissions = new HashSet<string>(managerPermissions, StringComparer.OrdinalIgnoreCase);
-        adminPermissions.UnionWith(AdminOnlyPermissions);
-
-        var desiredByRole = new Dictionary<Role, HashSet<string>>
-        {
-            [Role.User] = userPermissions,
-            [Role.Manager] = managerPermissions,
-            [Role.Admin] = adminPermissions,
-        };
-
-        var existingAssignments = await context.PermissionRoles
-            .Include(permissionRole => permissionRole.Permission)
-            .ToListAsync();
-
-        var toAdd = new List<Permission_RoleEntity>();
-
-        foreach (var (role, desiredPermissions) in desiredByRole)
-        {
-            var alreadyGranted = existingAssignments
-                .Where(a => a.RoleId == role)
-                .Select(a => a.Permission.Description)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var permission in permissions.Where(p => desiredPermissions.Contains(p.Description) && !alreadyGranted.Contains(p.Description)))
-            {
-                toAdd.Add(new Permission_RoleEntity { RoleId = role, PermissionId = permission.Id });
-            }
-        }
-
-        // Reconcile: drop any previously-granted row (e.g. from the old heuristic seeder)
-        // that the new explicit matrix no longer grants.
-        var toRemove = existingAssignments
-            .Where(a => !desiredByRole.TryGetValue(a.RoleId, out var desired) || !desired.Contains(a.Permission.Description))
-            .ToList();
-
-        if (toRemove.Count > 0)
-        {
-            context.PermissionRoles.RemoveRange(toRemove);
-        }
-
-        if (toAdd.Count > 0)
-        {
-            context.PermissionRoles.AddRange(toAdd);
-        }
-
-        if (toAdd.Count == 0 && toRemove.Count == 0)
-        {
-            Console.WriteLine("✅ Dynamic seed: role permissions already up to date.");
-            return;
-        }
-
-        await context.SaveChangesAsync();
-
-        Console.WriteLine($"✅ Dynamic seed: {toAdd.Count} role permissions added, {toRemove.Count} stale role permissions removed.");
     }
 }
