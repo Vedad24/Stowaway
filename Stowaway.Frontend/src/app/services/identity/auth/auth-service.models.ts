@@ -19,6 +19,7 @@ export interface CurrentUserDto
 {
     roleId : number;
     accessToken : string;
+    refreshToken : string;
 }
 
 export interface JwtUserPayload
