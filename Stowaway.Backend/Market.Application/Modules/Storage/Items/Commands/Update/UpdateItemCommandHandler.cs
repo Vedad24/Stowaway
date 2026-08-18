@@ -16,25 +16,25 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
 
             if (item is null)
             {
-                throw new Exception($"Item with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Item with id: {request.Id} not found");
             }
 
             var supplier = await ctx.Suppliers.Where(x=> x.Id == request.SupplierId).FirstOrDefaultAsync( cancellationToken);
 
             if (supplier is null)
             {
-                throw new Exception($"Supplier with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Supplier with id: {request.Id} not found");
             }
 
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id.Equals(request.ContainerId), cancellationToken);
             if (container == null)
             {
-                throw new Exception("Container does not exist");
+                throw new StowawayNotFoundException("Container does not exist");
             }
 
             if(request.Quantity < 1)
             {
-                throw new Exception("Quantity cant be less than 1");
+                throw new StowawayBusinessRuleException("item.invalid-quantity", "Quantity cant be less than 1");
             }
 
             await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, request.Quantity, cancellationToken, excludeItemIds: new[] { item.Id });

@@ -12,7 +12,7 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Commands.Update
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (supplier == null) {
-                throw new Exception($"Supplier with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Supplier with id: {request.Id} not found");
             }
 
             var exist = await ctx.Suppliers
@@ -20,7 +20,7 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Commands.Update
 
             if (exist)
             {
-                throw new Exception("Supplier with this name already exists");
+                throw new StowawayConflictException("Supplier with this name already exists");
             }
 
             supplier.Name = request.Name.Trim();

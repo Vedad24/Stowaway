@@ -9,7 +9,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Delete
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (container is null)
             {
-                throw new Exception($"Container with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.Id} not found");
             }
 
             var childContainers = await ctx.Containers
@@ -31,7 +31,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Delete
                 var target = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.MoveContentsToContainerId.Value, cancellationToken);
                 if (target is null)
                 {
-                    throw new Exception($"Container with id: {request.MoveContentsToContainerId.Value} not found");
+                    throw new StowawayNotFoundException($"Container with id: {request.MoveContentsToContainerId.Value} not found");
                 }
                 if (target.Id == container.Id)
                 {

@@ -42,6 +42,7 @@ public sealed class MarketExceptionHandler(
         {
             StowawayNotFoundException => StatusCodes.Status404NotFound,
             StowawayConflictException or StowawayBusinessRuleException => StatusCodes.Status409Conflict,
+            StowawayUnauthorizedException => StatusCodes.Status401Unauthorized,
             ValidationException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
@@ -62,6 +63,7 @@ public sealed class MarketExceptionHandler(
             case StowawayNotFoundException:
             case StowawayConflictException:
             case StowawayBusinessRuleException:
+            case StowawayUnauthorizedException:
                 code = "entity.error";
                 message = ex.Message;
                 break;

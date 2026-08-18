@@ -14,13 +14,13 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Move
             var item = await ctx.Item.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (item is null)
             {
-                throw new Exception($"Item with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Item with id: {request.Id} not found");
             }
 
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.ContainerId, cancellationToken);
             if (container is null)
             {
-                throw new Exception($"Container with id: {request.ContainerId} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.ContainerId} not found");
             }
 
             await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, item.Quantity, cancellationToken, excludeItemIds: new[] { item.Id });

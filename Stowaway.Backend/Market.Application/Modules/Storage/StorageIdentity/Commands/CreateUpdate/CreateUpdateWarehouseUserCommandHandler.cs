@@ -10,13 +10,13 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.CreateUp
             var userExists = await ctx.Users.AnyAsync(u => u.Id == request.UserId, cancellationToken);
             if (!userExists)
             {
-                throw new Exception("User with the supplied id was not found.");
+                throw new StowawayNotFoundException("User with the supplied id was not found.");
             }
 
             var warehouseExists = await ctx.Warehouses.AnyAsync(w => w.Id == request.WarehouseId, cancellationToken);
             if (!warehouseExists)
             {
-                throw new Exception("Warehouse with the supplied id was not found.");
+                throw new StowawayNotFoundException("Warehouse with the supplied id was not found.");
             }
 
             var priviledgeGroup = await ctx.PriviledgeGroups
@@ -24,12 +24,12 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.CreateUp
 
             if (priviledgeGroup is null)
             {
-                throw new Exception("Privilege group with the supplied id was not found.");
+                throw new StowawayNotFoundException("Privilege group with the supplied id was not found.");
             }
 
             if (priviledgeGroup.WarehouseId != request.WarehouseId)
             {
-                throw new Exception("Privilege group does not belong to the supplied warehouse.");
+                throw new StowawayBusinessRuleException("priviledge-group.wrong-warehouse", "Privilege group does not belong to the supplied warehouse.");
             }
 
             var existingAssignment = await ctx.WarehouseUsers

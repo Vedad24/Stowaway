@@ -33,7 +33,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Queries.GetById
 
             if (container is null)
             {
-                throw new Exception($"Container with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.Id} not found");
             }
 
             container.ItemQuantityUsed = await ContainerCapacityHelper.GetRecursiveItemQuantity(ctx, container.Id, cancellationToken);

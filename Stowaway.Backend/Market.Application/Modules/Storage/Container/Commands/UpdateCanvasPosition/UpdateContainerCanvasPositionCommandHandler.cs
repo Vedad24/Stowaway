@@ -15,12 +15,12 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.UpdateCanvasPo
 
             if (container is null)
             {
-                throw new Exception($"Container with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.Id} not found");
             }
 
             if (request.CanvasX.HasValue != request.CanvasY.HasValue)
             {
-                throw new Exception("Canvas position needs both X and Y, or neither");
+                throw new StowawayBusinessRuleException("canvas-position.incomplete", "Canvas position needs both X and Y, or neither");
             }
 
             container.CanvasX = request.CanvasX;

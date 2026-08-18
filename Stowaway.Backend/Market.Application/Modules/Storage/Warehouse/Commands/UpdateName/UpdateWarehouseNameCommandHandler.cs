@@ -9,7 +9,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.UpdateName
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (warehouse == null) {
-                throw new Exception($"Warehouse with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Warehouse with id: {request.Id} not found");
             }
 
             var exist = await ctx.Warehouses
@@ -17,7 +17,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.UpdateName
 
             if (exist)
             {
-                throw new Exception("Warehouse with this name already exists");
+                throw new StowawayConflictException("Warehouse with this name already exists");
             }
 
             warehouse.Name = request.Name.Trim();

@@ -16,13 +16,13 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Create
             var warehouse = await ctx.Warehouses.FirstOrDefaultAsync(x => x.Id == request.WarehouseId, cancellationToken);
             if (warehouse is null)
             {
-                throw new Exception($"Warehouse with id: {request.WarehouseId} not found");
+                throw new StowawayNotFoundException($"Warehouse with id: {request.WarehouseId} not found");
             }
 
             var containerType = await ctx.ContainerTypes.FirstOrDefaultAsync(x => x.Id == request.ContainerTypeId, cancellationToken);
             if (containerType is null)
             {
-                throw new Exception($"Container type with id: {request.ContainerTypeId} not found");
+                throw new StowawayNotFoundException($"Container type with id: {request.ContainerTypeId} not found");
             }
 
             if (request.ParentContainerId.HasValue)
@@ -30,12 +30,12 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Create
                 var parent = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.ParentContainerId.Value, cancellationToken);
                 if (parent is null)
                 {
-                    throw new Exception($"Container with id: {request.ParentContainerId.Value} not found");
+                    throw new StowawayNotFoundException($"Container with id: {request.ParentContainerId.Value} not found");
                 }
 
                 if (parent.WarehouseId != request.WarehouseId)
                 {
-                    throw new Exception("Parent container belongs to a different warehouse");
+                    throw new StowawayBusinessRuleException("container.cross-warehouse", "Parent container belongs to a different warehouse");
                 }
 
                 var parentType = await ctx.ContainerTypes.FirstOrDefaultAsync(t => t.Id == parent.ContainerTypeId, cancellationToken);
