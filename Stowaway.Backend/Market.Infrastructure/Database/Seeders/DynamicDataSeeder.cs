@@ -705,12 +705,14 @@ public static class DynamicDataSeeder
         Permissions.OrderRead, Permissions.OrderCreate,
         Permissions.SupplierCreate, Permissions.SupplierUpdate, Permissions.SupplierDelete,
         Permissions.WarehouseUsersManage,
+        Permissions.CartManage
     };
 
     private static readonly string[] AdminOnlyPermissions =
     {
         Permissions.RolesCreate, Permissions.RolesUpdate, Permissions.RolesDelete,
         Permissions.OrderUpdate, Permissions.OrderDelete,
+        Permissions.CartManage
     };
 
     private static readonly string[] SharedByAllRolesPermissions =
@@ -721,7 +723,6 @@ public static class DynamicDataSeeder
         Permissions.ItemRead, Permissions.ItemCreate, Permissions.ItemUpdate, Permissions.ItemDelete,
         Permissions.TagRead, Permissions.TagCreate,
         Permissions.SupplierRead,
-        Permissions.CartManage,
     };
 
     private static async Task SeedRolePermissionsAsync(DatabaseContext context)

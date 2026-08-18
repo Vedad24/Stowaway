@@ -20,11 +20,14 @@ import { PriviledgeGroupEdit } from './core/priviledges/priviledge-group-edit/pr
 import { ProductPage } from './core/sales/product-page/product-page';
 import { Cart } from './core/sales/cart/cart';
 import { routeGuardGuard } from './services/route-guard-guard';
+import { permissionGuard } from './services/permission-guard-guard';
+import { Permissions } from './shared/constants/permissions';
 import { EmployeeManagement } from './core/identity/employee-management/employee-management';
 import { EmployeeAddEdit } from './core/identity/employee-management/employee-add-edit/employee-add-edit';
 import { WarehouseUserManagement } from './core/identity/warehouse-user-management/warehouse-user-management';
 import { PaymentSuccess } from './core/sales/payment/success/payment-success/payment-success';
 import { PaymentCancel } from './core/sales/payment/cancel/payment-cancel/payment-cancel';
+import { permission } from 'process';
 
 export const routes: Routes = [
     {
@@ -47,39 +50,48 @@ export const routes: Routes = [
     },
     {
         path: 'warehouse',
-        component: Warehouse
+        component: Warehouse,
+        canActivate: [permissionGuard(Permissions.WarehouseRead)]
     },
     {
         path: 'warehouse/create',
-        component: CreateWarehouse
+        component: CreateWarehouse,
+        canActivate: [permissionGuard(Permissions.WarehouseCreate)]
     },
     {
         path: 'warehouse/edit/:abc',
-        component: EditWarehouse
+        component: EditWarehouse,
+        canActivate: [permissionGuard(Permissions.WarehouseUpdate)]
     },
     {
         path: 'item',
-        component: Item
+        component: Item,
+        canActivate: [permissionGuard(Permissions.ItemRead)]
     },
     {
         path: 'item/create',
-        component: CreateItem
+        component: CreateItem,
+        canActivate: [permissionGuard(Permissions.ItemCreate)]
     },
     {
         path: 'item/edit/:id',
-        component: EditItem
+        component: EditItem,
+        canActivate: [permissionGuard(Permissions.ItemUpdate)]
     },
     {
         path: 'supplier',
-        component: Supplier
+        component: Supplier,
+        canActivate: [permissionGuard(Permissions.SupplierRead)]
     },
     {
         path: 'supplier/create',
-        component: CreateSupplier
+        component: CreateSupplier,
+        canActivate: [permissionGuard(Permissions.SupplierCreate)]
     },
     {
         path: 'supplier/edit/:id',
-        component: EditSupplier
+        component: EditSupplier,
+        canActivate: [permissionGuard(Permissions.SupplierUpdate)]
     },
     {
         path: 'test-users',
@@ -87,7 +99,8 @@ export const routes: Routes = [
     },
     {
         path: 'orders-test',
-        component: TestSales
+        component: TestSales,
+        canActivate: [permissionGuard(Permissions.OrderRead)]
     },
     {
         path: 'sign-up',
@@ -99,15 +112,18 @@ export const routes: Routes = [
     },
     {
         path: "priviledge-group/edit/:warehouseId",
-        component: PriviledgeGroupEdit
+        component: PriviledgeGroupEdit,
+        canActivate: [permissionGuard(Permissions.WarehouseUsersManage)]
     },
     {
         path: 'product-page',
-        component: ProductPage
+        component: ProductPage,
+        canActivate: [permissionGuard(Permissions.OrderCreate)]
     },
     {
         path: 'cart',
-        component: Cart
+        component: Cart,
+        canActivate: [permissionGuard(Permissions.CartManage)]
     },
     {
         path: "payment/success/:orderId",
@@ -119,14 +135,17 @@ export const routes: Routes = [
     },
     {
         path: 'employee-management',
-        component: EmployeeManagement, 
+        component: EmployeeManagement,
+        canActivate: [permissionGuard(Permissions.UsersRead)]
     }
     ,{
         path: "employee-management/add-edit",
-        component: EmployeeAddEdit
+        component: EmployeeAddEdit,
+        canActivate: [permissionGuard(Permissions.UsersRead)]
     },
     {
         path: "employee-management/warehouse-user-manage/:userId",
-        component: WarehouseUserManagement
+        component: WarehouseUserManagement,
+        canActivate: [permissionGuard(Permissions.WarehouseUsersManage)]
     }
 ];
