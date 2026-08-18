@@ -19,12 +19,18 @@ public static class DatabaseInitializer
         if (env.IsTest())
         {
             await ctx.Database.EnsureCreatedAsync();
+            // resetIdentitySeeds: false — IsTest() runs against the InMemory provider,
+            // which doesn't support ExecuteSqlRawAsync/DBCC CHECKIDENT, and each test DB
+            // starts empty anyway so there's no ID-gap issue.
+            await StaticDataSeeder.SeedAsync(ctx, resetIdentitySeeds: false);
             await DynamicDataSeeder.SeedAsync(ctx);
             return;
         }
 
         // SQL Server or similar
         await ctx.Database.MigrateAsync();
+
+        await StaticDataSeeder.SeedAsync(ctx, resetIdentitySeeds: env.IsDevelopment());
 
         if (env.IsDevelopment())
         {
