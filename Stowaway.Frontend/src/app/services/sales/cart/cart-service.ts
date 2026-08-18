@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import {
   AddToCartCommand,
   AddToCartCommandDto,
@@ -16,7 +17,7 @@ import {
 })
 export class CartService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/Cart`;
+  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.Cart}`;
 
   public list(userId: number): Observable<ListCartItemsQueryDto> {
     return this.http.get<ListCartItemsQueryDto>(`${this.baseUrl}/${userId}`);

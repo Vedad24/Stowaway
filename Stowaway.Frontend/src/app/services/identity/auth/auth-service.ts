@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { CurrentUserService } from './current-user-service'; 
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment'
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import { LoginCommandDto } from './auth-service.models';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 @Injectable({
@@ -15,7 +16,7 @@ export class AuthService {
   backendUrl = environment.apiUrl;
   login(email: string, password: string) : Observable<boolean>{
     
-    return this.backendApi.post(`${this.backendUrl}/api/auth/login`, {
+    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/login`, {
       email: email,
       password: password,
       fingerprint: ''

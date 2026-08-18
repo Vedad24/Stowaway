@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import {
   ListSupplierQuery, ListSupplierQueryDto, ListSupplierQueryResponse,
   CreateSupplierCommand, UpdateSupplierCommand, GetSupplierByIdDto
@@ -12,7 +13,7 @@ import { buildHttpParams } from '../../../models/build-http-params';
   providedIn: 'root',
 })
 export class SupplierApiService {
-  private readonly baseUrl = `${environment.apiUrl}/Supplier`;
+  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.Supplier}`;
   private http = inject(HttpClient);
 
   list(request?: ListSupplierQuery): Observable<ListSupplierQueryResponse>{

@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import { CreateWarehouseCommand, GetWarehouseByIdDto, ListWarehouseQuery, ListWarehouseQueryResponse, UpdateWarehouseCommand, UpdateWarehouseNameCommand, UpdateWarehouseNameCommandDto } from './warehouse.model';
 import { Observable } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
@@ -10,7 +11,7 @@ import { ObjectEncodingOptions } from 'node:fs';
   providedIn: 'root',
 })
 export class WarehouseApiService {
-  private readonly baseUrl = `${environment.apiUrl}/Warehouse`;
+  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.Warehouse}`;
   private http = inject(HttpClient);
 
   list(request?: ListWarehouseQuery): Observable<ListWarehouseQueryResponse>{

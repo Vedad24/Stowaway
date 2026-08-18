@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import { buildHttpParams } from '../../../models/build-http-params';
 import {
   ListContainerTypeQueryDto,
@@ -17,7 +18,7 @@ import {
 })
 export class ProductPageService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/ProductPage`;
+  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.ProductPage}`;
 
   public getUserWarehouses(request?: ListWarehousesQuery): Observable<ListWarehousesQueryResponse> {
     const params = request ? buildHttpParams(request as any) : undefined;

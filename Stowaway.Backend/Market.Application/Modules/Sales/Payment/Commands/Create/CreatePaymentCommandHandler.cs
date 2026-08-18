@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Market.Application.Abstractions.Payments;
+using Market.Shared.Options;
+using Microsoft.Extensions.Options;
 using Stowaway.Domain.Entities.Sales;
 
 namespace Market.Application.Modules.Sales.Payment.Commands.Create
 {
-    public class CreatePaymentCommandHandler(IAppDbContext db, IPaymentProvider paymentProvider) : IRequestHandler<CreatePaymentCommand, CreatePaymentResponse>
+    public class CreatePaymentCommandHandler(
+        IAppDbContext db,
+        IPaymentProvider paymentProvider,
+        IOptions<FrontendOptions> frontendOptions) : IRequestHandler<CreatePaymentCommand, CreatePaymentResponse>
     {
         public async Task<CreatePaymentResponse> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
@@ -22,15 +27,16 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
         if (order.OrderStatusId == OrderStatus.Completed)
             throw new ValidationException("Order has already been paid.");
 
+        var frontendBaseUrl = frontendOptions.Value.BaseUrl;
+
         var paymentRequest = new CreatePaymentRequest
         {
             OrderId = order.Id,
             Amount = order.Total,
             Currency = "usd",
 
-            // temporary placeholders
-            SuccessUrl = $"http://localhost:4200/payment/success/{order.Id}",
-            CancelUrl = $"http://localhost:4200/payment/cancel/{order.Id}"
+            SuccessUrl = $"{frontendBaseUrl}/payment/success/{order.Id}",
+            CancelUrl = $"{frontendBaseUrl}/payment/cancel/{order.Id}"
         };
 
         var paymentResponse =

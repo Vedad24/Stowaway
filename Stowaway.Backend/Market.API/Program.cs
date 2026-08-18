@@ -46,6 +46,9 @@ public partial class Program
             // ---------------------------------------------------------
             // 3. Layer registrations
             // ---------------------------------------------------------
+            var allowedOrigins = builder.Configuration
+                .GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
             builder.Services
                 .AddAPI(builder.Configuration, builder.Environment)
                 .AddInfrastructure(builder.Configuration, builder.Environment)
@@ -54,12 +57,7 @@ public partial class Program
                 {
                     options.AddPolicy("FrontendPolicy", policy =>
                     {
-                        policy.WithOrigins(
-                                "http://localhost:4200",
-                                "https://localhost:4200",
-                                "http://127.0.0.1:4200",
-                                "https://127.0.0.1:4200"
-                            )
+                        policy.WithOrigins(allowedOrigins)
                                .AllowAnyMethod()
                                .AllowAnyHeader()
                                .AllowCredentials();
