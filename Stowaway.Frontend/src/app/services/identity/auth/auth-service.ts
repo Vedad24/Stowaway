@@ -38,4 +38,20 @@ export class AuthService {
   isLoggedIn(): import("@angular/router").MaybeAsync<import("@angular/router").GuardResult> {
     return this.currentUserService.currentUser !== null;
   }
+
+  logout(): Observable<boolean> {
+    const refreshToken = this.currentUserService.currentUser?.refreshToken ?? '';
+
+    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/logout`, {
+      refreshToken: refreshToken
+    })
+    .pipe(
+      tap(() => this.currentUserService.clearUser()),
+      map(() => true),
+      catchError(() => {
+        this.currentUserService.clearUser();
+        return of(false);
+      }),
+    );
+  }
 }

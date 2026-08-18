@@ -47,6 +47,7 @@ export const routes: Routes = [
     {
         path: 'choose-module',
         component: ChooseModule,
+        canActivate: [routeGuardGuard]
     },
     {
         path: 'warehouse',
@@ -93,22 +94,23 @@ export const routes: Routes = [
         component: EditSupplier,
         canActivate: [permissionGuard(Permissions.SupplierUpdate)]
     },
-    {
-        path: 'test-users',
-        component: TestUsers
-    },
-    {
-        path: 'orders-test',
-        component: TestSales,
-        canActivate: [permissionGuard(Permissions.OrderRead)]
-    },
+    // {
+    //     path: 'test-users',
+    //     component: TestUsers
+    // },
+    // {
+    //     path: 'orders-test',
+    //     component: TestSales,
+    //     canActivate: [permissionGuard(Permissions.OrderRead)]
+    // },
     {
         path: 'sign-up',
         component: SignUp
     },
     {
         path: "user/settings",
-        component: UserSettings
+        component: UserSettings,
+        canActivate: [routeGuardGuard]
     },
     {
         path: "priviledge-group/edit/:warehouseId",

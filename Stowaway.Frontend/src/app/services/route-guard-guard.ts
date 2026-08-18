@@ -11,7 +11,7 @@ export const routeGuardGuard: CanActivateFn = (route, state) => {
   //allows manually typing in URLs after authenticating
   if(!isPlatformBrowser(platformId))
     return true;
-
+  
   if( authService.isLoggedIn())
     return true;
   return router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url } });

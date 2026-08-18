@@ -24,9 +24,16 @@ export class CurrentUserService {
       decoded.role;
     this._currentUser = {
       roleId : roleClaim != null ? roleClaim == "Admin" ? 1 : 0 : 0,
-      accessToken: response.accessToken
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken
     }
     this.localStorageService.setItem('currentUserStorage', JSON.stringify(this._currentUser));
+  }
+
+  clearUser()
+  {
+    this._currentUser = null;
+    this.localStorageService.removeItem('currentUserStorage');
   }
 
   getUserFromStorage()
