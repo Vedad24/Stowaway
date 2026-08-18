@@ -1,4 +1,6 @@
-﻿using Stowaway.Application.Modules.Storage.Items.Queries.GetById;
+﻿using Market.API.Authorization;
+using Market.Shared.Constants;
+using Stowaway.Application.Modules.Storage.Items.Queries.GetById;
 using Stowaway.Application.Modules.Storage.Items.Queries.List;
 using Stowaway.Application.Modules.Storage.Supplier.Commands.Create;
 using Stowaway.Application.Modules.Storage.Supplier.Commands.Delete;
@@ -10,10 +12,11 @@ namespace Stowaway.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class SupplierController(ISender sender) : ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
+        [HasPermission(Permissions.SupplierRead)]
         public async Task<PageResult<ListSupplierQueryDto>> List([FromQuery] ListSupplierQuery query, CancellationToken cancellationToken)
         {
             var result = await sender.Send(query, cancellationToken);
@@ -21,7 +24,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.SupplierRead)]
         public async Task<GetSupplierByIdQueryDto> GetById(int id, CancellationToken cancellationToken)
         {
             var result = await sender.Send(new GetSupplierByIdQuery { Id = id }, cancellationToken);
@@ -29,7 +32,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [HasPermission(Permissions.SupplierCreate)]
         public async Task<ActionResult<int>> Create(CreateSupplierCommand command, CancellationToken cancellationToken)
         {
             int id = await sender.Send(command, cancellationToken);
@@ -37,7 +40,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.SupplierDelete)]
         public async Task<Unit> Delete(int id, CancellationToken cancellationToken)
         {
             return await sender.Send(new DeleteSupplierCommand { Id = id }, cancellationToken);
@@ -45,7 +48,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.SupplierUpdate)]
         public async Task Update(int id, UpdateSupplierCommand command, CancellationToken cancellationToken)
         {
             command.Id = id;

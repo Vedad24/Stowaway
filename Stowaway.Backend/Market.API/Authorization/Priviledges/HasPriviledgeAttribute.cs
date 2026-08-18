@@ -5,8 +5,15 @@ namespace Market.API.Authorization;
 
 public sealed class HasPriviledgeAttribute : AuthorizeAttribute
 {
-    public HasPriviledgeAttribute(string priviledge)
+    // Policy string carries the priviledge code plus warehouse-resolution metadata,
+    // pipe-delimited, so StowawayAuthPolicyProvider can rebuild a full PriviledgeRequirement
+    // from just the policy name without a separate out-of-band lookup.
+    public HasPriviledgeAttribute(
+        string priviledge,
+        WarehouseResolutionStrategy strategy = WarehouseResolutionStrategy.RouteId,
+        string routeKey = "id",
+        string bodyFieldName = "WarehouseId")
     {
-        Policy = $"{Priviledges.AuthPrefix}{priviledge}";
+        Policy = $"{Priviledges.AuthPrefix}{priviledge}|{strategy}|{routeKey}|{bodyFieldName}";
     }
 }

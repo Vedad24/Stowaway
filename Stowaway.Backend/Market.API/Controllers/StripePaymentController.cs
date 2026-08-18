@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Market.API.Authorization;
 using Market.Application.Modules.Sales.Payment.Commands.Create;
 using Market.Application.Modules.Sales.Payment.Commands.Update;
+using Market.Shared.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stripe;
@@ -24,6 +26,7 @@ namespace Market.API.Controllers
         }
 
         [HttpPost("pay")]
+        [HasPermission(Permissions.OrderCreate)]
         public async Task<IActionResult> MakePayment(
         [FromBody]CreatePaymentCommand command,
         CancellationToken cancellationToken)

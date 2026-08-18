@@ -1,5 +1,5 @@
-﻿using System.Security.Cryptography.Xml;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Market.API.Authorization;
+using Market.Shared.Constants;
 using Stowaway.Application.Modules.Storage.Items.Commands.Create;
 using Stowaway.Application.Modules.Storage.Items.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Items.Commands.Move;
@@ -12,10 +12,11 @@ namespace Stowaway.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ItemController(ISender sender) : ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ItemRead)]
         public async Task<PageResult<ListItemQueryDto>> List([FromQuery] ListItemQuery query, CancellationToken cancellationToken)
         {
             var result = await sender.Send(query, cancellationToken);
@@ -23,7 +24,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ItemRead)]
+        [HasPriviledge(Priviledges.ItemRead, WarehouseResolutionStrategy.ItemRouteId)]
         public async Task<GetItemByIdQueryDto> GetById(int id, CancellationToken cancellationToken)
         {
             var result = await sender.Send(new GetItemByIdQuery { Id = id },cancellationToken);
@@ -31,7 +33,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ItemCreate)]
+        [HasPriviledge(Priviledges.ItemCreate, WarehouseResolutionStrategy.BodyFieldViaContainer)]
         public async Task<ActionResult<int>> Create(CreateItemCommand payload, CancellationToken cancellationToken)
         {
             int id = await sender.Send(payload, cancellationToken);
@@ -39,14 +42,16 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ItemDelete)]
+        [HasPriviledge(Priviledges.ItemDelete, WarehouseResolutionStrategy.ItemRouteId)]
         public async Task Delete(int id, CancellationToken cancellationToken)
         {
             await sender.Send(new DeleteItemCommand { Id = id},cancellationToken);
         }
 
         [HttpPut("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ItemUpdate)]
+        [HasPriviledge(Priviledges.ItemUpdate, WarehouseResolutionStrategy.ItemRouteId)]
         public async Task Update(int id, UpdateItemCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
@@ -54,15 +59,20 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPut("{id:int}/canvas-position")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ItemUpdate)]
+        [HasPriviledge(Priviledges.ItemUpdate, WarehouseResolutionStrategy.ItemRouteId)]
         public async Task UpdateCanvasPosition(int id, UpdateItemCanvasPositionCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
             await sender.Send(payload, cancellationToken);
         }
 
+        // Only checks the source warehouse's priviledge, not the destination container's
+        // warehouse - matches Container.Move's same-warehouse constraint; a cross-warehouse
+        // item move would need the destination checked too, left as a known follow-up.
         [HttpPut("{id:int}/container")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ItemUpdate)]
+        [HasPriviledge(Priviledges.ItemUpdate, WarehouseResolutionStrategy.ItemRouteId)]
         public async Task Move(int id, MoveItemCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;

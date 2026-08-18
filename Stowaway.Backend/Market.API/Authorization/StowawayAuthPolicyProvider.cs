@@ -23,9 +23,17 @@ public sealed class StowawayAuthPolicyProvider : IAuthorizationPolicyProvider
             return _fallbackPolicyProvider.GetPolicyAsync(policyName);
         if(policyName.StartsWith(Priviledges.AuthPrefix, StringComparison.OrdinalIgnoreCase))
         {
+            var parts = policyName.Split('|');
+            var priviledge = parts[0];
+            var strategy = parts.Length > 1 && Enum.TryParse<WarehouseResolutionStrategy>(parts[1], out var parsedStrategy)
+                ? parsedStrategy
+                : WarehouseResolutionStrategy.RouteId;
+            var routeKey = parts.Length > 2 ? parts[2] : "id";
+            var bodyFieldName = parts.Length > 3 ? parts[3] : "WarehouseId";
+
             var policy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                .AddRequirements(new PriviledgeRequirement(policyName))
+                .AddRequirements(new PriviledgeRequirement(priviledge, strategy, routeKey, bodyFieldName))
                 .Build();
 
             return Task.FromResult<AuthorizationPolicy?>(policy);

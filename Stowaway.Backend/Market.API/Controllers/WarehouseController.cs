@@ -1,4 +1,4 @@
-﻿using Market.API.Authorization;
+using Market.API.Authorization;
 using Market.Shared.Constants;
 using Stowaway.Application.Modules.Storage.Warehouse.Commands.Create;
 using Stowaway.Application.Modules.Storage.Warehouse.Commands.Delete;
@@ -11,11 +11,11 @@ namespace Stowaway.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    //[Authorize(Policy = "AdminOnly")]
+    [Authorize]
     public class WarehouseController(ISender sender) : ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
+        [HasPermission(Permissions.WarehouseRead)]
         public async Task<PageResult<ListWarehouseQueryDto>> List([FromQuery] ListWarehouseQuery query, CancellationToken ct)
         {
             var result = await sender.Send(query, ct);
@@ -23,7 +23,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.WarehouseRead)]
         public async Task<GetWarehouseQueryByIdDto> GetById(int id, CancellationToken ct)
         {
             var result = await sender.Send(new GetWarehouseByIdQuery { Id  = id }, ct);
@@ -31,7 +31,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [HasPermission(Permissions.WarehouseCreate)]
         public async Task<ActionResult<int>> CreateWarehouse(CreateWarehouseCommand command, CancellationToken ct)
         {
             int id = await sender.Send(command, ct);
@@ -39,7 +39,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.WarehouseDelete)]
         public async Task Delete(int id, CancellationToken ct)
         {
             await sender.Send(new DeleteWarehouseCommand { Id = id}, ct);
@@ -47,7 +47,7 @@ namespace Stowaway.API.Controllers
 
         [HttpPut("{id:int}")]
         [HasPermission(Permissions.WarehouseUpdate)]
-
+        [HasPriviledge(Priviledges.WarehouseUpdate)]
         public async Task Update(int id, UpdateWarehouseCommand command, CancellationToken ct)
         {
             command.Id = id;
@@ -55,7 +55,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPatch("{id:int}/name")]
-        //[HasPriviledge(Priviledges.WarehouseUpdate)]
+        [HasPermission(Permissions.WarehouseUpdate)]
+        [HasPriviledge(Priviledges.WarehouseUpdate)]
         public async Task<UpdateWarehouseNameCommandDto> UpdateName(int id, UpdateWarehouseNameCommand command, CancellationToken ct)
         {
             command.Id = id;

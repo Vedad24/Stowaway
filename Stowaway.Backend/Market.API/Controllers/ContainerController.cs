@@ -1,3 +1,5 @@
+using Market.API.Authorization;
+using Market.Shared.Constants;
 using Stowaway.Application.Modules.Storage.Container.Commands.Create;
 using Stowaway.Application.Modules.Storage.Container.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Container.Commands.Move;
@@ -12,10 +14,11 @@ namespace Stowaway.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ContainerController(ISender sender) : ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerRead)]
         public async Task<ActionResult<ListContainersDto>> ListNames([FromQuery] ListContainersQuery query, CancellationToken cancellationToken)
         {
             var result = await sender.Send(query, cancellationToken);
@@ -23,7 +26,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerRead)]
+        [HasPriviledge(Priviledges.ContainerRead, WarehouseResolutionStrategy.ContainerRouteId)]
         public async Task<ActionResult<ListContainersDto>> GetById(int id, CancellationToken cancellationToken)
         {
             var result = await sender.Send(new GetContainerByIdQuery { Id = id }, cancellationToken);
@@ -31,7 +35,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerCreate)]
+        [HasPriviledge(Priviledges.ContainerCreate, WarehouseResolutionStrategy.BodyField, bodyFieldName: "WarehouseId")]
         public async Task<ActionResult<int>> Create(CreateContainerCommand command, CancellationToken cancellationToken)
         {
             int id = await sender.Send(command, cancellationToken);
@@ -39,7 +44,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerUpdate)]
+        [HasPriviledge(Priviledges.ContainerUpdate, WarehouseResolutionStrategy.ContainerRouteId)]
         public async Task Update(int id, UpdateContainerCommand command, CancellationToken cancellationToken)
         {
             command.Id = id;
@@ -47,15 +53,19 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPut("{id:int}/canvas-position")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerUpdate)]
+        [HasPriviledge(Priviledges.ContainerUpdate, WarehouseResolutionStrategy.ContainerRouteId)]
         public async Task UpdateCanvasPosition(int id, UpdateContainerCanvasPositionCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
             await sender.Send(payload, cancellationToken);
         }
 
+        // Only checks the source warehouse's priviledge; Move is itself constrained by the
+        // handler to keep a container within the same warehouse, so this is sufficient.
         [HttpPut("{id:int}/parent-container")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerUpdate)]
+        [HasPriviledge(Priviledges.ContainerUpdate, WarehouseResolutionStrategy.ContainerRouteId)]
         public async Task Move(int id, MoveContainerCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
@@ -63,7 +73,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpPut("{id:int}/status")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerUpdate)]
+        [HasPriviledge(Priviledges.ContainerUpdate, WarehouseResolutionStrategy.ContainerRouteId)]
         public async Task UpdateStatus(int id, UpdateContainerStatusCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
@@ -71,7 +82,8 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [AllowAnonymous]
+        [HasPermission(Permissions.ContainerDelete)]
+        [HasPriviledge(Priviledges.ContainerDelete, WarehouseResolutionStrategy.ContainerRouteId)]
         public async Task Delete(
             int id,
             [FromQuery] bool deleteContents,
