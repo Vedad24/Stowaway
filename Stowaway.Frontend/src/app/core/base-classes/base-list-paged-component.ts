@@ -47,7 +47,6 @@ export abstract class BaseListPagedComponent<TDto, TRequest extends BasePagedQue
   }
 
   onPage(event: PageEvent): void {
-    console.log("Page event registered", event);
     if (event.pageSize !== this.paging.pageSize) {
       this.changePageSize(event.pageSize);
     } else {

@@ -56,7 +56,6 @@ export class ListUsers {
 
   refreshUsers()
   {
-    console.log("Refreshing users...");
     this.userService.list({search:null, roleId:null, paging: new PageRequest()})
       .pipe(
         tap( (response : ListUserQueryResponse) => {
@@ -64,7 +63,7 @@ export class ListUsers {
         this.users.data = response.items;
         }),
       )
-      .subscribe({next: (response) => {},error: error=> console.log('error?')});
+      .subscribe({next: (response) => {},error: error => {}});
   }
 
 }

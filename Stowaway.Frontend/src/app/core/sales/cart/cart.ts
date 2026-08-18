@@ -114,9 +114,8 @@ export class Cart implements OnInit {
     const createOrderCommand : CreateOrderCommand = this.prepareOrder();
     
     this.orderService.create(createOrderCommand).subscribe(
-      (createOrderResponse) => 
+      (createOrderResponse) =>
         {
-          console.log(createOrderResponse);
           this.clearCart().subscribe(
             (response) => 
             {

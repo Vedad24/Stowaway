@@ -25,7 +25,6 @@ export class PriviledgesService {
 
   setData(data: { name: string; description: string }) {
     this.priviledgeData = data;
-    console.log('data is set', this.priviledgeData);
   }
 
   clearData() {

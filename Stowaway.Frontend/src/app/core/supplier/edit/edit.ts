@@ -46,7 +46,6 @@ export class EditSupplier
           this.stopLoading();
         },
         error: (err) => {
-          console.log(err.message);
           this.stopLoading();
         }
       })
@@ -63,7 +62,6 @@ export class EditSupplier
           this.router.navigate(['/supplier']);
         },
         error: (err) => {
-          console.log(err.message);
         }
       })
     }

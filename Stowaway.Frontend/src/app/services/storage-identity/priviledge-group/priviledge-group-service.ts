@@ -45,7 +45,6 @@ export class PriviledgeGroupService {
 
   setData(data: { name: string; description: string }) {
     this.priviledgeGroupData = data;
-    console.log('data is set', this.priviledgeGroupData);
   }
 
   clearData() {

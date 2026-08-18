@@ -39,7 +39,6 @@ export class PaginationTable<TDto>{
   }
 
   onPage(event: PageEvent): void {
-    console.log("Pagination table pageEvent", event);
     this.page.emit(event);
   }
 }

@@ -7,12 +7,12 @@ export abstract class BaseListComponent<TDto> extends BaseComponent{
   items = signal<TDto[]>([]);
 
   /**
-   * Konkretnu implementaciju punjenja podataka ostavljamo djeci.
+   * The concrete data-loading implementation is left to subclasses.
    */
   protected abstract loadData(): void;
 
   /**
-   * Helper koji možeš zvati iz ngOnInit dječije komponente.
+   * Helper you can call from a child component's ngOnInit.
    */
   protected initList(): void {
     this.loadData();

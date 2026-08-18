@@ -63,7 +63,6 @@ export class UserService {
   {
 
     this.signUpData = data;
-    console.log("data is set", this.signUpData);
   }
   clearData()
   {

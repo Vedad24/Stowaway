@@ -40,9 +40,6 @@ export class UserSettings implements OnInit {
     this.userService.getSelf().subscribe({
       next: (response) => {
         this.user = response;
-        console.log('User data loaded:', response);
-        console.log("Reponse role id", response.role.id);
-        console.log("role", RoleName[response.role.id]);
         this.form.patchValue({
           email: response.email,
           firstName: response.firstName,
@@ -70,7 +67,6 @@ export class UserSettings implements OnInit {
       firstName: this.form.value.firstName ?? null,
       lastName: this.form.value.lastName ?? null,
     };
-    console.log("Update self payload", payload);
     this.userService
       .updateSelf(payload)
       .pipe(

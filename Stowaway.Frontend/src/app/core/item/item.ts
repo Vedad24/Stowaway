@@ -68,7 +68,6 @@ export class Item
         this.loadPagedData();
       },
       error: (err) => {
-        console.log(err.message);
       }
     });
   }

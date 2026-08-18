@@ -31,7 +31,6 @@ export class DynamicForm {
       //close dialog while emitting payload <- works like throwing exception all the way to whoever subscribed to afterClosed()
       this.dialogRef.close(this.payLoad);
     }
-    //console.log("payload:", this.payLoad);
   }
   onCancel() {
     this.dialogRef.close(false);

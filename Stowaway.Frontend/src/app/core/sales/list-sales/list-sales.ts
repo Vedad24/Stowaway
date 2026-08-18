@@ -58,8 +58,7 @@ export class ListSales {
 
   ngAfterViewInit()
   {
-    //console.log("afterView")
-    this.orders.paginator = this.paginator 
+    this.orders.paginator = this.paginator
     this.refreshOrders();
     
   }
@@ -76,7 +75,6 @@ export class ListSales {
     })
       .pipe(
         tap( (response : ListOrdersQueryResponse) => {
-          console.log(response);
           this.orders.data = response.items
         }),
         catchError( err => { 

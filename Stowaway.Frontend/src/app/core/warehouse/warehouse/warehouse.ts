@@ -56,11 +56,10 @@ export class Warehouse
         this.loadPagedData();
       },
       error: (err) => {
-        console.log(err.message);
       }
     })
   }
-  
+
   searchData() {
     this.request.search = this.searchTerm;
     this.request.paging.page = 1;

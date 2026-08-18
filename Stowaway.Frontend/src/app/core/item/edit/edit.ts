@@ -69,7 +69,6 @@ export class EditItem
         this.stopLoading();
       },
       error: (err) => {
-        console.log(err.message);
         this.stopLoading();
       }
     })
@@ -102,7 +101,6 @@ export class EditItem
         this.router.navigate(['/item']);
       },
       error: (err) => {
-        console.log(err.message);
       }
     })
   }
