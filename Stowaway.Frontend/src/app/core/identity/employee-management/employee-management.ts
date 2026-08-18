@@ -160,9 +160,8 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
     }
     this.userService.create(createPayload).subscribe(
       {
-        next: (response) =>
+        next: () =>
         {
-          console.log("User created with id:", response);
           this.loadPagedData();
         }
       }
@@ -184,7 +183,6 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
       {
         next: () =>
         {
-          console.log("User updated:", id);
           this.loadPagedData();
         }
       }

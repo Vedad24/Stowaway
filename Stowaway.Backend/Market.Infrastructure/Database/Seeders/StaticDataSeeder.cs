@@ -1,4 +1,5 @@
 using Market.Shared.Constants;
+using Serilog;
 using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
@@ -102,13 +103,13 @@ public static class StaticDataSeeder
 
         if (missingPermissions.Count == 0)
         {
-            Console.WriteLine("✅ Static seed: permissions already exist.");
+            Log.Information("✅ Static seed: permissions already exist.");
             return;
         }
 
         context.Permissions.AddRange(missingPermissions);
         await context.SaveChangesAsync();
-        Console.WriteLine($"✅ Static seed: {missingPermissions.Count} permissions added.");
+        Log.Information("✅ Static seed: {Count} permissions added.", missingPermissions.Count);
     }
 
     private static async Task SeedPrivilegesAsync(DatabaseContext context)
@@ -143,14 +144,14 @@ public static class StaticDataSeeder
 
         if (missingPrivileges.Count == 0)
         {
-            Console.WriteLine("✅ Static seed: warehouse privileges already exist.");
+            Log.Information("✅ Static seed: warehouse privileges already exist.");
             return;
         }
 
         context.Priviledges.AddRange(missingPrivileges);
 
         await context.SaveChangesAsync();
-        Console.WriteLine($"✅ Static seed: {missingPrivileges.Count} warehouse privileges added.");
+        Log.Information("✅ Static seed: {Count} warehouse privileges added.", missingPrivileges.Count);
     }
 
     private static async Task SeedRolesAsync(DatabaseContext context)
@@ -177,14 +178,14 @@ public static class StaticDataSeeder
 
         if (missingRoles.Count == 0)
         {
-            Console.WriteLine("✅ Static seed: roles already exist.");
+            Log.Information("✅ Static seed: roles already exist.");
             return;
         }
 
         context.Roles.AddRange(missingRoles);
         await context.SaveChangesAsync();
 
-        Console.WriteLine($"✅ Static seed: {missingRoles.Count} roles added.");
+        Log.Information("✅ Static seed: {Count} roles added.", missingRoles.Count);
     }
 
     private static async Task SeedOrderStatusAsync(DatabaseContext context)
@@ -202,7 +203,7 @@ public static class StaticDataSeeder
             context.OrderStatuses.Add(status);
             context.SaveChanges();
         }
-        Console.WriteLine("✅ Static seed: order statuses added.");
+        Log.Information("✅ Static seed: order statuses added.");
     }
 
     private static async Task SeedContainerTypesAsync(DatabaseContext context)
@@ -234,7 +235,7 @@ public static class StaticDataSeeder
         if (context.ChangeTracker.HasChanges())
         {
             await context.SaveChangesAsync();
-            Console.WriteLine("✅ Static seed: container types added.");
+            Log.Information("✅ Static seed: container types added.");
         }
     }
 
@@ -258,7 +259,7 @@ public static class StaticDataSeeder
 
         context.ContainerStatuses.AddRange(statuses);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Static seed: container statuses added.");
+        Log.Information("✅ Static seed: container statuses added.");
     }
 
     // Explicit per-role permission matrix. Admin gets every permission that exists.
@@ -350,12 +351,12 @@ public static class StaticDataSeeder
 
         if (toAdd.Count == 0 && toRemove.Count == 0)
         {
-            Console.WriteLine("✅ Static seed: role permissions already up to date.");
+            Log.Information("✅ Static seed: role permissions already up to date.");
             return;
         }
 
         await context.SaveChangesAsync();
 
-        Console.WriteLine($"✅ Static seed: {toAdd.Count} role permissions added, {toRemove.Count} stale role permissions removed.");
+        Log.Information("✅ Static seed: {AddedCount} role permissions added, {RemovedCount} stale role permissions removed.", toAdd.Count, toRemove.Count);
     }
 }

@@ -19,7 +19,7 @@ public partial class Program
 
         try
         {
-            Log.Information("Starting Market API...");
+            Log.Information("Starting Stowaway API...");
 
             //
             // 1) Standard builder (includes appsettings.json, appsettings.{ENV}.json,
@@ -106,8 +106,8 @@ public partial class Program
         }
         catch (HostAbortedException)
         {
-            // EF Core tools abortiraju host nakon što uzmu DbContext.
-            // Ovo nije runtime greška – samo tiho izađi.
+            // EF Core tools abort the host after they grab the DbContext.
+            // This isn't a runtime error - just exit quietly.
             Log.Information("Host aborted by EF Core tooling (design-time) - its ok.");
         }
         catch (Exception ex)

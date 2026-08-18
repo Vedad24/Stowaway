@@ -61,7 +61,6 @@ export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListS
         this.loadPagedData();
       },
       error: (err) => {
-        console.log(err.message);
       }
     });
   }

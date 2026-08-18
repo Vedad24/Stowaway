@@ -49,10 +49,8 @@ export class CreateSupplier
       next: (itemId) => {
         this.stopLoading();
         this.router.navigate(['/supplier'])
-        console.log(command);
       },
       error: (err) => {
-        console.log(err.message);
       }
     })
   }
@@ -70,7 +68,6 @@ export class CreateSupplier
     formData.append('totalDeliveries', this.form.value.totalDeliveries);
     formData.append('failedDeliveries', this.form.value.failedDeliveries);
 
-    console.log('Submitting item:', this.form.value);
     this.createItem();
   }
 }

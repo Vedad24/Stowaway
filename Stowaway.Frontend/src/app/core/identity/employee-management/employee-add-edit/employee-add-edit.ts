@@ -65,7 +65,6 @@ export class EmployeeAddEdit{
     (
       (response)=>
       {
-        console.log("form:", response);
         const questions = response.questions as QuestionBase<string>[];
         if (this.data) {
           this.prefillQuestions(questions, this.data);

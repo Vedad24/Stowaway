@@ -47,10 +47,8 @@ export class CreateWarehouse
         next: (itemId) => {
           this.stopLoading();
           this.router.navigate(['/warehouse'])
-          console.log(command);
         },
         error: (err) => {
-          console.log(err.message);
         }
       })
     }
@@ -69,7 +67,6 @@ export class CreateWarehouse
       formData.append('capacity', this.form.value.capacity ?? '');
       formData.append('isEnabled', this.form.value.isEnabled ?? '');
   
-      console.log('Submitting item:', this.form.value);
       this.createItem();
     }
 

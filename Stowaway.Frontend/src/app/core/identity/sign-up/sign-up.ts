@@ -44,7 +44,6 @@ export class SignUp {
     this.userService.create(payload)
       .pipe(
         tap((response) => {
-          console.log('Created user with ID', response);
           this.userService.setData({ email: payload.email, password: payload.password });
           this.router.navigate(['/login']);
         }),

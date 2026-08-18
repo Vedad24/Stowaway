@@ -92,8 +92,6 @@ export class WarehouseUserManagement
     this.request.paging = { page: 1, pageSize: 10 };
 
     const userId = this.activatedRoute.snapshot.paramMap.get("userId");
-    console.log(userId);
-    console.log(Number(userId));
     this.userService.get(Number(userId)).subscribe(
       (response) =>
       {

@@ -60,7 +60,6 @@ private fb = inject(FormBuilder);
     this.containerService.list().subscribe(res => {
       this.containers = res;
     });
-    console.log(this.containers);
   }
 
   onImageSelected(event: Event) {
@@ -76,7 +75,6 @@ private fb = inject(FormBuilder);
 
       reader.readAsDataURL(this.selectedImageFile);
       //this.form.patchValue({ image: this.selectedImageFile });
-      //console.log(this.selectedImageFile);
     }
   }
 
@@ -96,10 +94,8 @@ private fb = inject(FormBuilder);
       next: (itemId) => {
         this.stopLoading();
         this.router.navigate(['/item'])
-        console.log(command);
       },
       error: (err) => {
-        console.log(err.message);
       }
     })
     
@@ -121,7 +117,6 @@ private fb = inject(FormBuilder);
       formData.append('image', this.form.value.image);
     } */
 
-    console.log('Submitting item:', this.form.value);
     this.createItem();
   }
 }

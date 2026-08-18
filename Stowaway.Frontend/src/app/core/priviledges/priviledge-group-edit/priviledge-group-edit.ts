@@ -180,9 +180,8 @@ export class PriviledgeGroupEdit implements OnInit {
 
     this.priviledgeGroupService.update(this.selectedGroup.id, payload).subscribe({
       next: (response) => {
-        console.log(response);
         this.isSaving.set(false);
-        
+
       },
       error: () => {
         this.isSaving.set(false);

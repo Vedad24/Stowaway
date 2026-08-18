@@ -1,4 +1,5 @@
 ﻿using Market.Shared.Constants;
+using Serilog;
 using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
@@ -8,15 +9,15 @@ using System.Numerics;
 namespace Market.Infrastructure.Database.Seeders;
 
 /// <summary>
-/// Dynamic seeder koji se pokreće u runtime-u,
-/// obično pri startu aplikacije (npr. u Program.cs).
-/// Koristi se za unos demo/test podataka koji nisu dio migracije.
+/// Dynamic seeder that runs at runtime,
+/// usually on application startup (e.g. in Program.cs).
+/// Used to insert demo/test data that isn't part of a migration.
 /// </summary>
 public static class DynamicDataSeeder
 {
     public static async Task SeedAsync(DatabaseContext context)
     {
-        // Osiguraj da baza postoji (bez migracija)
+        // Ensure the database exists (without migrations)
         await context.Database.EnsureCreatedAsync();
         await SeedUsersAsync(context);
         await SeedSupplierAsync(context);
@@ -63,7 +64,7 @@ public static class DynamicDataSeeder
         order.Total = orderItems.Sum(oi => oi.Total);
         order.OrderItems = orderItems;
         context.SaveChanges();
-        Console.WriteLine("✅ Dynamic seed: demo orders added.");
+        Log.Information("✅ Dynamic seed: demo orders added.");
 
     }
 
@@ -91,7 +92,7 @@ public static class DynamicDataSeeder
 
         context.Suppliers.AddRange(CocktaSupplier, OazaSupplier);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo suppliers added.");
+        Log.Information("✅ Dynamic seed: demo suppliers added.");
     }
 
     private static async Task SeedWarehouseAsync(DatabaseContext context)
@@ -123,7 +124,7 @@ public static class DynamicDataSeeder
 
         context.Warehouses.AddRange(MainStorage, SmallRoom);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo warehouses added.");
+        Log.Information("✅ Dynamic seed: demo warehouses added.");
     }
 
     private static async Task SeedContainersAsync(DatabaseContext context)
@@ -151,7 +152,7 @@ public static class DynamicDataSeeder
 
         context.Containers.AddRange(CardboardBox, WoodenPallet);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo containers added.");
+        Log.Information("✅ Dynamic seed: demo containers added.");
     }
 
     private static async Task SeedContainerStatusHistoryAsync(DatabaseContext context)
@@ -185,7 +186,7 @@ public static class DynamicDataSeeder
         }
 
         await context.SaveChangesAsync();
-        Console.WriteLine($"✅ Dynamic seed: {containersWithoutStatus.Count} container status history entries added.");
+        Log.Information("✅ Dynamic seed: {Count} container status history entries added.", containersWithoutStatus.Count);
     }
 
     private static async Task SeedItemsAsync(DatabaseContext context)
@@ -217,7 +218,7 @@ public static class DynamicDataSeeder
 
         context.Item.AddRange(WaterBottle, CocktaBottle);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo items added.");
+        Log.Information("✅ Dynamic seed: demo items added.");
     }
 
     private static async Task SeedTagsAsync(DatabaseContext context)
@@ -238,7 +239,7 @@ public static class DynamicDataSeeder
 
         context.Tags.AddRange(tags);
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo tags added.");
+        Log.Information("✅ Dynamic seed: demo tags added.");
     }
 
     private static async Task SeedItemTagsAsync(DatabaseContext context)
@@ -267,12 +268,12 @@ public static class DynamicDataSeeder
         );
 
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: demo item tags added.");
+        Log.Information("✅ Dynamic seed: demo item tags added.");
     }
 
 
     /// <summary>
-    /// Kreira demo korisnike ako ih još nema u bazi.
+    /// Creates demo users if they don't already exist in the database.
     /// </summary>
     private static async Task SeedUsersAsync(DatabaseContext context)
     {
@@ -322,7 +323,7 @@ public static class DynamicDataSeeder
         context.Users.AddRange(admin, manager, user, dummyForSwagger, dummyForTests);
         await context.SaveChangesAsync();
 
-        Console.WriteLine("✅ Dynamic seed: demo users added.");
+        Log.Information("✅ Dynamic seed: demo users added.");
     }
 
     private static async Task SeedStorageIdentityAsync(DatabaseContext context)
@@ -334,7 +335,7 @@ public static class DynamicDataSeeder
             warehouse = new WarehouseEntity { Name = "Main Warehouse" };
             context.Warehouses.Add(warehouse);
             await context.SaveChangesAsync();
-            Console.WriteLine("✅ Dynamic seed: demo warehouse added.");
+            Log.Information("✅ Dynamic seed: demo warehouse added.");
         }
 
         var privilegeCodes = new[]
@@ -469,6 +470,6 @@ public static class DynamicDataSeeder
         await EnsureAssignment("user@market.local", readerGroup);
 
         await context.SaveChangesAsync();
-        Console.WriteLine("✅ Dynamic seed: warehouse identity groups and assignments added.");
+        Log.Information("✅ Dynamic seed: warehouse identity groups and assignments added.");
     }
 }

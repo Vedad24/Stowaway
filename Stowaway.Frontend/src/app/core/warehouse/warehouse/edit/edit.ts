@@ -45,7 +45,6 @@ export class EditWarehouse
         this.stopLoading();
       },
       error: (err) => {
-        console.log(err.message);
         this.stopLoading();
       }
     })
@@ -62,7 +61,6 @@ export class EditWarehouse
         this.router.navigate(['/warehouse']);
       },
       error: (err) => {
-        console.log(err.message);
       }
     })
   }

@@ -22,26 +22,22 @@ export class CurrentUserService {
     const roleClaim =
       decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
       decoded.role;
-    console.log("LoginDTO response: ", roleClaim);
     this._currentUser = {
       roleId : roleClaim != null ? roleClaim == "Admin" ? 1 : 0 : 0,
       accessToken: response.accessToken
     }
-    //console.log("Current user", this._currentUser);
     this.localStorageService.setItem('currentUserStorage', JSON.stringify(this._currentUser));
   }
 
   getUserFromStorage()
   {
     this._currentUser = JSON.parse(this.localStorageService.getItem('currentUserStorage')!);
-    //console.log("Current user after storage read:", this._currentUser);
   }
   private get decodedJwt() : JwtUserPayload | null
   {
       if(this.currentUser === null)
         return null;
       const jwt = jwtDecode<JwtUserPayload>(this.currentUser!.accessToken);
-      //console.log("JWT decode: ", jwt);
       return jwt;
   }
   public get userEmail() : string
@@ -54,8 +50,6 @@ export class CurrentUserService {
     if(this.decodedJwt === null)
       return -1;
     const id = this.decodedJwt.nameid;
-    //console.log(id);
-    //console.log(this.userEmail);
     return Number(id);
     
   }
