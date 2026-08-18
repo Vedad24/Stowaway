@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import {
   CreatePaymentCommand,
   CreatePaymentResponse,
@@ -13,7 +14,7 @@ import {
 })
 export class PaymentService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/StripePayment`;
+  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.StripePayment}`;
 
   public pay(payload: CreatePaymentCommand): Observable<CreatePaymentResponse> {
     return this.http.post<CreatePaymentResponse>(`${this.baseUrl}/pay`, payload);

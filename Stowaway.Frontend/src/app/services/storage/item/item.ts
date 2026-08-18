@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import { CreateItemCommand, GetItemByIdDto, ListItemQuery, ListItemQueryDto, ListItemQueryResponse, MoveItemCommand, UpdateCanvasPositionCommand, UpdateItemCommand } from './item.model';
 import { Observable, onErrorResumeNextWith } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
@@ -10,7 +11,7 @@ import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
   providedIn: 'root',
 })
 export class ItemApiService {
-  private readonly baseUrl = `${environment.apiUrl}/Item`;
+  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.Item}`;
   private http = inject(HttpClient);
 
   list(request? : ListItemQuery): Observable<ListItemQueryResponse>{

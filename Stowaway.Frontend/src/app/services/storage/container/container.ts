@@ -3,13 +3,14 @@ import { Observable, onErrorResumeNextWith } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import { ListContainersQueryResponse, ListContainersQuery, ListContainersQueryDto, MoveContainerCommand, UpdateCanvasPositionCommand, CreateContainerCommand, UpdateContainerCommand, DeleteContainerRequest, ContainerStatusName } from './container.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ContainerApiService {
-  private readonly baseUrl = `${environment.apiUrl}/Container`;
+  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.Container}`;
   private http = inject(HttpClient);
 
   list(request? : ListContainersQuery): Observable<ListContainersQueryResponse>{

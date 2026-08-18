@@ -42,6 +42,11 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<FrontendOptions>()
+            .Bind(configuration.GetSection(FrontendOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         // JWT auth (reads from IOptions<JwtOptions>)
         services.AddAuthentication(o =>
         {

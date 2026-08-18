@@ -11,6 +11,7 @@ import { delay, tap } from 'rxjs';
 import { ListUsers } from "../list-users/list-users";
 import { AutocompleteComponent, IOptionsInfo } from '../../../shared/autocomplete-component/autocomplete-component';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 
 @Component({
   selector: 'app-test-users',
@@ -33,7 +34,7 @@ export class TestUsers {
 
   ngAfterViewInit()
   {
-    this.htpp.get<any[]>(`${environment.apiUrl}/Roles`, {})
+    this.htpp.get<any[]>(`${environment.apiUrl}/${ApiEndpoints.Roles}`, {})
     .subscribe({next :(response) =>
     {
       setTimeout(() => { 

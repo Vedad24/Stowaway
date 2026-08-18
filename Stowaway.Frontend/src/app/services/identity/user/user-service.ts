@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { CreateUserCommand, GetEmployeeFormQueryDto, GetSelfDto, GetUserById, GetUserByIdOrMailDto, ListUserQuery, ListUserQueryResponse, UpdateSelfCommand, UpdateSelfCommandDto, UpdateUserCommand } from './user-service.models';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import { Observable } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
 
@@ -10,7 +11,7 @@ import { buildHttpParams } from '../../../models/build-http-params';
 })
 export class UserService {
   http = inject(HttpClient);
-  userURL = `${environment.apiUrl}/User`;
+  userURL = `${environment.apiUrl}/${ApiEndpoints.User}`;
   
   public get( id: number) : Observable<GetUserByIdOrMailDto>{
     return this.http.get<GetUserByIdOrMailDto>(`${this.userURL}/${id}`);

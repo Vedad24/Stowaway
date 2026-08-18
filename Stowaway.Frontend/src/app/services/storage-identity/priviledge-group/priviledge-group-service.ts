@@ -8,6 +8,7 @@ import {
   UpdatePriviledgeGroupCommand,
 } from './priviledge-group-service.models';
 import { environment } from '../../../../enviroments/enivroment';
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -15,8 +16,8 @@ import { Observable } from 'rxjs';
 })
 export class PriviledgeGroupService {
   private readonly http = inject(HttpClient);
-  private readonly priviledgeGroupURL = `${environment.apiUrl}/StorageIdentity/privilege-groups`;
-  private readonly warehouseUsersURL = `${environment.apiUrl}/StorageIdentity/warehouse-users`;
+  private readonly priviledgeGroupURL = `${environment.apiUrl}/${ApiEndpoints.StorageIdentityPrivilegeGroups}`;
+  private readonly warehouseUsersURL = `${environment.apiUrl}/${ApiEndpoints.StorageIdentityWarehouseUsers}`;
 
   public list(warehouseId: number): Observable<ListPriviledgeGroupQueryDto[]> {
     const params = { warehouseId: warehouseId.toString() };
