@@ -17,7 +17,7 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Update
             case "payment_intent.succeeded":
                 return await HandlePaymentSucceeded((PaymentIntent)request.EventData, ct);
             case "payment_intent.payment_failed":
-                return await HandlePaymentFailed((PaymentIntent)request.EventData);
+                return await HandlePaymentFailed((PaymentIntent)request.EventData, ct);
             default:
                 return Unit.Value;
             
@@ -45,9 +45,22 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Update
             return Unit.Value;
         }
 
-        private async Task<Unit> HandlePaymentFailed(PaymentIntent eventData)
+        private async Task<Unit> HandlePaymentFailed(PaymentIntent eventData, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            if (!int.TryParse(eventData.Metadata["OrderId"], out var orderId))
+                throw new ValidationException("Invalid OrderId in metadata.");
+            var order = await db.Orders
+                .FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken: default);
+
+            if (order is null)
+                throw new StowawayNotFoundException($"Order with id {orderId} not found.");
+
+            order.OrderStatusId = OrderStatus.Cancelled;
+            order.PaymentIntentId = eventData.Id;
+
+            await db.SaveChangesAsync(ct);
+
+            return Unit.Value;
         }
     }
 }
