@@ -18,7 +18,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
 
             if (string.IsNullOrWhiteSpace(normalizedName))
             {
-                throw new Exception("Item name is required");
+                throw new StowawayBusinessRuleException("item.name-required", "Item name is required");
             }
 
             //bool exists = await ctx.Item.AnyAsync(x => x.Name == normalizedName, cancellationToken);
@@ -32,18 +32,18 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
 
             if (supplier == null)
             {
-                throw new Exception("Supplier is not valid");
+                throw new StowawayBusinessRuleException("item.invalid-supplier", "Supplier is not valid");
             }
 
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id.Equals(request.ContainerId), cancellationToken);
-            if (container == null) 
+            if (container == null)
             {
-                throw new Exception("Container does not exist");
+                throw new StowawayNotFoundException("Container does not exist");
             }
 
             if (request.Quantity < 1)
             {
-                throw new Exception("Quantity cant be less than 1");
+                throw new StowawayBusinessRuleException("item.invalid-quantity", "Quantity cant be less than 1");
             }
 
             await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, request.Quantity, cancellationToken);

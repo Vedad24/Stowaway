@@ -11,7 +11,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Delete
 
             if (warehouse == null)
             {
-                throw new Exception($"Warehouse with id: {request.Id} is not found");
+                throw new StowawayNotFoundException($"Warehouse with id: {request.Id} is not found");
             }
 
             ctx.Warehouses.Remove(warehouse);

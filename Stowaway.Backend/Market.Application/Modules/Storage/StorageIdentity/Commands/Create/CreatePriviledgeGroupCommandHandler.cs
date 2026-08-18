@@ -17,7 +17,7 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Create
             var warehouseExists = await ctx.Warehouses.AnyAsync(x => x.Id == request.WarehouseId, cancellationToken);
             if (!warehouseExists)
             {
-                throw new Exception("Warehouse with the supplied id was not found.");
+                throw new StowawayNotFoundException("Warehouse with the supplied id was not found.");
             }
 
             var duplicates = await ctx.PriviledgeGroups
@@ -25,7 +25,7 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Create
 
             if (duplicates)
             {
-                throw new Exception("A privilege group with the same name already exists for this warehouse.");
+                throw new StowawayConflictException("A privilege group with the same name already exists for this warehouse.");
             }
 
             var validPrivilegeIds = await ctx.Priviledges
@@ -35,7 +35,7 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Create
 
             if (validPrivilegeIds.Count != request.PriviledgeIds.Distinct().Count())
             {
-                throw new Exception("One or more privilege ids are invalid.");
+                throw new StowawayBusinessRuleException("priviledge-group.invalid-priviledges", "One or more privilege ids are invalid.");
             }
 
             var group = new PriviledgeGroupEntity

@@ -14,7 +14,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Delete
 
             if (item == null)
             {
-                throw new Exception($"Item with id {request.Id} is not found");
+                throw new StowawayNotFoundException($"Item with id {request.Id} is not found");
             }
 
             ctx.Item.Remove(item);

@@ -26,7 +26,7 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Queries.GetById
 
             if (supplier is null) 
             {
-                throw new Exception($"Supplier with id: {request.Id} is not found");   
+                throw new StowawayNotFoundException($"Supplier with id: {request.Id} is not found");
             }
 
             return supplier;

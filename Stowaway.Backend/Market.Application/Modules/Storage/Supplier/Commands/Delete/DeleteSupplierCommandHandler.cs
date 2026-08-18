@@ -12,7 +12,7 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Commands.Delete
 
             if (supplier == null)
             {
-                throw new Exception($"Supplier with id: {request.Id} is not found");
+                throw new StowawayNotFoundException($"Supplier with id: {request.Id} is not found");
             }
 
             ctx.Suppliers.Remove(supplier);

@@ -46,7 +46,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
 
             if (item == null)
             {
-                throw new Exception($"Item not found with id: {request.Id}");
+                throw new StowawayNotFoundException($"Item not found with id: {request.Id}");
             }
 
             return item;

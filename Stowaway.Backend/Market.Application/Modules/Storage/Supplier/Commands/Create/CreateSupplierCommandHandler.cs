@@ -16,14 +16,14 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Commands.Create
 
             if (string.IsNullOrWhiteSpace(normalized))
             {
-                throw new Exception("Name is required");
+                throw new StowawayBusinessRuleException("supplier.name-required", "Name is required");
             }
 
             bool exists = await ctx.Suppliers.AnyAsync(x => x.Name == normalized, cancellationToken);
 
             if (exists)
             {
-                throw new Exception("Supplier already exists with this name");
+                throw new StowawayConflictException("Supplier already exists with this name");
             }
 
             var supplier = new SupplierEntity

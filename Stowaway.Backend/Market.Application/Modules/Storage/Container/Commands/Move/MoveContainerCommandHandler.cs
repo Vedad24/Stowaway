@@ -13,24 +13,24 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
         {
             if (request.Id == request.ParentContainerId)
             {
-                throw new Exception("A container cannot be placed inside itself");
+                throw new StowawayBusinessRuleException("container.self-parent", "A container cannot be placed inside itself");
             }
 
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (container is null)
             {
-                throw new Exception($"Container with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.Id} not found");
             }
 
             var target = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.ParentContainerId, cancellationToken);
             if (target is null)
             {
-                throw new Exception($"Container with id: {request.ParentContainerId} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.ParentContainerId} not found");
             }
 
             if (target.WarehouseId != container.WarehouseId)
             {
-                throw new Exception("Cannot move a container into a different warehouse");
+                throw new StowawayBusinessRuleException("container.cross-warehouse", "Cannot move a container into a different warehouse");
             }
 
             var containerType = await ctx.ContainerTypes.FirstOrDefaultAsync(t => t.Id == container.ContainerTypeId, cancellationToken);
@@ -47,7 +47,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
             {
                 if (ancestorId.Value == container.Id)
                 {
-                    throw new Exception("Cannot move a container into one of its own sub-containers");
+                    throw new StowawayBusinessRuleException("container.circular-nesting", "Cannot move a container into one of its own sub-containers");
                 }
 
                 ancestorId = await ctx.Containers

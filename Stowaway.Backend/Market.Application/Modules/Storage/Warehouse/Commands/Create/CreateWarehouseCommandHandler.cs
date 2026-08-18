@@ -17,7 +17,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Create
             bool exists = await ctx.Warehouses.AnyAsync(x => x.Name == normalized, cancellationToken);
 
             if (exists) {
-                throw new Exception("Warehouse with this name already exists.");
+                throw new StowawayConflictException("Warehouse with this name already exists.");
             }
 
             var warehouse = new WarehouseEntity

@@ -22,7 +22,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Queries.GetById
 
             if (warehouse == null)
             {
-                throw new Exception($"Warehouse with ID : {request.Id} not found");
+                throw new StowawayNotFoundException($"Warehouse with ID : {request.Id} not found");
             }
 
             return warehouse;

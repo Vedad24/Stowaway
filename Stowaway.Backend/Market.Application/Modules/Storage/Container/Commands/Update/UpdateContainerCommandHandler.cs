@@ -16,13 +16,13 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Update
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (container is null)
             {
-                throw new Exception($"Container with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.Id} not found");
             }
 
             var containerType = await ctx.ContainerTypes.FirstOrDefaultAsync(x => x.Id == request.ContainerTypeId, cancellationToken);
             if (containerType is null)
             {
-                throw new Exception($"Container type with id: {request.ContainerTypeId} not found");
+                throw new StowawayNotFoundException($"Container type with id: {request.ContainerTypeId} not found");
             }
 
             if (container.ParentContainerId.HasValue)

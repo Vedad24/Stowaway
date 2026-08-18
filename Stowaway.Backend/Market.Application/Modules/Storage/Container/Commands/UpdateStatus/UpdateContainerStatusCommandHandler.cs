@@ -17,12 +17,12 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.UpdateStatus
             var container = await ctx.Containers.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (container is null)
             {
-                throw new Exception($"Container with id: {request.Id} not found");
+                throw new StowawayNotFoundException($"Container with id: {request.Id} not found");
             }
 
             if (currentUser.UserId is null)
             {
-                throw new Exception("Current user could not be resolved.");
+                throw new StowawayUnauthorizedException("Current user could not be resolved.");
             }
 
             var status = await ctx.ContainerStatuses.FirstOrDefaultAsync(
