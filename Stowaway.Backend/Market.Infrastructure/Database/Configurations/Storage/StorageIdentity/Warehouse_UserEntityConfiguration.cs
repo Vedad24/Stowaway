@@ -8,7 +8,7 @@ namespace Stowaway.Infrastructure.Database.Configurations.Storage.StorageIdentit
     {
         public void Configure(EntityTypeBuilder<Warehouse_UserEntity> builder)
         {
-            builder.HasKey(wu => new { wu.WarehouseId, wu.UserId, wu.PriviledgeGroupId });
+            builder.HasKey(wu => new { wu.WarehouseId, wu.UserId });
 
             builder.HasOne(wu => wu.Warehouse)
                 .WithMany()
