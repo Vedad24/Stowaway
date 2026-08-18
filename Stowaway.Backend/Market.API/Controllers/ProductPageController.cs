@@ -20,6 +20,7 @@ namespace Market.API.Controllers
         }
 
         [HttpGet("get-container-types")]
+        [AllowAnonymous] //for server-side rendering
         public async Task<PageResult<ListContainerTypeQueryDto>> GetContainerTypes([FromQuery] ListContainerTypeQuery query, CancellationToken ct)
         {
             return await sender.Send(query, ct);
