@@ -2,24 +2,16 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
   {
-    path: 'warehouse/edit/:abc',
+    path: '',
     renderMode: RenderMode.Server
   },
   {
-    path: 'item/edit/:id',
+    path: 'product-page',
     renderMode: RenderMode.Server
   },
-  {
-    path: 'supplier/edit/:id',
-    renderMode: RenderMode.Server
-  },
-  //Any paths that require something from backend with auth should use RenderMode.Client
-  {
-    path: 'employee-management',
-    renderMode: RenderMode.Client
-  },
+  //Everything else needs auth/browser context -> Client
   {
     path: '**',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Client
   }
 ];
