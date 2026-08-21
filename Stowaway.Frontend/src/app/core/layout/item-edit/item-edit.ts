@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { ContainerTreeService } from '../../../services/storage/container/container-tree';
 import { SupplierApiService } from '../../../services/storage/supplier/supplier';
 import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
@@ -21,7 +22,7 @@ export interface ItemEditDialogData {
 @Component({
   selector: 'app-item-edit',
   standalone: true,
-  imports: [MatDialogModule, DynamicForm],
+  imports: [MatDialogModule, MatIconModule, DynamicForm],
   templateUrl: './item-edit.html',
   styleUrl: './item-edit.css',
 })

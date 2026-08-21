@@ -84,6 +84,13 @@
 
   /*Slide toggles*/
   --mat-option-hover-state-layer-color: var(--gold);
+
+  /* mat-dialog */
+  --mat-dialog-container-color: var(--cream);
+  --mat-dialog-subhead-color: var(--text-dark);
+  --mat-dialog-supporting-text-color: var(--text-muted);
+  --mat-dialog-container-shape: 16px;
+  --mat-dialog-container-elevation-shadow: 0 16px 40px color-mix(in srgb, var(--text-dark) 16%, transparent);
 }
 
 html,

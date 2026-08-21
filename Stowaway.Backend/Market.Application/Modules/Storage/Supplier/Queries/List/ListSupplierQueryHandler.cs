@@ -20,6 +20,39 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Queries.List
                 query = query.Where(x => x.Name.ToLower().Contains(searchTerm));
             }
 
+            if (!string.IsNullOrWhiteSpace(request.Address))
+            {
+                var address = request.Address.Trim().ToLower();
+                query = query.Where(x => x.Address.ToLower().Contains(address));
+            }
+
+            if (request.MinTotalDeliveries.HasValue)
+            {
+                query = query.Where(x => x.TotalDeliveries >= request.MinTotalDeliveries.Value);
+            }
+
+            if (request.MaxTotalDeliveries.HasValue)
+            {
+                query = query.Where(x => x.TotalDeliveries <= request.MaxTotalDeliveries.Value);
+            }
+
+            if (request.MinFailedDeliveries.HasValue)
+            {
+                query = query.Where(x => x.FailedDeliveries >= request.MinFailedDeliveries.Value);
+            }
+
+            if (request.MaxFailedDeliveries.HasValue)
+            {
+                query = query.Where(x => x.FailedDeliveries <= request.MaxFailedDeliveries.Value);
+            }
+
+            if (request.MinFailureRate.HasValue)
+            {
+                query = query.Where(x =>
+                    x.TotalDeliveries > 0 &&
+                    (x.FailedDeliveries * 100.0 / x.TotalDeliveries) >= request.MinFailureRate.Value);
+            }
+
             var projectedQuery = query.Select(x => new ListSupplierQueryDto
             {
                 Id = x.Id,

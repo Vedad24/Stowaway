@@ -26,6 +26,20 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 ? query.Where(x => x.ParentContainerId == request.ParentContainerId.Value)
                 : query.Where(x => x.ParentContainerId == null);
 
+            if (request.ContainerTypeId.HasValue)
+            {
+                query = query.Where(x => x.ContainerTypeId == request.ContainerTypeId.Value);
+            }
+
+            if (request.StatusId.HasValue)
+            {
+                query = query.Where(x => ctx.ContainerStatusHistories
+                    .Where(h => h.ContainerId == x.Id)
+                    .OrderByDescending(h => h.Date)
+                    .Select(h => h.StatusId)
+                    .FirstOrDefault() == request.StatusId.Value);
+            }
+
             var projectedQuery = query.Select(x => new ListContainersDto
             {
                 Id = x.Id,

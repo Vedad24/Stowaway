@@ -1,5 +1,11 @@
 <div class="dialog-card">
-  <h2>Edit item</h2>
+  <div class="dialog-header">
+    <span class="dialog-icon"><mat-icon>inventory_2</mat-icon></span>
+    <div>
+      <h2>Edit item</h2>
+      <p class="subtitle">Update the item's details or move it to another container.</p>
+    </div>
+  </div>
 
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
