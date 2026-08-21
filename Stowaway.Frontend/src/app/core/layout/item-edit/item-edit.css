@@ -1,9 +1,43 @@
 .dialog-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 8px 4px;
+  gap: 16px;
+  padding: 20px 22px 18px;
   min-width: 320px;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--sage-soft, #c7d3c0);
+}
+
+.dialog-icon mat-icon {
+  color: var(--sage, #8fa28a) !important;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-dark, #2f352f);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted, #5c665d);
 }
 
 .full-width {
@@ -13,7 +47,10 @@
 .error {
   color: var(--mat-sys-error, #b3261e);
   margin: 0;
+  padding: 8px 10px;
   font-size: 0.875rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, #b3261e 8%, transparent);
 }
 
 .actions {

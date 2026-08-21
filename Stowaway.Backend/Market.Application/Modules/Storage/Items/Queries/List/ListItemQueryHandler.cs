@@ -29,6 +29,26 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 query = query.Where(x => x.ContainerId == request.ContainerId.Value);
             }
 
+            if (request.SupplierId.HasValue)
+            {
+                query = query.Where(x => x.SupplierId == request.SupplierId.Value);
+            }
+
+            if (request.TagIds is { Count: > 0 })
+            {
+                query = query.Where(x => ctx.ItemTags.Any(it => it.ItemId == x.Id && request.TagIds.Contains(it.TagId)));
+            }
+
+            if (request.MinQuantity.HasValue)
+            {
+                query = query.Where(x => x.Quantity >= request.MinQuantity.Value);
+            }
+
+            if (request.MaxQuantity.HasValue)
+            {
+                query = query.Where(x => x.Quantity <= request.MaxQuantity.Value);
+            }
+
             var projectedQuery = query.Select(x => new ListItemQueryDto
             {
                 Id = x.Id,
