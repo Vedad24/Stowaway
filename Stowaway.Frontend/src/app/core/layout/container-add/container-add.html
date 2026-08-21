@@ -1,5 +1,11 @@
 <div class="dialog-card">
-  <h2>Create container</h2>
+  <div class="dialog-header">
+    <span class="dialog-icon"><mat-icon>archive</mat-icon></span>
+    <div>
+      <h2>Create container</h2>
+      <p class="subtitle">Add a new container to organize this warehouse.</p>
+    </div>
+  </div>
 
   @if (errorMessage()) {
     <p class="error">{{ errorMessage() }}</p>
