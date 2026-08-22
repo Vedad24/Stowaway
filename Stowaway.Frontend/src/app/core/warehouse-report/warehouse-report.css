@@ -1,0 +1,145 @@
+:host {
+  display: block;
+  min-height: 100%;
+  background: linear-gradient(135deg, var(--cream) 0%, var(--sage-soft) 100%);
+}
+
+.report-page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 64px;
+  padding: 0 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.logoName {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.logo {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.header-actions button mat-icon {
+  margin-right: 0.25rem;
+}
+
+.report-content {
+  flex: 1;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 3rem;
+}
+
+.report-sheet {
+  background: var(--cream);
+  border: 1px solid color-mix(in srgb, var(--sage) 25%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--text-dark) 8%, transparent);
+  padding: 2rem;
+}
+
+.report-header {
+  border-bottom: 2px solid var(--sage-soft);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-header h1 {
+  margin: 0 0 0.25rem;
+  color: var(--text-dark);
+}
+
+.report-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.report-meta {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.report-state {
+  padding: 1rem 0;
+  color: var(--text-muted);
+}
+
+.report-error {
+  color: #b3261e;
+}
+
+.report-section {
+  margin-bottom: 2rem;
+}
+
+.report-section h2 {
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.report-empty {
+  color: var(--text-muted);
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.report-table th {
+  text-align: left;
+  background-color: var(--sage-soft);
+  color: var(--text-dark);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.2rem 0.2rem 0 0;
+}
+
+.report-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--sage-soft);
+  color: var(--text-dark);
+}
+
+.report-table tbody tr:hover {
+  background-color: color-mix(in srgb, var(--sage-soft) 40%, transparent);
+}
+
+@media print {
+  :host {
+    background: none;
+  }
+
+  .app-header {
+    display: none;
+  }
+
+  .report-sheet {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
+}

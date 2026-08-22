@@ -1,0 +1,20 @@
+.dialog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 4px;
+  min-width: 340px;
+}
+
+.type-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}

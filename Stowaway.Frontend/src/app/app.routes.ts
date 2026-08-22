@@ -27,6 +27,7 @@ import { EmployeeAddEdit } from './core/identity/employee-management/employee-ad
 import { WarehouseUserManagement } from './core/identity/warehouse-user-management/warehouse-user-management';
 import { PaymentSuccess } from './core/sales/payment/success/payment-success/payment-success';
 import { PaymentCancel } from './core/sales/payment/cancel/payment-cancel/payment-cancel';
+import { WarehouseReport } from './core/warehouse-report/warehouse-report';
 import { permission } from 'process';
 
 export const routes: Routes = [
@@ -116,6 +117,11 @@ export const routes: Routes = [
         path: "priviledge-group/edit/:warehouseId",
         component: PriviledgeGroupEdit,
         canActivate: [permissionGuard(Permissions.WarehouseUsersManage)]
+    },
+    {
+        path: "report/:warehouseId",
+        component: WarehouseReport,
+        canActivate: [permissionGuard(Permissions.WarehouseRead)]
     },
     {
         path: 'product-page',
