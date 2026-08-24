@@ -9,9 +9,9 @@
   height: calc(100vh - 64px);
   width: 340px;
   max-width: 90vw;
-  background: #fff;
-  border-left: 1px solid #e5e7eb;
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+  background: var(--cream);
+  border-left: 1px solid var(--surface-border);
+  box-shadow: -4px 0 16px color-mix(in srgb, var(--shadow-tint) 8%, transparent);
   padding: 1.25rem;
   overflow-y: auto;
   transform: translateX(100%);
@@ -49,7 +49,7 @@
   width: 100%;
   height: 160px;
   border-radius: 0.5rem;
-  background: #f7f7f5;
+  background: var(--surface-sunken);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,7 +70,7 @@
 .panel-title {
   margin: 0.9rem 0 0;
   font-size: 1.25rem;
-  color: #1f2937;
+  color: var(--text-dark);
 }
 
 .panel-tags {
@@ -90,7 +90,7 @@
 .panel-no-tags {
   margin: 0.75rem 0;
   font-size: 0.85rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .panel-fields {
@@ -104,23 +104,23 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .panel-field dd {
   margin: 0.15rem 0 0;
   font-size: 0.95rem;
-  color: #1f2937;
+  color: var(--text-dark);
 }
 
 .panel-loading {
   margin-top: 1.5rem;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .panel-error {
   margin: 1.5rem 0 0;
-  color: #b3261e;
+  color: var(--danger);
   font-size: 0.875rem;
 }
 

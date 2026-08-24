@@ -8,6 +8,7 @@
       <h1 class="app-title">Stowaway</h1>
     </div>
     <div class="header-actions">
+      <app-theme-toggle></app-theme-toggle>
       <button mat-flat-button color="primary" type="button" [disabled]="isLoading()" (click)="print()">
         <mat-icon>print</mat-icon>
         Print

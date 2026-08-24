@@ -9,10 +9,11 @@ import { ItemAdd } from '../item-add/item-add';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { ItemApiService } from '../../../services/storage/item/item';
 import { ContainerApiService } from '../../../services/storage/container/container';
+import { ThemeToggle } from '../../../shared/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, RouterLink, ThemeToggle],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

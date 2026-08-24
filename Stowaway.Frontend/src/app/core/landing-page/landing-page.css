@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  color: #102a43;
+  color: var(--text-dark);
 }
 
 .landing-page {
@@ -97,7 +97,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.9rem 0;
-  border-bottom: 1px solid #e6eefc;
+  border-bottom: 1px solid var(--sage-soft);
 }
 
 .preview-row:last-child {
@@ -157,7 +157,7 @@
   padding: 2rem;
   text-align: center;
   margin-top: 1rem;
-  background: #cdd4c8;
+  background: var(--sage-soft);
 }
 
 .footer {
