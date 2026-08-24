@@ -26,6 +26,7 @@ public partial class DatabaseContext : DbContext, IAppDbContext
     public DbSet<ContainerEntity> Containers => Set<ContainerEntity>();
     public DbSet<ContainerTypeEntity> ContainerTypes => Set<ContainerTypeEntity>();
     public DbSet<Item_TagEntity> ItemTags => Set<Item_TagEntity>();
+    public DbSet<ItemImageEntity> ItemImages => Set<ItemImageEntity>();
     public DbSet<ItemEntity> Item => Set<ItemEntity>();
     public DbSet<SupplierEntity> Suppliers => Set<SupplierEntity>();
     public DbSet<TagEntity> Tags => Set<TagEntity>();

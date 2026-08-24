@@ -52,3 +52,8 @@ export class AutocompleteQuestion extends QuestionBase<string> {
 export class TagsQuestion extends QuestionBase<string> {
   override controlType = 'tags';
 }
+
+// value is a JSON-encoded array of base64 image strings (no data: prefix), e.g. '["/9j/4AAQ...","..."]'
+export class ImagesQuestion extends QuestionBase<string> {
+  override controlType = 'images';
+}

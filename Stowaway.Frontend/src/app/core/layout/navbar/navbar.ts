@@ -104,6 +104,7 @@ export class Navbar {
         supplierId: Number(v.supplierId),
         containerId: Number(v.containerId),
         tagIds: v.tagIds ? JSON.parse(v.tagIds) : [],
+        images: v.images ? JSON.parse(v.images) : [],
       }).subscribe({
         next: () => this.canvasState.notifyLocationChanged(),
         error: (err) => console.error('Unable to create item.', err),

@@ -23,5 +23,8 @@ public sealed class UpdateItemCommandValidator : AbstractValidator<UpdateItemCom
 
         RuleFor(x => x.SupplierId)
             .GreaterThan(0).WithMessage("Supplier is required.");
+
+        RuleFor(x => x.Images)
+            .Must(x => x.Count <= 10).WithMessage("An item can have at most 10 photos.");
     }
 }

@@ -19,5 +19,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
         public required ListContainersDto Container { get; init; }
         public required SharedSupplierDto Supplier { get; init; }
         public required List<SharedTagDto> Tags { get; init; }
+        public required List<SharedItemImageDto> Images { get; init; }
     }
 }
