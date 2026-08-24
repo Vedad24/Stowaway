@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,6 +48,7 @@ const MAX_PAGE_SIZE = 100;
 export class WarehouseReport implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly titleService = inject(Title);
   private readonly warehouseService = inject(WarehouseApiService);
   private readonly containerService = inject(ContainerApiService);
   private readonly itemService = inject(ItemApiService);
@@ -93,6 +95,7 @@ export class WarehouseReport implements OnInit {
     try {
       const warehouse = await firstValueFrom(this.warehouseService.getById(this.warehouseId));
       this.warehouseName.set(warehouse.name);
+      this.titleService.setTitle(`${warehouse.name} report`);
 
       const containerRows = await this.collectContainers(this.warehouseId, null, []);
       this.containerRows.set(containerRows);

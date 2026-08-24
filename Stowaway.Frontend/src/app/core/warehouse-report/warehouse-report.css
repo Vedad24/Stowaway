@@ -128,18 +128,24 @@
   background-color: color-mix(in srgb, var(--sage-soft) 40%, transparent);
 }
 
+/* Chrome only reserves space for its default header/footer (title + URL)
+   inside the @page margin — zeroing it out removes them. Padding moves onto
+   the content itself so the report doesn't end up flush with the paper edge. */
+@page {
+  margin: 0;
+}
+
 @media print {
-  :host {
-    background: none;
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .app-header {
     display: none;
   }
 
-  .report-sheet {
-    box-shadow: none;
-    border: none;
-    padding: 0;
+  .report-content {
+    padding: 0.5in;
   }
 }
