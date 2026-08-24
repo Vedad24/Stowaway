@@ -21,6 +21,12 @@ export interface SharedTagDto{
     name: string
 }
 
+export interface SharedItemImageDto{
+    id: number,
+    byteImage: string,
+    sortOrder: number
+}
+
 export interface ListItemQueryDto {
     id: number,
     name: string,
@@ -44,7 +50,8 @@ export interface GetItemByIdDto{
     quantity: number,
     supplier: SharedSupplierDto,
     container: SharedContainerDto,
-    tags: SharedTagDto[]
+    tags: SharedTagDto[],
+    images: SharedItemImageDto[]
 }
 
 export interface CreateItemCommand{
@@ -54,7 +61,8 @@ export interface CreateItemCommand{
     quantity: number,
     supplierId: number,
     containerId: number,
-    tagIds?: number[]
+    tagIds?: number[],
+    images?: string[]
 }
 
 export interface UpdateItemCommand{
@@ -64,7 +72,8 @@ export interface UpdateItemCommand{
     quantity: number,
     supplierId: number,
     containerId: number,
-    tagIds?: number[]
+    tagIds?: number[],
+    images?: string[]
 }
 
 export interface UpdateCanvasPositionCommand{

@@ -55,8 +55,41 @@ export class ItemDetailPanel {
     return tagTextColor(tagColor(id));
   }
 
-  getImageSrc(item: GetItemByIdDto): string | null {
-    return item.byteImage ? `data:image/jpeg;base64,${item.byteImage}` : null;
+  readonly carouselIndex = signal(0);
+
+  readonly imageSrcs = computed<string[]>(() => {
+    const data = this.item();
+    if (!data) {
+      return [];
+    }
+    if (data.images?.length) {
+      return data.images
+        .slice()
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((i) => `data:image/jpeg;base64,${i.byteImage}`);
+    }
+    if (data.byteImage) {
+      return [`data:image/jpeg;base64,${data.byteImage}`];
+    }
+    return [];
+  });
+
+  nextImage(): void {
+    const n = this.imageSrcs().length;
+    if (n) {
+      this.carouselIndex.set((this.carouselIndex() + 1) % n);
+    }
+  }
+
+  prevImage(): void {
+    const n = this.imageSrcs().length;
+    if (n) {
+      this.carouselIndex.set((this.carouselIndex() - 1 + n) % n);
+    }
+  }
+
+  goToImage(index: number): void {
+    this.carouselIndex.set(index);
   }
 
   close(): void {
@@ -81,6 +114,7 @@ export class ItemDetailPanel {
         containerId: item.container.id,
         warehouseId: warehouse.id,
         tagIds: item.tags.map((t) => t.id),
+        images: item.images,
       },
     });
 
@@ -96,6 +130,7 @@ export class ItemDetailPanel {
         supplierId: Number(v.supplierId),
         containerId: Number(v.containerId),
         tagIds: v.tagIds ? JSON.parse(v.tagIds) : [],
+        images: v.images ? JSON.parse(v.images) : [],
       }).subscribe({
         next: () => {
           this.loadItem(item.id);
@@ -147,6 +182,7 @@ export class ItemDetailPanel {
           return;
         }
         this.item.set(item);
+        this.carouselIndex.set(0);
         this.isLoading.set(false);
       },
       error: (err) => {

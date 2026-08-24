@@ -24,6 +24,7 @@ namespace Stowaway.Domain.Entities.Storage
         public ContainerEntity Container { get; set; }
         public double? CanvasX { get; set; }
         public double? CanvasY { get; set; }
+        public ICollection<ItemImageEntity> Images { get; set; } = new List<ItemImageEntity>();
 
     }
 }
