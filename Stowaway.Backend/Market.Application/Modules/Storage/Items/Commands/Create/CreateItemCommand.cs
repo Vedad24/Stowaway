@@ -16,5 +16,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
         public int ContainerId { get; init; }
         public int SupplierId { get; init; }
         public List<int> TagIds { get; init; } = new();
+        public List<string> Images { get; init; } = new();
     }
 }

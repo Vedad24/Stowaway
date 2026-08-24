@@ -37,5 +37,9 @@
       <label class="tags-label">{{ question().label }}</label>
       <app-tag-picker [formControlName]="question().key" />
     }
+    @case ('images') {
+      <label class="tags-label">{{ question().label }}</label>
+      <app-image-picker [formControlName]="question().key" />
+    }
   }
 </div>

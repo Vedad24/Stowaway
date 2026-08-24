@@ -52,7 +52,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
             {
                 Name = normalizedName,
                 Description = request.Description,
-                ByteImage = request.ByteImage,
+                ByteImage = request.Images.Count > 0 ? Convert.FromBase64String(request.Images[0]) : request.ByteImage,
                 Quantity = request.Quantity,
                 SupplierId = request.SupplierId,
                 ContainerId = request.ContainerId,
@@ -71,6 +71,21 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
                 foreach (var tagId in validTagIds)
                 {
                     ctx.ItemTags.Add(new Item_TagEntity { ItemId = item.Id, TagId = tagId });
+                }
+
+                await ctx.SaveChangesAsync(cancellationToken);
+            }
+
+            if (request.Images.Count > 0)
+            {
+                for (int i = 0; i < request.Images.Count; i++)
+                {
+                    ctx.ItemImages.Add(new ItemImageEntity
+                    {
+                        ItemId = item.Id,
+                        ByteImage = Convert.FromBase64String(request.Images[i]),
+                        SortOrder = i,
+                    });
                 }
 
                 await ctx.SaveChangesAsync(cancellationToken);

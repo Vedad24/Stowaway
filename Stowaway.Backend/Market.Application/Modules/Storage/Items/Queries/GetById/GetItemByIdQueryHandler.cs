@@ -42,6 +42,11 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
                     .Where(it => it.ItemId == x.Id)
                     .Select(it => new SharedTagDto { Id = it.Tag.Id, Name = it.Tag.Name })
                     .ToList(),
+                Images = ctx.ItemImages
+                    .Where(i => i.ItemId == x.Id)
+                    .OrderBy(i => i.SortOrder)
+                    .Select(i => new SharedItemImageDto { Id = i.Id, ByteImage = i.ByteImage, SortOrder = i.SortOrder })
+                    .ToList(),
             }).FirstOrDefaultAsync(cancellationToken);
 
             if (item == null)
