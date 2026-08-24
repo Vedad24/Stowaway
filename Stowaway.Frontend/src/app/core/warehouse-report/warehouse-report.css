@@ -16,8 +16,14 @@
   align-items: center;
   min-height: 64px;
   padding: 0 1.5rem;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--cream);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .logoName {
@@ -54,7 +60,7 @@
   background: var(--cream);
   border: 1px solid color-mix(in srgb, var(--sage) 25%, transparent);
   border-radius: 16px;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--text-dark) 8%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--shadow-tint) 8%, transparent);
   padding: 2rem;
 }
 
@@ -87,7 +93,7 @@
 }
 
 .report-error {
-  color: #b3261e;
+  color: var(--danger);
 }
 
 .report-section {

@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-landing-page',
-  imports: [MatButtonModule, MatCardModule, MatToolbarModule],
+  imports: [MatButtonModule, MatCardModule, MatToolbarModule, ThemeToggle],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css',
 })

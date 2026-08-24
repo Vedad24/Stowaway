@@ -7,7 +7,7 @@
 .canvas-shell {
   height: 100%;
   min-height: 0;
-  background: #fafafa;
+  background: var(--cream);
   display: flex;
   flex-direction: column;
 }
@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 1rem;
   text-align: center;
   padding: 2rem;
@@ -28,8 +28,8 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: #fff;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--cream);
 }
 
 .breadcrumb {
@@ -42,7 +42,7 @@
 .crumb {
   border: 0;
   background: transparent;
-  color: #4b5563;
+  color: var(--text-muted);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -51,25 +51,25 @@
 }
 
 .crumb:hover {
-  background: #f3f4f6;
+  background: var(--surface-hover);
 }
 
 .crumb-current {
-  color: #1f2937;
+  color: var(--text-dark);
 }
 
 .crumb-sep {
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .canvas-status {
   margin-left: auto;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .canvas-status-error {
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .canvas-body {
@@ -81,8 +81,8 @@
 .canvas-tray {
   width: 220px;
   flex-shrink: 0;
-  border-right: 1px solid #e5e7eb;
-  background: #f7f7f5;
+  border-right: 1px solid var(--surface-border);
+  background: var(--surface-sunken);
   padding: 0.75rem;
   overflow-y: auto;
 }
@@ -96,7 +96,7 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .tray-card {
@@ -105,12 +105,12 @@
   gap: 0.5rem;
   padding: 0.5rem 0.6rem;
   margin-bottom: 0.5rem;
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--cream);
+  border: 1px solid var(--surface-border);
   border-radius: 0.4rem;
   cursor: grab;
   font-size: 0.9rem;
-  color: #1f2937;
+  color: var(--text-dark);
 }
 
 .tray-card.cdk-drag-dragging {
@@ -123,7 +123,7 @@
 }
 
 .tray-card-item {
-  background: #fdf6ec;
+  background: color-mix(in srgb, var(--gold) 15%, var(--cream));
 }
 
 .canvas-grid {
@@ -131,7 +131,7 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  background-image: radial-gradient(circle, #dfe3da 1px, transparent 1px);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--text-dark) 18%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -139,7 +139,7 @@
   position: absolute;
   top: 1rem;
   left: 1rem;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
@@ -154,10 +154,10 @@
   gap: 0.2rem;
   width: 112px;
   padding: 0.6rem 0.5rem 0.5rem;
-  background: #fff;
-  border: 1px solid #d4d8cf;
+  background: var(--cream);
+  border: 1px solid var(--surface-border);
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--shadow-tint) 12%, transparent);
   cursor: grab;
   text-align: center;
   user-select: none;
@@ -168,7 +168,7 @@
 }
 
 .canvas-card-container {
-  border-top: 3px solid #8fa28a;
+  border-top: 3px solid var(--sage);
   width: calc(112px * var(--card-scale, 1));
   padding: calc(0.6rem * var(--card-scale, 1)) calc(0.5rem * var(--card-scale, 1)) calc(0.5rem * var(--card-scale, 1));
 }
@@ -189,7 +189,7 @@
   width: 100%;
   height: 4px;
   border-radius: 999px;
-  background: #e7e9e2;
+  background: var(--surface-sunken);
   overflow: hidden;
 }
 
@@ -224,13 +224,13 @@
 .card-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-dark);
   overflow-wrap: anywhere;
 }
 
 .card-hint {
   font-size: 0.7rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .card-unplace {
@@ -263,7 +263,7 @@
   height: 1.2rem;
   border: 0;
   border-radius: 999px;
-  background: #8fa28a;
+  background: var(--sage);
   color: #fff;
   font-size: 0.7rem;
   line-height: 1;
@@ -293,7 +293,7 @@
   height: 1.2rem;
   border: 0;
   border-radius: 999px;
-  background: #b3261e;
+  background: var(--danger);
   color: #fff;
   font-size: 0.65rem;
   line-height: 1;
@@ -304,7 +304,7 @@
 }
 
 .card-delete:hover {
-  background: #7f180f;
+  background: var(--danger-hover);
 }
 
 .card-delete-inline {
