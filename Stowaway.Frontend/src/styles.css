@@ -9,6 +9,14 @@
   --gold: #c8a96b;
   --text-dark: #2f352f;
   --text-muted: #5c665d;
+  --shadow-tint: #000000;
+  --danger: #b3261e;
+  --danger-hover: #7f180f;
+  /* Derived neutrals: computed from the base vars above, so they
+     automatically track light/dark without a separate override block. */
+  --surface-border: color-mix(in srgb, var(--text-dark) 15%, transparent);
+  --surface-hover: color-mix(in srgb, var(--sage) 12%, var(--cream));
+  --surface-sunken: color-mix(in srgb, var(--text-dark) 6%, var(--cream));
   /*Global color pallette for angular material*/
   --mat-sys-primary: var(--sage);
   --mat-sys-primary-container: var(--gold);
@@ -90,7 +98,19 @@
   --mat-dialog-subhead-color: var(--text-dark);
   --mat-dialog-supporting-text-color: var(--text-muted);
   --mat-dialog-container-shape: 16px;
-  --mat-dialog-container-elevation-shadow: 0 16px 40px color-mix(in srgb, var(--text-dark) 16%, transparent);
+  --mat-dialog-container-elevation-shadow: 0 16px 40px color-mix(in srgb, var(--shadow-tint) 16%, transparent);
+}
+
+:root.dark {
+  --sage: #7fa878;
+  --sage-soft: #3a4a3d;
+  --cream: #1c1f1c;
+  --gold: #d9b877;
+  --text-dark: #ecebe4;
+  --text-muted: #a9b3a8;
+  --danger: #e5534b;
+  --danger-hover: #ff6b61;
+  color-scheme: dark;
 }
 
 html,
@@ -151,7 +171,7 @@ a:hover {
 
 .mat-mdc-card {
   border: 1px solid color-mix(in srgb, var(--sage) 25%, transparent);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--text-dark) 8%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--shadow-tint) 8%, transparent);
 }
 
 .invalid-credentials-snackbar {
@@ -159,7 +179,7 @@ a:hover {
   color: var(--sage);
   border: 1px solid var(--sage-soft);
   border-radius: 12px;
-  box-shadow: 0 12px 30px rgba(47, 53, 47, 0.16);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--shadow-tint) 16%, transparent);
 }
 
 .invalid-credentials-snackbar .mdc-snackbar__surface {
