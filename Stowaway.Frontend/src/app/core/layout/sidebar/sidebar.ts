@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
 
 interface ContainerTreeNode extends ListContainersQueryDto {
   expanded: boolean;
@@ -45,6 +47,7 @@ export class Sidebar implements OnInit {
   private readonly containerService = inject(ContainerApiService);
   private readonly canvasState = inject(WarehouseCanvasState);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   warehouses = signal<WarehouseTreeNode[]>([]);
   isLoading = signal(false);
@@ -333,6 +336,20 @@ export class Sidebar implements OnInit {
   
   goToPriviledges(warehouseId : number) {
     this.router.navigate(['priviledge-group/edit', warehouseId]);
+  }
+
+  openReportDialog(warehouse: WarehouseTreeNode): void {
+    const dialogRef = this.dialog.open(WarehouseReportDialog, {
+      width: '380px',
+      data: { warehouseName: warehouse.name },
+    });
+
+    dialogRef.afterClosed().subscribe((type: WarehouseReportType | undefined) => {
+      if (!type) {
+        return;
+      }
+      this.router.navigate(['/report', warehouse.id], { queryParams: { type } });
+    });
   }
 }
 
