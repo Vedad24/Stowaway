@@ -11,12 +11,20 @@
   background-color: var(--sage-soft);
 }
 
+.sidebar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
 .sidebar-search {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 0.75rem;
-  margin-bottom: 0.75rem;
+  flex: 1;
+  min-width: 0;
   border-radius: 999px;
   background-color: var(--cream);
   box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-tint) 15%, transparent);

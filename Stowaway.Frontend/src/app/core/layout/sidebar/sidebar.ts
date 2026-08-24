@@ -9,6 +9,8 @@ import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../se
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
+import { WarehouseAdd } from '../warehouse-add/warehouse-add';
+import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 
 interface ContainerTreeNode extends ListContainersQueryDto {
   expanded: boolean;
@@ -46,6 +48,7 @@ export class Sidebar implements OnInit {
   private readonly productPageService = inject(ProductPageService);
   private readonly containerService = inject(ContainerApiService);
   private readonly canvasState = inject(WarehouseCanvasState);
+  private readonly warehouseService = inject(WarehouseApiService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
@@ -119,6 +122,30 @@ export class Sidebar implements OnInit {
 
   selectWarehouse(warehouse: WarehouseTreeNode): void {
     this.canvasState.selectWarehouse({ id: warehouse.id, name: warehouse.name });
+  }
+
+  addWarehouse(): void {
+    const dialogRef = this.dialog.open(WarehouseAdd, {
+      width: '420px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+      const v = JSON.parse(result);
+      this.warehouseService.create({
+        name: (v.name ?? '').trim(),
+        description: (v.description ?? '').trim(),
+        city: (v.city ?? '').trim(),
+        address: (v.address ?? '').trim(),
+        capacity: Number(v.capacity),
+        isEnabled: true,
+      }).subscribe({
+        next: () => this.loadTree(),
+        error: (err) => console.error('Unable to create warehouse.', err),
+      });
+    });
   }
 
   withAncestor(ancestors: ContainerTreeNode[], container: ContainerTreeNode): ContainerTreeNode[] {
