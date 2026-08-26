@@ -7,6 +7,7 @@ import { ItemApiService } from '../../../services/storage/item/item';
 import { GetItemByIdDto } from '../../../services/storage/item/item.model';
 import { ItemEdit } from '../item-edit/item-edit';
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
+import { ImageLightbox } from '../../../shared/image-lightbox/image-lightbox';
 import { extractErrorMessage } from '../../../models/http-error';
 import { tagColor, tagTextColor } from '../../../shared/tag-color';
 
@@ -92,6 +93,20 @@ export class ItemDetailPanel {
     this.carouselIndex.set(index);
   }
 
+  openLightbox(): void {
+    const images = this.imageSrcs();
+    if (!images.length) {
+      return;
+    }
+    this.dialog.open(ImageLightbox, {
+      width: '90vw',
+      height: '85vh',
+      maxWidth: '1200px',
+      panelClass: 'image-lightbox-panel',
+      data: { images, startIndex: this.carouselIndex() },
+    });
+  }
+
   close(): void {
     this.canvasState.clearSelection();
   }
@@ -104,7 +119,8 @@ export class ItemDetailPanel {
     }
 
     const dialogRef = this.dialog.open(ItemEdit, {
-      width: '420px',
+      width: '840px',
+      maxWidth: '95vw',
       data: {
         id: item.id,
         name: item.name,

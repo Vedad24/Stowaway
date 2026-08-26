@@ -9,7 +9,12 @@
     @if (item(); as data) {
       <div class="panel-image">
         @if (imageSrcs().length > 0) {
-          <img [src]="imageSrcs()[carouselIndex()]" [alt]="data.name" />
+          <img
+            [src]="imageSrcs()[carouselIndex()]"
+            [alt]="data.name"
+            class="panel-image-zoomable"
+            (click)="openLightbox()"
+          />
           @if (imageSrcs().length > 1) {
             <button type="button" class="carousel-nav carousel-prev" (click)="prevImage()" aria-label="Previous photo">‹</button>
             <button type="button" class="carousel-nav carousel-next" (click)="nextImage()" aria-label="Next photo">›</button>
