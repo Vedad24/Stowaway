@@ -85,7 +85,8 @@ export class Navbar {
     }
 
     const dialogRef = this.dialog.open(ItemAdd, {
-      width: '420px',
+      width: '840px',
+      maxWidth: '95vw',
       data: {
         warehouseId: warehouse.id,
         containerId: this.currentContainer()?.id ?? null,

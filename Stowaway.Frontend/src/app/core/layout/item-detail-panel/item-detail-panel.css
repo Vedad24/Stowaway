@@ -64,6 +64,10 @@
   object-fit: cover;
 }
 
+.panel-image-zoomable {
+  cursor: zoom-in;
+}
+
 .panel-image-placeholder {
   font-size: 2.5rem;
 }

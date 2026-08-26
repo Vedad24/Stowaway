@@ -19,6 +19,12 @@ export class DynamicForm {
   readonly form = computed<FormGroup>(() =>
     this.qcs.toFormGroup(this.questions() as QuestionBase<string>[]),
   );
+  readonly imagesQuestion = computed(
+    () => this.questions()?.find((q) => q.controlType === 'images') ?? null,
+  );
+  readonly fieldQuestions = computed(
+    () => this.questions()?.filter((q) => q.controlType !== 'images') ?? [],
+  );
   payLoad = '';
   
   
