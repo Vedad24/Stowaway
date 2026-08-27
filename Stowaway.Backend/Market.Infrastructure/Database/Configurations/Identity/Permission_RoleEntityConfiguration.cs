@@ -12,6 +12,16 @@ namespace Stowaway.Infrastructure.Database.Configurations.Identity
         public void Configure(EntityTypeBuilder<Permission_RoleEntity> builder)
         {
             builder.HasKey(pr => new {pr.PermissionId, pr.RoleId});
+
+            builder.HasOne(pr => pr.Permission)
+                .WithMany()
+                .HasForeignKey(pr => pr.PermissionId)
+                .IsRequired();
+
+            builder.HasOne(pr => pr.Role)
+                .WithMany()
+                .HasForeignKey(pr => pr.RoleId)
+                .IsRequired();
         }
     }
 }
