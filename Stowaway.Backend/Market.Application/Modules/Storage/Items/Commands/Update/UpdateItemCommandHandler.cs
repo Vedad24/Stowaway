@@ -41,7 +41,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
 
             item.Name = request.Name;
             item.Description = request.Description;
-            item.ByteImage = request.ByteImage;
+            item.ByteImage = request.Images.Count > 0 ? Convert.FromBase64String(request.Images[0]) : request.ByteImage;
             item.Quantity = request.Quantity;
             item.SupplierId = request.SupplierId;
             item.ContainerId = request.ContainerId;
@@ -62,6 +62,21 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Update
             foreach (var tagId in validTagIds.Where(id => !existingTagIds.Contains(id)))
             {
                 ctx.ItemTags.Add(new Item_TagEntity { ItemId = item.Id, TagId = tagId });
+            }
+
+            var existingImages = await ctx.ItemImages
+                .Where(i => i.ItemId == item.Id)
+                .ToListAsync(cancellationToken);
+            ctx.ItemImages.RemoveRange(existingImages);
+
+            for (int i = 0; i < request.Images.Count; i++)
+            {
+                ctx.ItemImages.Add(new ItemImageEntity
+                {
+                    ItemId = item.Id,
+                    ByteImage = Convert.FromBase64String(request.Images[i]),
+                    SortOrder = i,
+                });
             }
 
             await ctx.SaveChangesAsync(cancellationToken);

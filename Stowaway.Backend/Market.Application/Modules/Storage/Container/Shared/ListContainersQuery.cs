@@ -12,5 +12,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
         public string? Search { get; init; }
         public int? WarehouseId { get; init; }
         public int? ParentContainerId { get; init; }
+        public int? ContainerTypeId { get; init; }
+        public int? StatusId { get; init; }
     }
 }

@@ -1,15 +1,18 @@
 <nav class="sidebar-tree" aria-label="Warehouse navigation">
-  <label class="sidebar-search" for="sidebar-search">
-    <span class="search-icon">🔎</span>
-    <input
-      id="sidebar-search"
-      type="text"
-      placeholder="Search here..."
-      [value]="searchText()"
-      (input)="updateSearch($any($event.target).value)"
-      (keydown.enter)="executeSearch()"
-    />
-  </label>
+  <div class="sidebar-toolbar">
+    <label class="sidebar-search" for="sidebar-search">
+      <span class="search-icon">🔎</span>
+      <input
+        id="sidebar-search"
+        type="text"
+        placeholder="Search here..."
+        [value]="searchText()"
+        (input)="updateSearch($any($event.target).value)"
+        (keydown.enter)="executeSearch()"
+      />
+    </label>
+    <button matButton title="Add warehouse" (click)="addWarehouse()"><mat-icon>add_business</mat-icon></button>
+  </div>
 
   @if (isLoading()) {
     <div class="tree-state">Loading warehouses…</div>
@@ -32,6 +35,7 @@
                 <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
               </button>
               <span class="tree-label" (click)="selectWarehouse(warehouse)">{{ warehouse.name }}</span>
+              <button matButton title="Generate report" (click)="openReportDialog(warehouse)"><mat-icon>summarize</mat-icon></button>
               <button matButton (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
             </div>
             @if (warehouse.loading) {

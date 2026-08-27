@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
@@ -15,7 +16,7 @@ export interface ContainerAddDialogData {
 @Component({
   selector: 'app-container-add',
   standalone: true,
-  imports: [MatDialogModule, DynamicForm],
+  imports: [MatDialogModule, MatIconModule, DynamicForm],
   templateUrl: './container-add.html',
   styleUrl: './container-add.css',
 })

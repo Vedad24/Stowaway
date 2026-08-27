@@ -1,0 +1,42 @@
+<div class="lightbox" tabindex="0" (keydown)="onKeydown($event)">
+  <button type="button" class="lightbox-close" (click)="close()" aria-label="Close">✕</button>
+
+  <div class="lightbox-toolbar">
+    <button type="button" (click)="zoomOut()" [disabled]="zoom() <= 1" aria-label="Zoom out">−</button>
+    <span class="lightbox-zoom-level">{{ zoomPercent() }}%</span>
+    <button type="button" (click)="zoomIn()" [disabled]="zoom() >= 4" aria-label="Zoom in">+</button>
+  </div>
+
+  <div
+    class="lightbox-viewport"
+    [class.zoomed]="zoom() > 1"
+    (wheel)="onWheel($event)"
+    (dblclick)="toggleZoom()"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointerleave)="onPointerUp()"
+  >
+    <img
+      [src]="currentSrc()"
+      alt=""
+      [style.transform]="'translate(' + pan().x + 'px, ' + pan().y + 'px) scale(' + zoom() + ')'"
+    />
+  </div>
+
+  @if (data.images.length > 1) {
+    <button type="button" class="lightbox-nav lightbox-prev" (click)="prev()" aria-label="Previous photo">‹</button>
+    <button type="button" class="lightbox-nav lightbox-next" (click)="next()" aria-label="Next photo">›</button>
+    <div class="lightbox-dots">
+      @for (src of data.images; track $index) {
+        <button
+          type="button"
+          class="lightbox-dot"
+          [class.lightbox-dot-active]="$index === index()"
+          (click)="goTo($index)"
+          [attr.aria-label]="'Go to photo ' + ($index + 1)"
+        ></button>
+      }
+    </div>
+  }
+</div>

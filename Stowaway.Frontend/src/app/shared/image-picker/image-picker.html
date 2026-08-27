@@ -1,0 +1,51 @@
+<div class="image-picker">
+  @if (images().length > 0) {
+    <div class="image-picker-thumbs">
+      @for (img of images(); track $index) {
+        <div class="image-picker-thumb">
+          <img [src]="'data:image/jpeg;base64,' + img" alt="" />
+          <button
+            type="button"
+            class="image-picker-remove"
+            (click)="removeImage($index)"
+            aria-label="Remove photo"
+          >
+            ✕
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (croppingFile(); as file) {
+    <div class="image-picker-cropper">
+      <image-cropper
+        #cropper
+        [imageFile]="file"
+        [maintainAspectRatio]="false"
+        [output]="'base64'"
+        [imageQuality]="80"
+        [resizeToWidth]="1280"
+        [resizeToHeight]="1280"
+        [onlyScaleDown]="true"
+      ></image-cropper>
+      <div class="image-picker-cropper-actions">
+        <button mat-stroked-button type="button" (click)="cancelCrop()">Skip</button>
+        <button mat-flat-button type="button" (click)="confirmCrop(cropper)">Use photo</button>
+      </div>
+      @if (cropQueue().length > 0) {
+        <p class="image-picker-queue-hint">{{ cropQueue().length }} more photo(s) queued</p>
+      }
+    </div>
+  } @else {
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      multiple
+      class="image-picker-file-input"
+      (change)="onFilesSelected($event)"
+    />
+    <button mat-stroked-button type="button" (click)="fileInput.click()">Add photos</button>
+  }
+</div>

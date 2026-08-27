@@ -1,12 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
+import { WarehouseAdd } from '../warehouse-add/warehouse-add';
+import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 
 interface ContainerTreeNode extends ListContainersQueryDto {
   expanded: boolean;
@@ -44,7 +48,9 @@ export class Sidebar implements OnInit {
   private readonly productPageService = inject(ProductPageService);
   private readonly containerService = inject(ContainerApiService);
   private readonly canvasState = inject(WarehouseCanvasState);
+  private readonly warehouseService = inject(WarehouseApiService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   warehouses = signal<WarehouseTreeNode[]>([]);
   isLoading = signal(false);
@@ -116,6 +122,30 @@ export class Sidebar implements OnInit {
 
   selectWarehouse(warehouse: WarehouseTreeNode): void {
     this.canvasState.selectWarehouse({ id: warehouse.id, name: warehouse.name });
+  }
+
+  addWarehouse(): void {
+    const dialogRef = this.dialog.open(WarehouseAdd, {
+      width: '420px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+      const v = JSON.parse(result);
+      this.warehouseService.create({
+        name: (v.name ?? '').trim(),
+        description: (v.description ?? '').trim(),
+        city: (v.city ?? '').trim(),
+        address: (v.address ?? '').trim(),
+        capacity: Number(v.capacity),
+        isEnabled: true,
+      }).subscribe({
+        next: () => this.loadTree(),
+        error: (err) => console.error('Unable to create warehouse.', err),
+      });
+    });
   }
 
   withAncestor(ancestors: ContainerTreeNode[], container: ContainerTreeNode): ContainerTreeNode[] {
@@ -333,6 +363,20 @@ export class Sidebar implements OnInit {
   
   goToPriviledges(warehouseId : number) {
     this.router.navigate(['priviledge-group/edit', warehouseId]);
+  }
+
+  openReportDialog(warehouse: WarehouseTreeNode): void {
+    const dialogRef = this.dialog.open(WarehouseReportDialog, {
+      width: '380px',
+      data: { warehouseName: warehouse.name },
+    });
+
+    dialogRef.afterClosed().subscribe((type: WarehouseReportType | undefined) => {
+      if (!type) {
+        return;
+      }
+      this.router.navigate(['/report', warehouse.id], { queryParams: { type } });
+    });
   }
 }
 

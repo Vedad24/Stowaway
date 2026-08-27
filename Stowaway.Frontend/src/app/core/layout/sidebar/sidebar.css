@@ -7,8 +7,15 @@
   height: 100%;
   min-height: 0;
   padding: 0.75rem 0.75rem 1rem;
-  color: #e5e7eb;
-  background-color: #c7d3c0;
+  color: var(--text-dark);
+  background-color: var(--sage-soft);
+}
+
+.sidebar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
 }
 
 .sidebar-search {
@@ -16,10 +23,11 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 0.75rem;
-  margin-bottom: 0.75rem;
+  flex: 1;
+  min-width: 0;
   border-radius: 999px;
-  background-color: #f7f4ed;
-  box-shadow: 0 1px 2px rgba(47, 53, 47, 0.15);
+  background-color: var(--cream);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-tint) 15%, transparent);
 }
 
 .sidebar-search input {
@@ -27,7 +35,7 @@
   border: 0;
   outline: none;
   background: transparent;
-  color: #2f352f;
+  color: var(--text-dark);
   font-size: 0.95rem;
 }
 
@@ -41,7 +49,7 @@
 .tree-state {
   padding: 0.5rem 0;
   font-size: 0.95rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .tree-error {
@@ -65,15 +73,15 @@
   align-items: center;
   padding: 0.2rem 1rem;
   gap: 0.5rem;
-  background-color: #f7f4ed;
+  background-color: var(--cream);
   border-radius: 0.2rem 0.4rem 0.4rem 0.2rem;
   margin-bottom: 0.3rem;
   cursor: pointer;
 }
 
 .tree-row-match {
-  border: 1px solid #8fa28a;
-  box-shadow: inset 0 0 4px #8fa28a;
+  border: 1px solid var(--sage);
+  box-shadow: inset 0 0 4px var(--sage);
 }
 
 .tree-toggle {
@@ -95,7 +103,7 @@
 .tree-icon {
   font-size: 0.95rem;
   line-height: 1;
-  color: #2f352f;
+  color: var(--text-dark);
 }
 
 .tree-icon-spacer {
@@ -104,7 +112,7 @@
 
 .tree-label {
   font-weight: 600;
-  color: #2f352f;
+  color: var(--text-dark);
   cursor: pointer;
   border-radius: 0.2rem;
   padding: 0.1rem 0.3rem;
@@ -112,7 +120,7 @@
 }
 
 .tree-label:hover {
-  background-color: #e4ded0;
+  background-color: var(--surface-hover);
 }
 
 .tree-children {
@@ -123,7 +131,7 @@
 
 .tree-child {
   padding: 0.25rem 0;
-  color: #d1d5db;
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
@@ -134,6 +142,6 @@
 .tree-loading,
 .tree-empty {
   padding: 0.2rem 0.5rem 0.4rem 1.5rem;
-  color: #526052;
+  color: var(--text-muted);
   font-size: 0.85rem;
 }

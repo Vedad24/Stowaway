@@ -1,22 +1,49 @@
 .dynamic-form {
   max-width: 480px;
+  width: 100%;
 }
 .dynamic-form-wrapper
 {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
 }
 .form-row {
-  margin-bottom: 8px;
+  margin-bottom: 14px;
+}
 
+.dynamic-form.has-images {
+  max-width: 760px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  column-gap: 24px;
+  align-items: start;
+}
+
+.dynamic-form.has-images .dynamic-form-fields {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dynamic-form.has-images .dynamic-form-images {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dynamic-form.has-images .form-actions {
+  grid-column: 1 / -1;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 4px;
+  margin-bottom: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--sage-soft, #c7d3c0);
 }
 
 .payload {

@@ -7,6 +7,7 @@ import { ItemApiService } from '../../../services/storage/item/item';
 import { GetItemByIdDto } from '../../../services/storage/item/item.model';
 import { ItemEdit } from '../item-edit/item-edit';
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
+import { ImageLightbox } from '../../../shared/image-lightbox/image-lightbox';
 import { extractErrorMessage } from '../../../models/http-error';
 import { tagColor, tagTextColor } from '../../../shared/tag-color';
 
@@ -55,8 +56,55 @@ export class ItemDetailPanel {
     return tagTextColor(tagColor(id));
   }
 
-  getImageSrc(item: GetItemByIdDto): string | null {
-    return item.byteImage ? `data:image/jpeg;base64,${item.byteImage}` : null;
+  readonly carouselIndex = signal(0);
+
+  readonly imageSrcs = computed<string[]>(() => {
+    const data = this.item();
+    if (!data) {
+      return [];
+    }
+    if (data.images?.length) {
+      return data.images
+        .slice()
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((i) => `data:image/jpeg;base64,${i.byteImage}`);
+    }
+    if (data.byteImage) {
+      return [`data:image/jpeg;base64,${data.byteImage}`];
+    }
+    return [];
+  });
+
+  nextImage(): void {
+    const n = this.imageSrcs().length;
+    if (n) {
+      this.carouselIndex.set((this.carouselIndex() + 1) % n);
+    }
+  }
+
+  prevImage(): void {
+    const n = this.imageSrcs().length;
+    if (n) {
+      this.carouselIndex.set((this.carouselIndex() - 1 + n) % n);
+    }
+  }
+
+  goToImage(index: number): void {
+    this.carouselIndex.set(index);
+  }
+
+  openLightbox(): void {
+    const images = this.imageSrcs();
+    if (!images.length) {
+      return;
+    }
+    this.dialog.open(ImageLightbox, {
+      width: '90vw',
+      height: '85vh',
+      maxWidth: '1200px',
+      panelClass: 'image-lightbox-panel',
+      data: { images, startIndex: this.carouselIndex() },
+    });
   }
 
   close(): void {
@@ -71,7 +119,8 @@ export class ItemDetailPanel {
     }
 
     const dialogRef = this.dialog.open(ItemEdit, {
-      width: '420px',
+      width: '840px',
+      maxWidth: '95vw',
       data: {
         id: item.id,
         name: item.name,
@@ -81,6 +130,7 @@ export class ItemDetailPanel {
         containerId: item.container.id,
         warehouseId: warehouse.id,
         tagIds: item.tags.map((t) => t.id),
+        images: item.images,
       },
     });
 
@@ -96,6 +146,7 @@ export class ItemDetailPanel {
         supplierId: Number(v.supplierId),
         containerId: Number(v.containerId),
         tagIds: v.tagIds ? JSON.parse(v.tagIds) : [],
+        images: v.images ? JSON.parse(v.images) : [],
       }).subscribe({
         next: () => {
           this.loadItem(item.id);
@@ -147,6 +198,7 @@ export class ItemDetailPanel {
           return;
         }
         this.item.set(item);
+        this.carouselIndex.set(0);
         this.isLoading.set(false);
       },
       error: (err) => {

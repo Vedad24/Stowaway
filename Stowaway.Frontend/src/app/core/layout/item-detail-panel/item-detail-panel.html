@@ -8,8 +8,28 @@
 
     @if (item(); as data) {
       <div class="panel-image">
-        @if (getImageSrc(data); as src) {
-          <img [src]="src" [alt]="data.name" />
+        @if (imageSrcs().length > 0) {
+          <img
+            [src]="imageSrcs()[carouselIndex()]"
+            [alt]="data.name"
+            class="panel-image-zoomable"
+            (click)="openLightbox()"
+          />
+          @if (imageSrcs().length > 1) {
+            <button type="button" class="carousel-nav carousel-prev" (click)="prevImage()" aria-label="Previous photo">‹</button>
+            <button type="button" class="carousel-nav carousel-next" (click)="nextImage()" aria-label="Next photo">›</button>
+            <div class="carousel-dots">
+              @for (src of imageSrcs(); track $index) {
+                <button
+                  type="button"
+                  class="carousel-dot"
+                  [class.carousel-dot-active]="$index === carouselIndex()"
+                  (click)="goToImage($index)"
+                  [attr.aria-label]="'Go to photo ' + ($index + 1)"
+                ></button>
+              }
+            </div>
+          }
         } @else {
           <span class="panel-image-placeholder">🏷️</span>
         }

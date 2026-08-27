@@ -449,6 +449,31 @@ namespace Stowaway.Infrastructure.Migrations
                     b.ToTable("Item", "Storage");
                 });
 
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ItemImageEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("ByteImage")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemImage", "Storage");
+                });
+
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.Item_TagEntity", b =>
                 {
                     b.Property<int>("ItemId")
@@ -818,6 +843,17 @@ namespace Stowaway.Infrastructure.Migrations
                     b.Navigation("Supplier");
                 });
 
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ItemImageEntity", b =>
+                {
+                    b.HasOne("Stowaway.Domain.Entities.Storage.ItemEntity", "Item")
+                        .WithMany("Images")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.Item_TagEntity", b =>
                 {
                     b.HasOne("Stowaway.Domain.Entities.Storage.ItemEntity", "Item")
@@ -926,6 +962,11 @@ namespace Stowaway.Infrastructure.Migrations
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ContainerEntity", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Stowaway.Domain.Entities.Storage.ItemEntity", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Storage.StorageIdentity.PriviledgeGroupEntity", b =>

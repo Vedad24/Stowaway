@@ -9,10 +9,11 @@ import { ItemAdd } from '../item-add/item-add';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { ItemApiService } from '../../../services/storage/item/item';
 import { ContainerApiService } from '../../../services/storage/container/container';
+import { ThemeToggle } from '../../../shared/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, RouterLink, ThemeToggle],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -84,7 +85,8 @@ export class Navbar {
     }
 
     const dialogRef = this.dialog.open(ItemAdd, {
-      width: '420px',
+      width: '840px',
+      maxWidth: '95vw',
       data: {
         warehouseId: warehouse.id,
         containerId: this.currentContainer()?.id ?? null,
@@ -103,6 +105,7 @@ export class Navbar {
         supplierId: Number(v.supplierId),
         containerId: Number(v.containerId),
         tagIds: v.tagIds ? JSON.parse(v.tagIds) : [],
+        images: v.images ? JSON.parse(v.images) : [],
       }).subscribe({
         next: () => this.canvasState.notifyLocationChanged(),
         error: (err) => console.error('Unable to create item.', err),

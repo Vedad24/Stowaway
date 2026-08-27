@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { ContainerTreeService } from '../../../services/storage/container/container-tree';
 import { SupplierApiService } from '../../../services/storage/supplier/supplier';
 import { DynamicForm } from '../../../shared/dynamic-form/dynamic-form';
-import { DropdownQuestion, QuestionBase, TagsQuestion, TextboxQuestion } from '../../../shared/dynamic-form/question-service/question.models';
+import { DropdownQuestion, ImagesQuestion, QuestionBase, TagsQuestion, TextboxQuestion } from '../../../shared/dynamic-form/question-service/question.models';
 import { extractErrorMessage } from '../../../models/http-error';
 
 export interface ItemAddDialogData {
@@ -15,7 +16,7 @@ export interface ItemAddDialogData {
 @Component({
   selector: 'app-item-add',
   standalone: true,
-  imports: [MatDialogModule, DynamicForm],
+  imports: [MatDialogModule, MatIconModule, DynamicForm],
   templateUrl: './item-add.html',
   styleUrl: './item-add.css',
 })
@@ -58,6 +59,7 @@ export class ItemAdd implements OnInit {
           options: containerOptions.map(c => ({ key: String(c.id), value: c.label })),
         }),
         new TagsQuestion({ key: 'tagIds', label: 'Tags', order: 6, value: '[]' }),
+        new ImagesQuestion({ key: 'images', label: 'Photos', order: 7, value: '[]' }),
       ]);
       this.isLoadingOptions.set(false);
     }).catch((err) => {

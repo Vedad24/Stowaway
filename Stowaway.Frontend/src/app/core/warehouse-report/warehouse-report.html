@@ -1,0 +1,110 @@
+<div class="report-page">
+  <header class="app-header">
+    <div class="logoName">
+      <button mat-icon-button type="button" title="Back" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <img class="logo" src="assets/icons/dolly.png" alt="" />
+      <h1 class="app-title">Stowaway</h1>
+    </div>
+    <div class="header-actions">
+      <app-theme-toggle></app-theme-toggle>
+      <button mat-flat-button color="primary" type="button" [disabled]="isLoading()" (click)="print()">
+        <mat-icon>print</mat-icon>
+        Print
+      </button>
+    </div>
+  </header>
+
+  <main class="report-content">
+  <div class="report-sheet">
+    <header class="report-header">
+      <h1>{{ warehouseName() || 'Warehouse report' }}</h1>
+      <p class="report-subtitle">
+        @if (reportType() === 'containers') { Containers report }
+        @else if (reportType() === 'items') { Items report }
+        @else { Containers and items report }
+      </p>
+      @if (generatedAt()) {
+        <p class="report-meta">Generated {{ generatedAt() | date: 'medium' }}</p>
+      }
+    </header>
+
+    @if (isLoading()) {
+      <div class="report-state">Generating report…</div>
+    }
+
+    @if (!isLoading() && errorMessage()) {
+      <div class="report-state report-error">{{ errorMessage() }}</div>
+    }
+
+    @if (!isLoading() && !errorMessage()) {
+      @if (showContainers) {
+        <section class="report-section">
+          <h2>Containers ({{ containerRows().length }})</h2>
+          @if (containerRows().length === 0) {
+            <p class="report-empty">No containers in this warehouse.</p>
+          } @else {
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Location</th>
+                  <th>Type</th>
+                  <th>Items</th>
+                  <th>Containers</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of containerRows(); track row.id) {
+                  <tr>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.ancestorPath }}</td>
+                    <td>{{ row.typeName }}</td>
+                    <td>{{ row.itemsUsed }} / {{ row.maxItems }}</td>
+                    <td>{{ row.containersUsed }} / {{ row.maxContainers }}</td>
+                    <td>{{ row.status }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </section>
+      }
+
+      @if (showItems) {
+        <section class="report-section">
+          <h2>Items ({{ itemRows().length }})</h2>
+          @if (itemRows().length === 0) {
+            <p class="report-empty">No items in this warehouse.</p>
+          } @else {
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Container</th>
+                  <th>Quantity</th>
+                  <th>Supplier</th>
+                  <th>Tags</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of itemRows(); track row.id) {
+                  <tr>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.containerPath }}</td>
+                    <td>{{ row.quantity }}</td>
+                    <td>{{ row.supplierName }}</td>
+                    <td>{{ row.tags }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </section>
+      }
+    }
+  </div>
+  </main>
+</div>
