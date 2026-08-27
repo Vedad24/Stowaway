@@ -1,0 +1,13 @@
+using Market.Application.Abstractions;
+
+namespace Market.Tests.Helpers;
+
+public sealed class FakeCurrentUser : IAppCurrentUser
+{
+    public int? UserId { get; init; }
+    public string? Email { get; init; }
+    public bool IsAuthenticated { get; init; } = true;
+    public bool IsAdmin { get; init; }
+    public bool IsManager { get; init; }
+    public bool IsEmployee { get; init; }
+}
