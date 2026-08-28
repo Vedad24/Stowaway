@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Market.API.Middleware;
 
@@ -12,6 +13,22 @@ public sealed class RequestResponseLoggingMiddleware(
     ILogger<RequestResponseLoggingMiddleware> logger)
 {
     private const int SlowRequestThresholdMs = 400; // 400 ms
+
+    private static readonly string[] SensitiveJsonKeys =
+        ["password", "accessToken", "refreshToken", "token"];
+
+    private static string RedactSensitiveFields(string json)
+    {
+        foreach (var key in SensitiveJsonKeys)
+        {
+            json = Regex.Replace(
+                json,
+                $"(\"{key}\"\\s*:\\s*)\"[^\"]*\"",
+                "$1\"***REDACTED***\"",
+                RegexOptions.IgnoreCase);
+        }
+        return json;
+    }
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -54,10 +71,10 @@ public sealed class RequestResponseLoggingMiddleware(
                 .AppendLine($"  Duration: {stopwatch.ElapsedMilliseconds} ms");
 
             if (!string.IsNullOrWhiteSpace(requestBody))
-                logMessage.AppendLine($"  Request Body: {requestBody}");
+                logMessage.AppendLine($"  Request Body: {RedactSensitiveFields(requestBody)}");
 
             if (!string.IsNullOrWhiteSpace(responseText))
-                logMessage.AppendLine($"  Response Body: {responseText}");
+                logMessage.AppendLine($"  Response Body: {RedactSensitiveFields(responseText)}");
 
             var elapsed = stopwatch.ElapsedMilliseconds;
             if (elapsed > SlowRequestThresholdMs)

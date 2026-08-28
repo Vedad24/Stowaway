@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Market.Domain.Entities.Sales;
+using Market.Shared.Constants;
 
 namespace Market.Application.Modules.Sales.Cart.Commands.AddToCart
 {
-    public class AddToCartCommandHandler(IAppDbContext db) : IRequestHandler<AddToCartCommand, AddToCartCommandDto>
+    public class AddToCartCommandHandler(IAppDbContext db, IAppCurrentUser currentUser) : IRequestHandler<AddToCartCommand, AddToCartCommandDto>
     {
         public async Task<AddToCartCommandDto> Handle(AddToCartCommand request, CancellationToken cancellationToken)
         {
+            if (request.UserId != currentUser.UserId && !currentUser.HasPermission(Permissions.CartManageAny))
+                throw new StowawayBusinessRuleException("P-C-S", "Users can only add to their own carts");
             if (await db.Warehouses.AnyAsync(w => w.Id == request.WarehouseId) == false)
             {
                 throw new StowawayNotFoundException($"Warehouse with id {request.WarehouseId} not found.");

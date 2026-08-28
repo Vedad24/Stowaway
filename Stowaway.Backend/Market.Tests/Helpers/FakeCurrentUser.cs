@@ -10,4 +10,7 @@ public sealed class FakeCurrentUser : IAppCurrentUser
     public bool IsAdmin { get; init; }
     public bool IsManager { get; init; }
     public bool IsEmployee { get; init; }
+    public HashSet<string> Permissions { get; init; } = [];
+
+    public bool HasPermission(string permission) => Permissions.Contains(permission);
 }

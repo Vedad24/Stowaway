@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Market.API.Authorization;
 using Market.Application.Modules.Sales.Payment.Commands.Create;
 using Market.Application.Modules.Sales.Payment.Commands.Update;
+using Market.Infrastructure.Payments.Stripe;
 using Market.Shared.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Stripe;
 
 namespace Market.API.Controllers
@@ -18,11 +20,13 @@ namespace Market.API.Controllers
     {
         private readonly ILogger<StripePaymentController> logger;
         private readonly ISender sender;
+        private readonly IOptions<StripeOptions> stripeOptions;
 
-        public StripePaymentController(ILogger<StripePaymentController> logger, ISender sender)
+        public StripePaymentController(ILogger<StripePaymentController> logger, ISender sender, IOptions<StripeOptions> stripeOptions)
         {
             this.sender = sender;
             this.logger = logger;
+            this.stripeOptions = stripeOptions;
         }
 
         [HttpPost("pay")]
@@ -47,9 +51,9 @@ namespace Market.API.Controllers
         try
         {
             var stripeEvent = EventUtility.ConstructEvent(
-                json, 
-                Request.Headers["Stripe-Signature"], 
-                Infrastructure.Payments.Stripe.StripeOptions.WebhookSecret
+                json,
+                Request.Headers["Stripe-Signature"],
+                stripeOptions.Value.WebhookSecret
             );
 
             // Send to MediatR

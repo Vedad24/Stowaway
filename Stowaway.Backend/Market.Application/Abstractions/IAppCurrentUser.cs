@@ -37,4 +37,9 @@ public interface IAppCurrentUser
     /// Indicates whether the user is a regular employee.
     /// </summary>
     bool IsEmployee { get; }
+
+    /// <summary>
+    /// Indicates whether the user holds the given permission claim.
+    /// </summary>
+    bool HasPermission(string permission);
 }

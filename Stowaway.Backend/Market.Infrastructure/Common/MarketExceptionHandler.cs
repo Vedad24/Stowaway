@@ -29,16 +29,7 @@ public sealed class MarketExceptionHandler(
 
         var traceId = Activity.Current?.Id ?? ctx.TraceIdentifier;
 
-        logger.LogError(ex,
-            "Unhandled exception. Path: {Path}, Method: {Method}, TraceId: {TraceId}, User: {User}",
-            ctx.Request.Path,
-            ctx.Request.Method,
-            traceId,
-            ctx.User.Identity?.Name ?? "anonymous");
-
-
-        ctx.Response.ContentType = "application/json";
-        ctx.Response.StatusCode = ex switch
+        var statusCode = ex switch
         {
             StowawayNotFoundException => StatusCodes.Status404NotFound,
             StowawayConflictException or StowawayBusinessRuleException => StatusCodes.Status409Conflict,
@@ -46,6 +37,29 @@ public sealed class MarketExceptionHandler(
             ValidationException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
+
+        if (statusCode >= StatusCodes.Status500InternalServerError)
+        {
+            logger.LogError(ex,
+                "Unhandled exception. Path: {Path}, Method: {Method}, TraceId: {TraceId}, User: {User}",
+                ctx.Request.Path,
+                ctx.Request.Method,
+                traceId,
+                ctx.User.Identity?.Name ?? "anonymous");
+        }
+        else
+        {
+            logger.LogWarning(ex,
+                "Request failed with {StatusCode}. Path: {Path}, Method: {Method}, TraceId: {TraceId}, User: {User}",
+                statusCode,
+                ctx.Request.Path,
+                ctx.Request.Method,
+                traceId,
+                ctx.User.Identity?.Name ?? "anonymous");
+        }
+
+        ctx.Response.ContentType = "application/json";
+        ctx.Response.StatusCode = statusCode;
 
         var error = BuildErrorDto(ex, env.IsDevelopment(), traceId);
 

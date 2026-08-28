@@ -58,6 +58,7 @@ public static class Permissions
 
     //Cart Permissions (self-scoped)
     public const string CartManage = "Cart.Manage";
+    public const string CartManageAny = "Cart.Manage.Any";
 
     //Warehouse users / priviledge group management
     public const string WarehouseUsersManage = "WarehouseUsers.Manage";

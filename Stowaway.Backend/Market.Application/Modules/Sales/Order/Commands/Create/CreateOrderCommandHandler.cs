@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 
 namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
 {
-    public class CreateOrderCommandHandler(IAppDbContext db) : IRequestHandler<CreateOrderCommand, CreateOrderCommandDto>
+    public class CreateOrderCommandHandler(IAppDbContext db, IAppCurrentUser currentUser) : IRequestHandler<CreateOrderCommand, CreateOrderCommandDto>
     {
         public async Task<CreateOrderCommandDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
+            if (request.UserId != currentUser.UserId)
+                throw new StowawayBusinessRuleException("P-O-S", "Users can only place orders for themselves");
 
             #region MakeOrder
             var order = new OrderEntity
