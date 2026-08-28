@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Market.Shared.Constants;
 
 namespace Market.Application.Modules.Sales.Cart.Queries.List
 {
-    public class ListCartItemsQueryHandler(IAppDbContext db) : IRequestHandler<ListCartItemsQuery, ListCartItemQueryDto>
+    public class ListCartItemsQueryHandler(IAppDbContext db, IAppCurrentUser currentUser) : IRequestHandler<ListCartItemsQuery, ListCartItemQueryDto>
     {
         public async Task<ListCartItemQueryDto> Handle(ListCartItemsQuery request, CancellationToken cancellationToken)
         {
+            if (request.UserId != currentUser.UserId && !currentUser.HasPermission(Permissions.CartManageAny))
+                throw new StowawayBusinessRuleException("P-C-S", "Users can only view their own carts");
             if(db.Users.Any(u => u.Id == request.UserId) == false)
             {
                 throw new StowawayNotFoundException($"User with id {request.UserId} not found.");

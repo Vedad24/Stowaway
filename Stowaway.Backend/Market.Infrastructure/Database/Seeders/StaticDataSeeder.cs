@@ -88,6 +88,7 @@ public static class StaticDataSeeder
             Permissions.SupplierUpdate,
             Permissions.SupplierDelete,
             Permissions.CartManage,
+            Permissions.CartManageAny,
             Permissions.WarehouseUsersManage,
         };
 
@@ -264,7 +265,8 @@ public static class StaticDataSeeder
 
     // Explicit per-role permission matrix. Admin gets every permission that exists.
     // Manager gets everything except Roles.Create/Update/Delete.
-    // User only gets its own module access (Self, Warehouse.Read, Container/Item/Tag/Supplier.Read, Cart).
+    // User only gets its own module access (Self, Warehouse.Read, Container/Item/Tag/Supplier.Read).
+    // Users/Employees have no Cart or Order access at all - only Manager and Admin do.
     private static readonly string[] ManagerOnlyPermissions =
     {
         Permissions.UsersRead, Permissions.UsersCreate, Permissions.UsersUpdate, Permissions.UsersDelete,
@@ -280,7 +282,8 @@ public static class StaticDataSeeder
     {
         Permissions.RolesCreate, Permissions.RolesUpdate, Permissions.RolesDelete,
         Permissions.OrderUpdate, Permissions.OrderDelete,
-        Permissions.CartManage
+        Permissions.CartManage,
+        Permissions.CartManageAny
     };
 
     private static readonly string[] SharedByAllRolesPermissions =

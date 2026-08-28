@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Market.Domain.Entities.Sales;
+using Market.Shared.Constants;
 
 namespace Market.Application.Modules.Sales.Cart.Commands.ClearCart
 {
@@ -10,7 +11,7 @@ namespace Market.Application.Modules.Sales.Cart.Commands.ClearCart
     {
         public async Task<ClearCartCommandDto> Handle(ClearCartCommand request, CancellationToken cancellationToken)
         {
-            if(request.UserId != currentUser.UserId)
+            if(request.UserId != currentUser.UserId && !currentUser.HasPermission(Permissions.CartManageAny))
                 throw new StowawayBusinessRuleException("P-C-S", "Users can only clear their own carts");
             if (await db.Users.AnyAsync(u => u.Id == request.UserId) == false)
             {

@@ -17,7 +17,7 @@ public class CreateOrderCommandHandlerTests
         await db.SaveChangesAsync(CancellationToken.None);
         db.ChangeTracker.Clear();
 
-        var handler = new CreateOrderCommandHandler(db);
+        var handler = new CreateOrderCommandHandler(db, new FakeCurrentUser { UserId = 1 });
 
         var dto = await handler.Handle(new CreateOrderCommand
         {
@@ -41,7 +41,7 @@ public class CreateOrderCommandHandlerTests
         db.Warehouses.Add(new WarehouseEntity { Id = 1, Name = "W1", Description = "d", City = "c", Address = "a", Capacity = 100, isEnabled = true });
         await db.SaveChangesAsync(CancellationToken.None);
 
-        var handler = new CreateOrderCommandHandler(db);
+        var handler = new CreateOrderCommandHandler(db, new FakeCurrentUser { UserId = 1 });
 
         await Assert.ThrowsAsync<StowawayNotFoundException>(() =>
             handler.Handle(new CreateOrderCommand
@@ -50,6 +50,27 @@ public class CreateOrderCommandHandlerTests
                 OrderItems = new List<SharedOrderCommandContainerType>
                 {
                     new() { ContainerTypeId = 999, WarehouseId = 1, Quantity = 1 }
+                }
+            }, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Handle_ThrowsBusinessRuleException_WhenUserIdDoesNotMatchCaller()
+    {
+        await using var db = TestDbContext.Create();
+        db.Warehouses.Add(new WarehouseEntity { Id = 1, Name = "W1", Description = "d", City = "c", Address = "a", Capacity = 100, isEnabled = true });
+        db.ContainerTypes.Add(new ContainerTypeEntity { Id = 1, MaxItems = 50, MaxContainers = 5, Price = 100m });
+        await db.SaveChangesAsync(CancellationToken.None);
+
+        var handler = new CreateOrderCommandHandler(db, new FakeCurrentUser { UserId = 2 });
+
+        await Assert.ThrowsAsync<StowawayBusinessRuleException>(() =>
+            handler.Handle(new CreateOrderCommand
+            {
+                UserId = 1,
+                OrderItems = new List<SharedOrderCommandContainerType>
+                {
+                    new() { ContainerTypeId = 1, WarehouseId = 1, Quantity = 1 }
                 }
             }, CancellationToken.None));
     }

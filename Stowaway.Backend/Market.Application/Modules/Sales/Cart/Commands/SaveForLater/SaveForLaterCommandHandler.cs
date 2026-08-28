@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Market.Domain.Entities.Sales;
+using Market.Shared.Constants;
 
 namespace Market.Application.Modules.Sales.Cart.Commands.SaveForLater
 {
-    public class SaveForLaterCommandHandler(IAppDbContext db) : IRequestHandler<SaveForLaterCommand, SaveForLaterCommandDto>
+    public class SaveForLaterCommandHandler(IAppDbContext db, IAppCurrentUser currentUser) : IRequestHandler<SaveForLaterCommand, SaveForLaterCommandDto>
     {
         public async Task<SaveForLaterCommandDto> Handle(SaveForLaterCommand request, CancellationToken cancellationToken)
         {
+            if (request.UserId != currentUser.UserId && !currentUser.HasPermission(Permissions.CartManageAny))
+                throw new StowawayBusinessRuleException("P-C-S", "Users can only save items to their own carts");
             if (await db.Warehouses.AnyAsync(w => w.Id == request.WarehouseId) == false)
             {
                 throw new StowawayNotFoundException($"Warehouse with id {request.WarehouseId} not found.");
