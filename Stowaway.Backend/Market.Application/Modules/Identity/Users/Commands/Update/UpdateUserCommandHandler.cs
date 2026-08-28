@@ -1,9 +1,10 @@
 ﻿
 using Microsoft.Extensions.Configuration;
+using Stowaway.Domain.Entities.Identity;
 
 namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
 {
-    public class UpdateUserCommandHandler(IAppDbContext context) : IRequestHandler<UpdateUserCommand, UpdateUserCommandDto>
+    public class UpdateUserCommandHandler(IAppDbContext context, IAppCurrentUser currentUser) : IRequestHandler<UpdateUserCommand, UpdateUserCommandDto>
     {
         public async Task<UpdateUserCommandDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
@@ -16,6 +17,8 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
             {
                 if (!context.Roles.Any(r => r.Id == request.Role.Id))
                     throw new StowawayNotFoundException($"Role doesn't exist -> RoleId {request.Role.Id}");
+                if (request.Role.Id == Role.Admin && !currentUser.IsAdmin)
+                    throw new StowawayUnauthorizedException("Only an Admin can assign the Admin role.");
                 context.Roles.Attach(request.Role);
                 user.Role = request.Role;
             }

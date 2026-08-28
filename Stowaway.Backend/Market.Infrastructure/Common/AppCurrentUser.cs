@@ -25,14 +25,14 @@ public sealed class AppCurrentUser(IHttpContextAccessor httpContextAccessor)
     public bool IsAuthenticated =>
         _user?.Identity?.IsAuthenticated ?? false;
 
-    public bool IsAdmin =>
-        _user?.FindFirstValue("is_admin")?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
+    private Role? RoleClaim =>
+        Enum.TryParse<Role>(_user?.FindFirstValue(ClaimTypes.Role), out var role) ? role : null;
 
-    public bool IsManager =>
-        _user?.FindFirstValue("is_manager")?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
+    public bool IsAdmin => RoleClaim == Role.Admin;
 
-    public bool IsEmployee =>
-        _user?.FindFirstValue("is_employee")?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
+    public bool IsManager => RoleClaim == Role.Manager;
+
+    public bool IsEmployee => RoleClaim == Role.User;
 
     public bool HasPermission(string permission) =>
         _user?.HasClaim(c => c.Type == Permissions.ClaimType && c.Value == permission) ?? false;
