@@ -37,4 +37,7 @@ public sealed class AppCurrentUser(IHttpContextAccessor httpContextAccessor)
     public bool HasPermission(string permission) =>
         _user?.HasClaim(c => c.Type == Permissions.ClaimType && c.Value == permission) ?? false;
 
+    public IReadOnlyList<string> PermissionCodes =>
+        _user?.FindAll(Permissions.ClaimType).Select(c => c.Value).ToList() ?? [];
+
 }

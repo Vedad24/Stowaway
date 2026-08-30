@@ -13,4 +13,6 @@ public sealed class FakeCurrentUser : IAppCurrentUser
     public HashSet<string> Permissions { get; init; } = [];
 
     public bool HasPermission(string permission) => Permissions.Contains(permission);
+
+    public IReadOnlyList<string> PermissionCodes => Permissions.ToList();
 }

@@ -42,7 +42,8 @@ public sealed class LoginCommandHandler(
         {
             AccessToken = tokens.AccessToken,
             RefreshToken = tokens.RefreshTokenRaw,
-            ExpiresAtUtc = tokens.RefreshTokenExpiresAtUtc
+            AccessTokenExpiresAtUtc = tokens.AccessTokenExpiresAtUtc,
+            RefreshTokenExpiresAtUtc = tokens.RefreshTokenExpiresAtUtc
         };
     }
 }

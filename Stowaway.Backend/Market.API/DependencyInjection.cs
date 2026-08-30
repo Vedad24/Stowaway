@@ -68,6 +68,19 @@ public static class DependencyInjection
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             };
+
+            o.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    if (string.IsNullOrEmpty(context.Request.Headers.Authorization) &&
+                        context.Request.Cookies.TryGetValue(AuthCookies.AccessTokenCookieName, out var accessToken))
+                    {
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         services.AddAuthorization(o =>
@@ -80,6 +93,14 @@ public static class DependencyInjection
         services.AddSingleton<IAuthorizationPolicyProvider, StowawayAuthPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<IAuthorizationHandler, PriviledgeAuthorizationHandler>();
+
+        // Antiforgery (double-submit cookie) - required now that auth tokens live in httpOnly cookies
+        services.AddAntiforgery(o =>
+        {
+            o.Cookie.Name = "XSRF-TOKEN";
+            o.Cookie.HttpOnly = false;
+            o.HeaderName = "X-XSRF-TOKEN";
+        });
 
         // Swagger with Bearer auth
         services.AddEndpointsApiExplorer();

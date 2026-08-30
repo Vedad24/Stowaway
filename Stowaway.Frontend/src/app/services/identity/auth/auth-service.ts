@@ -1,34 +1,30 @@
 import { inject, Injectable } from '@angular/core';
-import { CurrentUserService } from './current-user-service'; 
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { CurrentUserService } from './current-user-service';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../enviroments/enivroment'
 import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
-import { LoginCommandDto } from './auth-service.models';
-import { catchError, map, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  
-  
+
+
   backendApi = inject(HttpClient)
   currentUserService : CurrentUserService = inject(CurrentUserService);
   backendUrl = environment.apiUrl;
   login(email: string, password: string) : Observable<boolean>{
-    
+
     return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/login`, {
       email: email,
       password: password,
       fingerprint: ''
     })
     .pipe(
-      
-      tap( (response) => {
-        this.currentUserService.initializeUser(response as LoginCommandDto, email);
-      }),
+      switchMap(() => this.currentUserService.loadCurrentUser()),
 
       map( () => true ),
-      
+
       catchError( err => {
         return of (false);
       }),
@@ -39,12 +35,16 @@ export class AuthService {
     return this.currentUserService.currentUser !== null;
   }
 
-  logout(): Observable<boolean> {
-    const refreshToken = this.currentUserService.currentUser?.refreshToken ?? '';
+  refresh(): Observable<boolean> {
+    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/refresh`, {})
+      .pipe(
+        map(() => true),
+        catchError(() => of(false)),
+      );
+  }
 
-    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/logout`, {
-      refreshToken: refreshToken
-    })
+  logout(): Observable<boolean> {
+    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/logout`, {})
     .pipe(
       tap(() => this.currentUserService.clearUser()),
       map(() => true),
