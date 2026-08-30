@@ -2,11 +2,14 @@ using Market.API.Authorization;
 using Market.Application.Modules.Auth.Commands.Login;
 using Market.Application.Modules.Auth.Commands.Logout;
 using Market.Application.Modules.Auth.Commands.Refresh;
+using Market.Shared.Options;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
 
 [ApiController]
 [Route("api/auth")]
-public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery, IHostEnvironment env) : ControllerBase
+public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery, IHostEnvironment env, IOptions<JwtOptions> jwtOptions) : ControllerBase
 {
     [HttpPost("login")]
     [AllowAnonymous]
@@ -16,10 +19,7 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
 
         Response.SetAccessToken(env, tokens.AccessToken, tokens.AccessTokenExpiresAtUtc);
         Response.SetRefreshToken(env, tokens.RefreshToken, tokens.RefreshTokenExpiresAtUtc);
-        // The XSRF-TOKEN cookie is minted on GET /User/me instead of here: this request is still
-        // anonymous (the access_token cookie we just set doesn't retroactively authenticate it),
-        // and antiforgery embeds the caller's identity in the token, so minting it now would make
-        // it fail validation later against an authenticated request (e.g. Logout).
+        IssueXsrfTokenFor(tokens.AccessToken, tokens.RefreshTokenExpiresAtUtc);
 
         return Ok();
     }
@@ -40,6 +40,7 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
 
         Response.SetAccessToken(env, tokens.AccessToken, tokens.AccessTokenExpiresAtUtc);
         Response.SetRefreshToken(env, tokens.RefreshToken, tokens.RefreshTokenExpiresAtUtc);
+        IssueXsrfTokenFor(tokens.AccessToken, tokens.RefreshTokenExpiresAtUtc);
 
         return Ok();
     }
@@ -68,8 +69,23 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
         }
         catch (AntiforgeryValidationException ex)
         {
-            Console.WriteLine($"[DEBUG ANTIFORGERY] -> {ex.Message}");
+            //Console.WriteLine($"[DEBUG ANTIFORGERY] -> {ex.Message}");
             return false;
         }
+    }
+
+    // Login/Refresh are [AllowAnonymous], so HttpContext.User is still anonymous when this runs -
+    // setting a Set-Cookie header for access_token doesn't retroactively authenticate THIS request.
+    // Antiforgery embeds the caller's identity in the minted token, so minting while anonymous would
+    // make it fail validation later against an authenticated request (e.g. Logout). To mint a token
+    // bound to the real identity right now, we validate the access token we just issued through the
+    // exact same pipeline the JWT-bearer middleware uses on future requests, guaranteeing an
+    // identical ClaimsPrincipal - then mint against that.
+    private void IssueXsrfTokenFor(string accessToken, DateTime expiresAtUtc)
+    {
+        var principal = new JwtSecurityTokenHandler().ValidateToken(accessToken, jwtOptions.Value.ToTokenValidationParameters(), out _);
+        HttpContext.User = principal;
+
+        HttpContext.IssueXsrfToken(antiforgery, env, expiresAtUtc);
     }
 }

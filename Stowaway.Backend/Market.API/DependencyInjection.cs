@@ -4,9 +4,7 @@ using Market.Infrastructure.Payments.Stripe;
 using Market.Shared.Dtos;
 using Market.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 
 namespace Market.API;
 
@@ -57,17 +55,7 @@ public static class DependencyInjection
         {
             var jwt = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()!;
 
-            o.TokenValidationParameters = new()
-            {
-                ValidateIssuer = true,
-                ValidIssuer = jwt.Issuer,
-                ValidateAudience = true,
-                ValidAudience = jwt.Audience,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            };
+            o.TokenValidationParameters = jwt.ToTokenValidationParameters();
 
             o.Events = new JwtBearerEvents
             {
