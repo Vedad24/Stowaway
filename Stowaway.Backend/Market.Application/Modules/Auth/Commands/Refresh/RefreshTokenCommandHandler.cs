@@ -22,19 +22,19 @@ public sealed class RefreshTokenCommandHandler(
         var nowUtc = timeProvider.GetUtcNow().UtcDateTime;
 
         if (rt is null || rt.ExpiresAtUtc <= nowUtc)
-            throw new StowawayConflictException("Refresh token je nevažeći ili je istekao.");
+            throw new StowawayConflictException("Refresh token invalid or expired.");
 
         // (optional) Fingerprint check
         if (rt.Fingerprint is not null &&
             request.Fingerprint is not null &&
             rt.Fingerprint != request.Fingerprint)
         {
-            throw new StowawayConflictException("Neispravan klijentski otisak.");
+            throw new StowawayConflictException("Invalid client fingerprint.");
         }
 
         var user = rt.User;
         if (user is null || !user.IsEnabled || user.IsDeleted)
-            throw new StowawayConflictException("Korisnički nalog je nevažeći.");
+            throw new StowawayConflictException("User account invalid.");
 
         var permissions = user.RoleId is not null
             ? await ctx.PermissionRoles

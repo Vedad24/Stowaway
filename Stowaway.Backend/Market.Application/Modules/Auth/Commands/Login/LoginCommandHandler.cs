@@ -12,11 +12,11 @@ public sealed class LoginCommandHandler(
 
         var user = await ctx.Users
             .FirstOrDefaultAsync(x => x.Email.ToLower() == email && x.IsEnabled && !x.IsDeleted, ct)
-            ?? throw new StowawayNotFoundException("Korisnik nije pronađen ili je onemogućen.");
+            ?? throw new StowawayNotFoundException("User not found or disabled.");
 
         var verify = hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
         if (verify == PasswordVerificationResult.Failed)
-            throw new StowawayConflictException("Pogrešni kredencijali.");
+            throw new StowawayConflictException("Invalid credentials.");
 
         var permissions = user.RoleId is not null
             ? await ctx.PermissionRoles

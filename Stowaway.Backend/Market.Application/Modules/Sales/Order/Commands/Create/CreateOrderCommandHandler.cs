@@ -54,7 +54,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
             {
                 var containerType = dictionaryIdsContainerTypes.GetValueOrDefault(item.ContainerTypeId);
                 if (containerType is null)
-                    throw new StowawayNotFoundException("Ne postoji container type ->" + item.ContainerTypeId);
+                    throw new StowawayNotFoundException("Container type does not exist ->" + item.ContainerTypeId);
                 db.ContainerTypes.Attach(containerType);
 
                 decimal subtotal = RoundMoney(containerType.Price * item.Quantity);
