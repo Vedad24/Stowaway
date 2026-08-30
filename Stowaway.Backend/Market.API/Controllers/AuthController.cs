@@ -16,7 +16,10 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
 
         Response.SetAccessToken(env, tokens.AccessToken, tokens.AccessTokenExpiresAtUtc);
         Response.SetRefreshToken(env, tokens.RefreshToken, tokens.RefreshTokenExpiresAtUtc);
-        antiforgery.GetAndStoreTokens(HttpContext);
+        // The XSRF-TOKEN cookie is minted on GET /User/me instead of here: this request is still
+        // anonymous (the access_token cookie we just set doesn't retroactively authenticate it),
+        // and antiforgery embeds the caller's identity in the token, so minting it now would make
+        // it fail validation later against an authenticated request (e.g. Logout).
 
         return Ok();
     }
@@ -28,14 +31,15 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
         if (!Request.Cookies.TryGetValue(AuthCookies.RefreshTokenCookieName, out var refreshToken) || string.IsNullOrEmpty(refreshToken))
             return Unauthorized();
 
-        if (!await TryValidateAntiforgeryAsync())
-            return Forbid();
-
+        // No antiforgery check here: this endpoint exists specifically to run with an expired/absent
+        // access token, i.e. an anonymous request - identity-bound antiforgery validation would
+        // reject that by design, defeating the endpoint's purpose. CSRF protection here comes from
+        // the cookies' SameSite=Lax attribute, which already blocks cross-site POSTs (fetch/XHR and
+        // form-based) from attaching them in modern browsers.
         var tokens = await mediator.Send(new RefreshTokenCommand { RefreshToken = refreshToken }, ct);
 
         Response.SetAccessToken(env, tokens.AccessToken, tokens.AccessTokenExpiresAtUtc);
         Response.SetRefreshToken(env, tokens.RefreshToken, tokens.RefreshTokenExpiresAtUtc);
-        antiforgery.GetAndStoreTokens(HttpContext);
 
         return Ok();
     }
@@ -62,8 +66,9 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
             await antiforgery.ValidateRequestAsync(HttpContext);
             return true;
         }
-        catch (AntiforgeryValidationException)
+        catch (AntiforgeryValidationException ex)
         {
+            Console.WriteLine($"[DEBUG ANTIFORGERY] -> {ex.Message}");
             return false;
         }
     }

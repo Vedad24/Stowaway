@@ -94,11 +94,13 @@ public static class DependencyInjection
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<IAuthorizationHandler, PriviledgeAuthorizationHandler>();
 
-        // Antiforgery (double-submit cookie) - required now that auth tokens live in httpOnly cookies
+        // Antiforgery (double-submit cookie) - required now that auth tokens live in httpOnly cookies.
+        // The antiforgery system's own cookie holds a secret half of the token pair and must stay
+        // httpOnly (default) - it is NOT the value that gets echoed back in the header. The value
+        // JS actually needs to read and echo back (AntiforgeryTokenSet.RequestToken) is issued as a
+        // separate, readable "XSRF-TOKEN" cookie by AuthController/AuthCookies.SetXsrfToken.
         services.AddAntiforgery(o =>
         {
-            o.Cookie.Name = "XSRF-TOKEN";
-            o.Cookie.HttpOnly = false;
             o.HeaderName = "X-XSRF-TOKEN";
         });
 

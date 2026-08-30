@@ -1,7 +1,10 @@
 ﻿using Market.API.Authorization;
 using Market.Shared.Constants;
+using Market.Shared.Options;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Stowaway.Application.Modules.Identity.Users.Commands.Create;
 using Stowaway.Application.Modules.Identity.Users.Commands.Delete;
@@ -20,7 +23,7 @@ namespace Stowaway.API.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class UserController(ISender sender) : ControllerBase
+    public class UserController(ISender sender, IAntiforgery antiforgery, IHostEnvironment env, IOptions<JwtOptions> jwtOptions) : ControllerBase
     {
         [HttpPost]
         [AllowAnonymous]
@@ -81,7 +84,16 @@ namespace Stowaway.API.Controllers
         [HasPermission(Permissions.UsersSelfRead)]
         public async Task<GetSelfQueryDto> GetSelf(CancellationToken ct)
         {
-            return await sender.Send(new GetSelfQuery(), ct);
+            var dto = await sender.Send(new GetSelfQuery(), ct);
+
+            // Minted here (an always-authenticated request) rather than on Login/Refresh: the
+            // antiforgery system embeds the caller's identity in the token, so it must be issued
+            // from a request whose identity matches what future validating requests (e.g. Logout)
+            // will present. The frontend calls this endpoint right after login and on every app
+            // bootstrap, so the XSRF-TOKEN cookie stays correctly (re)issued for the session.
+            HttpContext.IssueXsrfToken(antiforgery, env, DateTime.UtcNow.AddDays(jwtOptions.Value.RefreshTokenDays));
+
+            return dto;
         }
 
         [HttpPut("me")]

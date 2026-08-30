@@ -95,6 +95,7 @@ public partial class Program
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseAntiforgery();
 
             app.MapControllers();
 
