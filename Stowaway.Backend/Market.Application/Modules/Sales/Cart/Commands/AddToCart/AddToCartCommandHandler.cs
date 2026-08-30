@@ -17,7 +17,10 @@ namespace Market.Application.Modules.Sales.Cart.Commands.AddToCart
             {
                 throw new StowawayNotFoundException($"Warehouse with id {request.WarehouseId} not found.");
             }
-
+            if(await db.ContainerTypes.AnyAsync(ct => ct.Id == request.ContainerType.Id) == false)
+            {
+                throw new StowawayNotFoundException($"Container type with id: {request.ContainerType.Id} not found.");
+            }
             //find item
             var existingItem = await db.CartItems.Where(x => x.UserId == request.UserId && x.ContainerType.Id == request.ContainerType.Id).FirstOrDefaultAsync();
             //if not found add to cart 
