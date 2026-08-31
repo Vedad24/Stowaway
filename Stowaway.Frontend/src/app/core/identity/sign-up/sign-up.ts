@@ -6,12 +6,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { catchError, tap } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { catchError, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { extractErrorMessage } from '../../../models/http-error';
 
 @Component({
   selector: 'app-sign-up',
-  imports: [MatInputModule, MatStepperModule, ReactiveFormsModule, MatButtonModule, MatCardModule],
+  imports: [MatInputModule, MatStepperModule, ReactiveFormsModule, MatButtonModule, MatCardModule, MatSnackBarModule],
   templateUrl: './sign-up.html',
   styleUrl: './sign-up.css',
 })
@@ -19,6 +21,7 @@ export class SignUp {
   router = inject(Router);
   userService = inject(UserService);
   fb = inject(FormBuilder);
+  snackBar = inject(MatSnackBar);
 
   emailForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -48,10 +51,20 @@ export class SignUp {
           this.router.navigate(['/login']);
         }),
         catchError((err) => {
-          throw new Error(err);
+          this.showSignUpError(err);
+          return of(null);
         })
       )
       .subscribe();
+  }
+
+  showSignUpError(err: unknown): void {
+    this.snackBar.open(extractErrorMessage(err, 'Sign up failed. Please try again.'), 'Dismiss', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['invalid-credentials-snackbar'],
+    });
   }
 
   goToLogin(): void {
