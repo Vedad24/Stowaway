@@ -15,6 +15,12 @@ namespace Stowaway.Application.Modules.Storage.Supplier.Commands.Delete
                 throw new StowawayNotFoundException($"Supplier with id: {request.Id} is not found");
             }
 
+            var hasItems = await ctx.Item.AnyAsync(x => x.SupplierId == supplier.Id, cancellationToken);
+            if (hasItems)
+            {
+                throw new ValidationException("Supplier has items sourced from it. Reassign or delete those items before deleting the supplier.");
+            }
+
             ctx.Suppliers.Remove(supplier);
             await ctx.SaveChangesAsync(cancellationToken);
 
