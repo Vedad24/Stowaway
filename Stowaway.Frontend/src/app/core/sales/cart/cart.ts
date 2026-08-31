@@ -139,7 +139,7 @@ export class Cart implements OnInit {
   prepareOrder(): CreateOrderCommand {
     const orderItems : SharedOrderCommandContainerType[] = 
       this.inCartItems.map<SharedOrderCommandContainerType>(
-        (item) => {return {containerTypeId : item.id, quantity : item.quantity, warehouseId: item.warehouseId};}
+        (item) => {return {containerTypeId : item.containerType.id!, quantity : item.quantity, warehouseId: item.warehouseId};}
       );
     return {
       userId : this.userId,

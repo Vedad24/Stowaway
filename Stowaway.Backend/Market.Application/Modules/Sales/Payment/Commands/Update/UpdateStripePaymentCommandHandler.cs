@@ -12,21 +12,24 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Update
     {
         public async Task<Unit> Handle(UpdateStripePaymentCommand request, CancellationToken ct)
         {
+            if (await db.ProcessedStripeEvents.AnyAsync(x => x.EventId == request.EventId, ct))
+                return Unit.Value;
+
             switch (request.EventType)
         {
             case "payment_intent.succeeded":
-                return await HandlePaymentSucceeded((PaymentIntent)request.EventData, ct);
+                return await HandlePaymentSucceeded((PaymentIntent)request.EventData, request.EventId, ct);
             case "payment_intent.payment_failed":
-                return await HandlePaymentFailed((PaymentIntent)request.EventData, ct);
+                return await HandlePaymentFailed((PaymentIntent)request.EventData, request.EventId, ct);
             default:
                 return Unit.Value;
-            
-        }
-        
-            
+
         }
 
-        private async Task<Unit> HandlePaymentSucceeded(PaymentIntent eventData, CancellationToken ct)
+
+        }
+
+        private async Task<Unit> HandlePaymentSucceeded(PaymentIntent eventData, string eventId, CancellationToken ct)
         {
             if(!int.TryParse(eventData.Metadata["OrderId"], out var orderId))
                 throw new ValidationException("Invalid OrderId in metadata.");
@@ -40,12 +43,12 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Update
             order.PaymentIntentId = eventData.Id;
             order.StripeSessionId = eventData.LatestChargeId;
 
-            await db.SaveChangesAsync(ct);
+            await SaveWithEventMarker(eventId, ct);
 
             return Unit.Value;
         }
 
-        private async Task<Unit> HandlePaymentFailed(PaymentIntent eventData, CancellationToken ct)
+        private async Task<Unit> HandlePaymentFailed(PaymentIntent eventData, string eventId, CancellationToken ct)
         {
             if (!int.TryParse(eventData.Metadata["OrderId"], out var orderId))
                 throw new ValidationException("Invalid OrderId in metadata.");
@@ -58,9 +61,23 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Update
             order.OrderStatusId = OrderStatus.Cancelled;
             order.PaymentIntentId = eventData.Id;
 
-            await db.SaveChangesAsync(ct);
+            await SaveWithEventMarker(eventId, ct);
 
             return Unit.Value;
+        }
+
+        private async Task SaveWithEventMarker(string eventId, CancellationToken ct)
+        {
+            db.ProcessedStripeEvents.Add(new ProcessedStripeEventEntity { EventId = eventId, ProcessedAtUtc = DateTime.UtcNow });
+
+            try
+            {
+                await db.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateException)
+            {
+                // Same event processed concurrently by another delivery - already applied, nothing more to do.
+            }
         }
     }
 }

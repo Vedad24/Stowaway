@@ -42,6 +42,7 @@ public sealed class TestDbContext : DbContext, IAppDbContext
     public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
     public DbSet<OrderStatusEntity> OrderStatuses => Set<OrderStatusEntity>();
     public DbSet<CartItemEntity> CartItems => Set<CartItemEntity>();
+    public DbSet<ProcessedStripeEventEntity> ProcessedStripeEvents => Set<ProcessedStripeEventEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
