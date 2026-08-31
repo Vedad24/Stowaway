@@ -67,9 +67,9 @@ namespace Stowaway.API.Controllers
             await sender.Send(payload, cancellationToken);
         }
 
-        // Only checks the source warehouse's priviledge, not the destination container's
-        // warehouse - matches Container.Move's same-warehouse constraint; a cross-warehouse
-        // item move would need the destination checked too, left as a known follow-up.
+        // Only checks the source warehouse's priviledge; MoveItemCommandHandler rejects the
+        // move if the destination container is in a different warehouse, so this is sufficient
+        // (matches Container.Move's same-warehouse constraint).
         [HttpPut("{id:int}/container")]
         [HasPermission(Permissions.ItemUpdate)]
         [HasPriviledge(Priviledges.ItemUpdate, WarehouseResolutionStrategy.ItemRouteId)]
