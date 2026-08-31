@@ -1,76 +1,67 @@
 import { inject, Injectable } from '@angular/core';
-import { CurrentUserDto, JwtUserPayload, LoginCommandDto } from './auth-service.models';
-import { jwtDecode, JwtPayload } from 'jwt-decode';
-import { LocalStorageService } from '../../local-storage-service';
+import { HttpClient } from '@angular/common/http';
+import { catchError, map, Observable, of } from 'rxjs';
+import { CurrentUserDto, GetSelfResponseDto } from './auth-service.models';
+import { environment } from '../../../../enviroments/enivroment'
+import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CurrentUserService {
   private _currentUser : CurrentUserDto | null = null;
-  private localStorageService = inject(LocalStorageService);
+  private backendApi = inject(HttpClient);
+  private backendUrl = environment.apiUrl;
 
-  public get currentUser() : CurrentUserDto | null { 
-    if(this._currentUser === null )
-      this.getUserFromStorage();
-    return this._currentUser; }
-  
+  public get currentUser() : CurrentUserDto | null {
+    return this._currentUser;
+  }
 
-  initializeUser(response : LoginCommandDto, email : string)
-  {
-    const decoded = jwtDecode<JwtUserPayload>(response.accessToken);
-    const roleClaim =
-      decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
-      decoded.role;
-    this._currentUser = {
-      roleId : roleClaim != null ? roleClaim == "Admin" ? 1 : 0 : 0,
-      accessToken: response.accessToken,
-      refreshToken: response.refreshToken
-    }
-    this.localStorageService.setItem('currentUserStorage', JSON.stringify(this._currentUser));
+  // Hydrates the in-memory user state from the server, since the access token is an
+  // httpOnly cookie now and can't be decoded client-side. Call on app bootstrap and after login.
+  loadCurrentUser(): Observable<CurrentUserDto | null> {
+    return this.backendApi.get<GetSelfResponseDto>(`${this.backendUrl}/${ApiEndpoints.User}/me`)
+      .pipe(
+        map((response) => {
+          const user: CurrentUserDto = {
+            userId: response.userId,
+            email: response.email,
+            firstName: response.firstName,
+            lastName: response.lastName,
+            roleId: response.role.id,
+            permissions: response.permissions,
+          };
+          this._currentUser = user;
+          return user;
+        }),
+        catchError(() => {
+          this._currentUser = null;
+          return of(null);
+        }),
+      );
   }
 
   clearUser()
   {
     this._currentUser = null;
-    this.localStorageService.removeItem('currentUserStorage');
   }
 
-  getUserFromStorage()
-  {
-    this._currentUser = JSON.parse(this.localStorageService.getItem('currentUserStorage')!);
-  }
-  private get decodedJwt() : JwtUserPayload | null
-  {
-      if(this.currentUser === null)
-        return null;
-      const jwt = jwtDecode<JwtUserPayload>(this.currentUser!.accessToken);
-      return jwt;
-  }
   public get userEmail() : string
   {
-    return this.decodedJwt? this.decodedJwt.email : "";
+    return this._currentUser?.email ?? "";
   }
 
   public get userId() : number
   {
-    if(this.decodedJwt === null)
-      return -1;
-    const id = this.decodedJwt.nameid;
-    return Number(id);
-    
+    return this._currentUser?.userId ?? -1;
   }
 
   public get roleId(): number {
-    return this.currentUser?.roleId ?? -1;
+    return this._currentUser?.roleId ?? -1;
   }
 
   public get permissions(): string[] {
-    const raw = this.decodedJwt?.permission;
-    if (raw == null) {
-      return [];
-    }
-    return Array.isArray(raw) ? raw : [raw];
+    return this._currentUser?.permissions ?? [];
   }
 
   public get isManager(): boolean {
@@ -84,4 +75,3 @@ export class CurrentUserService {
   }
 
 }
-

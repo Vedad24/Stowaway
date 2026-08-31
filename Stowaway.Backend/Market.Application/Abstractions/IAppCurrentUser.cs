@@ -42,4 +42,9 @@ public interface IAppCurrentUser
     /// Indicates whether the user holds the given permission claim.
     /// </summary>
     bool HasPermission(string permission);
+
+    /// <summary>
+    /// All permission claim codes held by the current user.
+    /// </summary>
+    IReadOnlyList<string> PermissionCodes { get; }
 }

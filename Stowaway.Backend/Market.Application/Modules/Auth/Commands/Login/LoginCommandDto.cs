@@ -18,5 +18,10 @@ public sealed class LoginCommandDto
     /// <summary>
     /// Expiration time of the access token in UTC format.
     /// </summary>
-    public DateTime ExpiresAtUtc { get; set; }
+    public DateTime AccessTokenExpiresAtUtc { get; set; }
+
+    /// <summary>
+    /// Expiration time of the refresh token in UTC format.
+    /// </summary>
+    public DateTime RefreshTokenExpiresAtUtc { get; set; }
 }

@@ -17,10 +17,12 @@ namespace Stowaway.Application.Modules.Identity.Users.Queries.GetSelf
             }
             GetSelfQueryDto dto = new()
             {
+                UserId = ur.Id,
                 Email = ur.Email,
                 FirstName = ur.FirstName ?? "[no_name]",
                 LastName = ur.LastName ?? "[no_name]",
-                Role = new GetSelfQueryDtoRoleDto { Id = (int)(ur.RoleId ?? Role.User) }
+                Role = new GetSelfQueryDtoRoleDto { Id = (int)(ur.RoleId ?? Role.User) },
+                Permissions = currentUser.PermissionCodes.ToList()
             };
             return dto;
         }

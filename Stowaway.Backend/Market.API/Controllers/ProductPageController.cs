@@ -14,6 +14,7 @@ namespace Market.API.Controllers
     public class ProductPageController(ISender sender) : ControllerBase
     {
         [HttpGet("get-user-warehouses")]
+        
         public async Task<PageResult<ListWarehousesQueryDto>> GetUserWarehouses([FromQuery] ListWarehousesQuery query, CancellationToken ct)
         {
             return await sender.Send(query, ct);

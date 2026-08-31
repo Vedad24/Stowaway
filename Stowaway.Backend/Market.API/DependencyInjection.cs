@@ -4,9 +4,7 @@ using Market.Infrastructure.Payments.Stripe;
 using Market.Shared.Dtos;
 using Market.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 
 namespace Market.API;
 
@@ -57,16 +55,19 @@ public static class DependencyInjection
         {
             var jwt = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()!;
 
-            o.TokenValidationParameters = new()
+            o.TokenValidationParameters = jwt.ToTokenValidationParameters();
+
+            o.Events = new JwtBearerEvents
             {
-                ValidateIssuer = true,
-                ValidIssuer = jwt.Issuer,
-                ValidateAudience = true,
-                ValidAudience = jwt.Audience,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
+                OnMessageReceived = context =>
+                {
+                    if (string.IsNullOrEmpty(context.Request.Headers.Authorization) &&
+                        context.Request.Cookies.TryGetValue(AuthCookies.AccessTokenCookieName, out var accessToken))
+                    {
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
             };
         });
 
@@ -80,6 +81,16 @@ public static class DependencyInjection
         services.AddSingleton<IAuthorizationPolicyProvider, StowawayAuthPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<IAuthorizationHandler, PriviledgeAuthorizationHandler>();
+
+        // Antiforgery (double-submit cookie) - required now that auth tokens live in httpOnly cookies.
+        // The antiforgery system's own cookie holds a secret half of the token pair and must stay
+        // httpOnly (default) - it is NOT the value that gets echoed back in the header. The value
+        // JS actually needs to read and echo back (AntiforgeryTokenSet.RequestToken) is issued as a
+        // separate, readable "XSRF-TOKEN" cookie by AuthController/AuthCookies.SetXsrfToken.
+        services.AddAntiforgery(o =>
+        {
+            o.HeaderName = "X-XSRF-TOKEN";
+        });
 
         // Swagger with Bearer auth
         services.AddEndpointsApiExplorer();
