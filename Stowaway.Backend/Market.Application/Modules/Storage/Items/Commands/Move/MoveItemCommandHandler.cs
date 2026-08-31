@@ -23,6 +23,16 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Move
                 throw new StowawayNotFoundException($"Container with id: {request.ContainerId} not found");
             }
 
+            var currentWarehouseId = await ctx.Containers
+                .Where(x => x.Id == item.ContainerId)
+                .Select(x => x.WarehouseId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (container.WarehouseId != currentWarehouseId)
+            {
+                throw new StowawayBusinessRuleException("item.cross-warehouse", "Cannot move an item into a different warehouse");
+            }
+
             await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, item.Quantity, cancellationToken, excludeItemIds: new[] { item.Id });
 
             item.ContainerId = container.Id;
