@@ -4,18 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Market.Application.Abstractions;
 using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Application.Modules.Storage.Items.Shared;
 using Stowaway.Application.Modules.Storage.Supplier.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Items.Queries.List
 {
-    public class ListItemQueryHandler(IAppDbContext ctx)
+    public class ListItemQueryHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
         : IRequestHandler<ListItemQuery, PageResult<ListItemQueryDto>>
     {
         public async Task<PageResult<ListItemQueryDto>> Handle(ListItemQuery request, CancellationToken cancellationToken)
         {
-            var query = ctx.Item.AsNoTracking();
+            var accessibleWarehouseIds = ctx.WarehouseUsers
+                .Where(wu => wu.UserId == appCurrentUser.UserId)
+                .Select(wu => wu.WarehouseId);
+
+            var query = ctx.Item.AsNoTracking()
+                .Where(x => accessibleWarehouseIds.Contains(x.Container.WarehouseId));
 
             var searchTerm = request.Search?.Trim().ToLower() ?? string.Empty;
 

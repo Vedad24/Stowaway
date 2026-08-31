@@ -1,14 +1,20 @@
-﻿using Stowaway.Application.Modules.Storage.Container.Shared;
+﻿using Market.Application.Abstractions;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 using Stowaway.Domain.Entities.Storage;
 
 namespace Stowaway.Application.Modules.Storage.Items.Queries.List
 {
-    public class ListContainersQueryHandler(IAppDbContext ctx)
+    public class ListContainersQueryHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
         : IRequestHandler<ListContainersQuery, List<ListContainersDto>>
     {
         public async Task<List<ListContainersDto>> Handle(ListContainersQuery request, CancellationToken cancellationToken)
         {
-            var query = ctx.Containers.AsNoTracking();
+            var accessibleWarehouseIds = ctx.WarehouseUsers
+                .Where(wu => wu.UserId == appCurrentUser.UserId)
+                .Select(wu => wu.WarehouseId);
+
+            var query = ctx.Containers.AsNoTracking()
+                .Where(x => accessibleWarehouseIds.Contains(x.WarehouseId));
 
             var searchTerm = request.Search?.Trim().ToLower() ?? string.Empty;
 
