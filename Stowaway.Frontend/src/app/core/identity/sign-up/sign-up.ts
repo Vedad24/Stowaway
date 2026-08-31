@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { catchError, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { extractErrorMessage } from '../../../models/http-error';
 
 @Component({
   selector: 'app-sign-up',
@@ -50,15 +51,15 @@ export class SignUp {
           this.router.navigate(['/login']);
         }),
         catchError((err) => {
-          this.showSignUpError();
+          this.showSignUpError(err);
           return of(null);
         })
       )
       .subscribe();
   }
 
-  showSignUpError(): void {
-    this.snackBar.open('Sign up failed. Please try again.', 'Dismiss', {
+  showSignUpError(err: unknown): void {
+    this.snackBar.open(extractErrorMessage(err, 'Sign up failed. Please try again.'), 'Dismiss', {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'top',
