@@ -37,5 +37,6 @@ public interface IAppDbContext
     public DbSet<OrderItemEntity> OrderItems { get; }
     public DbSet<OrderStatusEntity> OrderStatuses { get; }
     public DbSet<CartItemEntity> CartItems { get; }
+    public DbSet<ProcessedStripeEventEntity> ProcessedStripeEvents { get; }
     Task<int> SaveChangesAsync(CancellationToken ct);
 }

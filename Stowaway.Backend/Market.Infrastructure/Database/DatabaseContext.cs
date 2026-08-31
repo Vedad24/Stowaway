@@ -21,6 +21,7 @@ public partial class DatabaseContext : DbContext, IAppDbContext
     public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
     public DbSet<OrderStatusEntity> OrderStatuses => Set<OrderStatusEntity>();
     public DbSet<CartItemEntity> CartItems => Set<CartItemEntity>();
+    public DbSet<ProcessedStripeEventEntity> ProcessedStripeEvents => Set<ProcessedStripeEventEntity>();
 
     //Storage
     public DbSet<ContainerEntity> Containers => Set<ContainerEntity>();

@@ -63,10 +63,15 @@ namespace Market.Infrastructure.Payments.Stripe
                 }
             };
 
+            var requestOptions = new RequestOptions
+            {
+                IdempotencyKey = BuildCheckoutIdempotencyKey(request.OrderId)
+            };
+
             var service = new SessionService();
 
-            var session = await service.CreateAsync(options);
-            
+            var session = await service.CreateAsync(options, requestOptions);
+
             return new CreatePaymentResult
             {
                 CheckoutUrl = session.Url,
@@ -74,5 +79,7 @@ namespace Market.Infrastructure.Payments.Stripe
                 Status = session.PaymentStatus
             };
         }
+
+        public static string BuildCheckoutIdempotencyKey(int orderId) => $"order-{orderId}-checkout";
     }
 }
