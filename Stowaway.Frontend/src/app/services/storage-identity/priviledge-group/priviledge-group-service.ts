@@ -32,6 +32,10 @@ export class PriviledgeGroupService {
     return this.http.put<{ id: number }>(`${this.priviledgeGroupURL}/${id}`, payload);
   }
 
+  public delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.priviledgeGroupURL}/${id}`);
+  }
+
   public createUpdateWarehouseUser(
     payload: CreateUpdateWarehouseUserCommand,
   ): Observable<CreateUpdateWarehouseUserCommandDto> {

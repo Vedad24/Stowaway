@@ -3,6 +3,7 @@ using Market.Application.Modules.Storage.Priviledges.Queries.List;
 using Market.Shared.Constants;
 using Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Create;
 using Stowaway.Application.Modules.Storage.StorageIdentity.Commands.CreateUpdate;
+using Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Delete;
 using Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Update;
 using Stowaway.Application.Modules.Storage.StorageIdentity.Queries.List;
 
@@ -36,6 +37,14 @@ namespace Stowaway.API.Controllers
             command.PriviledgeId = privilegeId;
             var id = await sender.Send(command, ct);
             return Ok(new { id });
+        }
+
+        [HttpDelete("privilege-groups/{privilegeId}")]
+        [HasPermission(Permissions.WarehouseUsersManage)]
+        public async Task<ActionResult> DeletePrivilegeGroup(int privilegeId, CancellationToken ct)
+        {
+            await sender.Send(new DeletePriviledgeGroupCommand { Id = privilegeId }, ct);
+            return Ok();
         }
 
         [HttpGet("privileges")]

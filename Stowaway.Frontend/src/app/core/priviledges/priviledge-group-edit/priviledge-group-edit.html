@@ -29,7 +29,16 @@
             [class.active]="group.id === selectedGroupId"
             (click)="selectGroup(group)"
           >
-            <span>{{ group.name }}</span>
+            <span class="group-row">
+              <span>{{ group.name }}</span>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="deleteGroup(group, $event)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
           </a>
         }
       </mat-nav-list>
