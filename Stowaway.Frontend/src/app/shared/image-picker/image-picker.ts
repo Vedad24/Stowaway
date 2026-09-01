@@ -1,8 +1,15 @@
-import { Component, forwardRef, signal } from '@angular/core';
+import { Component, computed, forwardRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { ImageCropperComponent } from 'ngx-image-cropper';
+import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
+
+type QualityPreset = 'balanced' | 'low';
+
+const QUALITY_PRESETS: Record<QualityPreset, { quality: number; maxDimension: number; label: string }> = {
+  balanced: { quality: 75, maxDimension: 1280, label: 'Balanced' },
+  low: { quality: 50, maxDimension: 900, label: 'Low' },
+};
 
 @Component({
   selector: 'app-image-picker',
@@ -23,6 +30,13 @@ export class ImagePicker implements ControlValueAccessor {
   readonly cropQueue = signal<File[]>([]);
   readonly croppingFile = signal<File | null>(null);
   private disabled = signal(false);
+
+  readonly presetKeys: QualityPreset[] = ['balanced', 'low'];
+  readonly presets = QUALITY_PRESETS;
+  readonly qualityPreset = signal<QualityPreset>('balanced');
+  readonly currentPreset = computed(() => QUALITY_PRESETS[this.qualityPreset()]);
+  readonly livePreviewBytes = signal<number | null>(null);
+  readonly livePreviewSrc = signal<string | null>(null);
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
@@ -55,6 +69,43 @@ export class ImagePicker implements ControlValueAccessor {
     this.advanceQueue();
   }
 
+  setQualityPreset(preset: QualityPreset, cropper: ImageCropperComponent): void {
+    this.qualityPreset.set(preset);
+    // cropper.crop() reads from its internal `state.options`, not from the raw
+    // [imageQuality]/[resizeToWidth]/[resizeToHeight] @Inputs directly — those only reach
+    // `state.options` via ngOnChanges, which runs on Angular's next change-detection pass,
+    // not synchronously here. Without this, crop() would use last click's settings, so the
+    // preview would always lag one click behind. Write straight into `state.options` (not
+    // part of the public API, hence the cast) so the very next crop() call already sees it.
+    const p = QUALITY_PRESETS[preset];
+    (cropper as unknown as { state: { setOptions(o: Record<string, unknown>): void } }).state.setOptions({
+      imageQuality: p.quality,
+      resizeToWidth: p.maxDimension,
+      resizeToHeight: p.maxDimension,
+    });
+    this.applyCropResult(cropper.crop());
+  }
+
+  onImageCropped(event: ImageCroppedEvent): void {
+    this.applyCropResult(event);
+  }
+
+  private applyCropResult(result: ImageCroppedEvent | null): void {
+    if (result?.base64) {
+      this.livePreviewSrc.set(result.base64);
+      this.livePreviewBytes.set(this.estimateBytes(result.base64));
+    }
+  }
+
+  estimateBytes(base64: string): number {
+    const raw = base64.includes(',') ? base64.split(',')[1] : base64;
+    return Math.round((raw.length * 3) / 4);
+  }
+
+  formatBytes(bytes: number): string {
+    return bytes < 1024 ? `${bytes} B` : `${Math.round(bytes / 1024)} KB`;
+  }
+
   removeImage(index: number): void {
     if (this.disabled()) {
       return;
@@ -64,6 +115,8 @@ export class ImagePicker implements ControlValueAccessor {
   }
 
   private advanceQueue(): void {
+    this.livePreviewBytes.set(null);
+    this.livePreviewSrc.set(null);
     const queue = this.cropQueue();
     if (queue.length > 0) {
       this.croppingFile.set(queue[0]);
