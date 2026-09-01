@@ -4,6 +4,7 @@
       @for (img of images(); track $index) {
         <div class="image-picker-thumb">
           <img [src]="'data:image/jpeg;base64,' + img" alt="" />
+          <span class="image-picker-thumb-size">{{ formatBytes(estimateBytes(img)) }}</span>
           <button
             type="button"
             class="image-picker-remove"
@@ -19,16 +20,38 @@
 
   @if (croppingFile(); as file) {
     <div class="image-picker-cropper">
+      <div class="image-picker-quality">
+        @for (key of presetKeys; track key) {
+          <button
+            type="button"
+            class="image-picker-quality-btn"
+            [class.image-picker-quality-active]="qualityPreset() === key"
+            (click)="setQualityPreset(key, cropper)"
+          >
+            {{ presets[key].label }}
+          </button>
+        }
+      </div>
       <image-cropper
         #cropper
         [imageFile]="file"
         [maintainAspectRatio]="false"
         [output]="'base64'"
-        [imageQuality]="80"
-        [resizeToWidth]="1280"
-        [resizeToHeight]="1280"
+        [format]="'jpeg'"
+        [imageQuality]="currentPreset().quality"
+        [resizeToWidth]="currentPreset().maxDimension"
+        [resizeToHeight]="currentPreset().maxDimension"
         [onlyScaleDown]="true"
+        (imageCropped)="onImageCropped($event)"
       ></image-cropper>
+      @if (livePreviewSrc(); as previewSrc) {
+        <div class="image-picker-preview">
+          <img [src]="previewSrc" alt="Preview at selected quality" />
+          @if (livePreviewBytes(); as bytes) {
+            <p class="image-picker-size-hint">Estimated size: {{ formatBytes(bytes) }}</p>
+          }
+        </div>
+      }
       <div class="image-picker-cropper-actions">
         <button mat-stroked-button type="button" (click)="cancelCrop()">Skip</button>
         <button mat-flat-button type="button" (click)="confirmCrop(cropper)">Use photo</button>
