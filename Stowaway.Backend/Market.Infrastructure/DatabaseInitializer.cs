@@ -30,7 +30,7 @@ public static class DatabaseInitializer
         // SQL Server or similar
         await ctx.Database.MigrateAsync();
 
-        await StaticDataSeeder.SeedAsync(ctx, resetIdentitySeeds: env.IsDevelopment());
+        await StaticDataSeeder.SeedAsync(ctx, resetIdentitySeeds: false);
 
         if (env.IsDevelopment())
         {
