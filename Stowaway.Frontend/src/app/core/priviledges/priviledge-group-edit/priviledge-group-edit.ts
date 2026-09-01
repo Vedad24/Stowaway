@@ -8,12 +8,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PriviledgeGroupService } from '../../../services/storage-identity/priviledge-group/priviledge-group-service';
 import { PriviledgesService } from '../../../services/storage-identity/priviledges/priviledges-service';
 import { ListPriviledgeGroupQueryDto, UpdatePriviledgeGroupCommand } from '../../../services/storage-identity/priviledge-group/priviledge-group-service.models';
 import { ListPriviledgesQueryDto } from '../../../services/storage-identity/priviledges/priviledges-service.models';
 import { PriviledgeGroupAdd } from '../priviledge-group-add/priviledge-group-add';
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { ActivatedRoute } from '@angular/router';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 
@@ -26,7 +28,7 @@ interface PrivilegeToggleOption {
 @Component({
   selector: 'app-priviledge-group-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatListModule, MatCardModule, MatButtonModule, MatSlideToggleModule, MatDividerModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, FormsModule, MatListModule, MatCardModule, MatButtonModule, MatIconModule, MatSlideToggleModule, MatDividerModule, MatFormFieldModule, MatInputModule],
   templateUrl: './priviledge-group-edit.html',
   styleUrl: './priviledge-group-edit.css',
 })
@@ -161,6 +163,35 @@ export class PriviledgeGroupEdit implements OnInit {
         
         this.loadGroups();
       }
+    });
+  }
+
+  deleteGroup(group: ListPriviledgeGroupQueryDto, event: Event): void {
+    event.stopPropagation();
+
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '380px',
+      data: {
+        title: 'Delete privilege group',
+        message: `Are you sure you want to delete "${group.name}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        danger: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.priviledgeGroupService.delete(group.id).subscribe({
+        next: () => {
+          if (this.selectedGroupId === group.id) {
+            this.selectedGroupId = null;
+          }
+          this.loadGroups();
+        },
+      });
     });
   }
 
