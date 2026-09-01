@@ -8,6 +8,7 @@ import { PaginationTable, TableColumnDef } from '../../../shared/pagination-tabl
 import { CreateUserCommand, ListUserQuery, ListUserQueryDto, RoleName, UpdateUserCommand } from '../../../services/identity/user/user-service.models';
 import { UserService } from '../../../services/identity/user/user-service';
 import { EmployeeAddEdit } from './employee-add-edit/employee-add-edit';
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
 import { Router } from '@angular/router';
 
@@ -78,8 +79,50 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
         action: (row: ListUserQueryDto) => this.onWarehouseManage(row)
       }
     ]
+    },
+    {columnDef: 'btnDelete',
+      header: 'Delete',
+      type: 'action',
+      buttons:
+      [
+        {
+        type: 'icon',
+        label: 'Delete',
+        icon: 'delete',
+        color: '',
+        action: (row: ListUserQueryDto) => this.onDelete(row)
+      }
+      ]
     }
   ]
+  onDelete(row : ListUserQueryDto)
+  {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '380px',
+      data: {
+        title: 'Delete employee',
+        message: `Are you sure you want to delete "${row.firstName} ${row.lastName}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        danger: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.userService.delete(row.id).subscribe(
+        {
+          next: () =>
+          {
+            this.loadPagedData();
+          },
+          error: () => {console.error("There was an error deleteing the user");}
+        }
+        )
+    });
+  }
   onWarehouseManage(row : ListUserQueryDto)
   {
     const id = row.id;
