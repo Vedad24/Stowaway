@@ -24,7 +24,7 @@
   min-height: 0;
   border-right: 1px solid var(--surface-border);
   background: var(--cream);
-  overflow: auto;
+  overflow: hidden;
 }
 
 .layout-sidebar app-sidebar {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -36,6 +36,16 @@ interface ItemReportRow {
   tags: string;
 }
 
+type SortDirection = 'asc' | 'desc';
+
+interface SortState<T extends string> {
+  column: T;
+  direction: SortDirection;
+}
+
+type ContainerSortColumn = 'name' | 'ancestorPath' | 'typeName' | 'itemsUsed' | 'containersUsed' | 'status';
+type ItemSortColumn = 'name' | 'containerPath' | 'quantity' | 'supplierName' | 'tags';
+
 const MAX_PAGE_SIZE = 100;
 
 @Component({
@@ -65,6 +75,12 @@ export class WarehouseReport implements OnInit {
   containerRows = signal<ContainerReportRow[]>([]);
   itemRows = signal<ItemReportRow[]>([]);
 
+  containerSort = signal<SortState<ContainerSortColumn> | null>(null);
+  itemSort = signal<SortState<ItemSortColumn> | null>(null);
+
+  sortedContainerRows = computed(() => this.sortRows(this.containerRows(), this.containerSort()));
+  sortedItemRows = computed(() => this.sortRows(this.itemRows(), this.itemSort()));
+
   get showContainers(): boolean {
     return this.reportType() !== 'items';
   }
@@ -87,6 +103,41 @@ export class WarehouseReport implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/main']);
+  }
+
+  toggleContainerSort(column: ContainerSortColumn): void {
+    this.containerSort.set(this.toggleSort(this.containerSort(), column));
+  }
+
+  toggleItemSort(column: ItemSortColumn): void {
+    this.itemSort.set(this.toggleSort(this.itemSort(), column));
+  }
+
+  private toggleSort<T extends string>(current: SortState<T> | null, column: T): SortState<T> {
+    if (current?.column === column) {
+      return { column, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+    }
+    return { column, direction: 'asc' };
+  }
+
+  private sortRows<Row, K extends keyof Row & string>(rows: Row[], sort: SortState<K> | null): Row[] {
+    if (!sort) {
+      return rows;
+    }
+
+    const { column, direction } = sort;
+    const factor = direction === 'asc' ? 1 : -1;
+
+    return [...rows].sort((a, b) => {
+      const left = a[column];
+      const right = b[column];
+
+      if (typeof left === 'number' && typeof right === 'number') {
+        return (left - right) * factor;
+      }
+
+      return String(left).localeCompare(String(right), undefined, { numeric: true, sensitivity: 'base' }) * factor;
+    });
   }
 
   private async loadReport(): Promise<void> {
