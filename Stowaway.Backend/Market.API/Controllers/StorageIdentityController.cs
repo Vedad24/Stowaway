@@ -24,6 +24,7 @@ namespace Stowaway.API.Controllers
 
         [HttpPost("privilege-groups")]
         [HasPermission(Permissions.WarehouseUsersManage)]
+        [HasPriviledge(Priviledges.WarehouseUsersManage, WarehouseResolutionStrategy.BodyField, bodyFieldName: "WarehouseId")]
         public async Task<ActionResult<int>> CreatePrivilegeGroup(CreatePriviledgeGroupCommand command, CancellationToken ct)
         {
             var id = await sender.Send(command, ct);
@@ -32,6 +33,7 @@ namespace Stowaway.API.Controllers
 
         [HttpPut("privilege-groups/{privilegeId}")]
         [HasPermission(Permissions.WarehouseUsersManage)]
+        [HasPriviledge(Priviledges.WarehouseUsersManage, WarehouseResolutionStrategy.BodyField, bodyFieldName: "WarehouseId")]
         public async Task<ActionResult<int>> UpdatePrivilegeGroup(int privilegeId, UpdatePriviledgeGroupCommand command, CancellationToken ct)
         {
             command.PriviledgeId = privilegeId;
@@ -41,6 +43,7 @@ namespace Stowaway.API.Controllers
 
         [HttpDelete("privilege-groups/{privilegeId}")]
         [HasPermission(Permissions.WarehouseUsersManage)]
+        [HasPriviledge(Priviledges.WarehouseUsersManage, WarehouseResolutionStrategy.PriviledgeGroupRouteId, routeKey: "privilegeId")]
         public async Task<ActionResult> DeletePrivilegeGroup(int privilegeId, CancellationToken ct)
         {
             await sender.Send(new DeletePriviledgeGroupCommand { Id = privilegeId }, ct);
@@ -57,6 +60,7 @@ namespace Stowaway.API.Controllers
 
         [HttpPut("warehouse-users")]
         [HasPermission(Permissions.WarehouseUsersManage)]
+        [HasPriviledge(Priviledges.WarehouseUsersManage, WarehouseResolutionStrategy.BodyField, bodyFieldName: "WarehouseId")]
         public async Task<ActionResult<CreateUpdateWarehouseUserCommandDto>> CreateUpdateWarehouseUser(CreateUpdateWarehouseUserCommand command, CancellationToken ct)
         {
             var result = await sender.Send(command, ct);

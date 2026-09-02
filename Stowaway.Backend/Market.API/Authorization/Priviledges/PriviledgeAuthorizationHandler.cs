@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Json;
+using Market.Application.Abstractions;
 using Market.Infrastructure.Database;
 using Market.Shared.Constants;
 using Microsoft.AspNetCore.Authorization;
@@ -8,10 +9,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Market.API.Authorization;
 
-public sealed class PriviledgeAuthorizationHandler(DatabaseContext dbContext) : AuthorizationHandler<PriviledgeRequirement>
+public sealed class PriviledgeAuthorizationHandler(DatabaseContext dbContext, IAppCurrentUser appCurrentUser) : AuthorizationHandler<PriviledgeRequirement>
 {
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PriviledgeRequirement requirement)
     {
+        if (appCurrentUser.IsAdmin)
+        {
+            context.Succeed(requirement);
+            return;
+        }
+
         var userIdString = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!int.TryParse(userIdString, out var userId))
             return;
@@ -59,6 +66,17 @@ public sealed class PriviledgeAuthorizationHandler(DatabaseContext dbContext) : 
                 return await dbContext.Item
                     .Where(i => i.Id == itemId)
                     .Select(i => (int?)i.Container.WarehouseId)
+                    .FirstOrDefaultAsync();
+            }
+
+            case WarehouseResolutionStrategy.PriviledgeGroupRouteId:
+            {
+                var priviledgeGroupId = ParseRouteInt(httpContext, requirement.RouteKey);
+                if (priviledgeGroupId is null)
+                    return null;
+                return await dbContext.PriviledgeGroups
+                    .Where(pg => pg.Id == priviledgeGroupId)
+                    .Select(pg => (int?)pg.WarehouseId)
                     .FirstOrDefaultAsync();
             }
 

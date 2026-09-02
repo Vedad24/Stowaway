@@ -2,12 +2,17 @@
 
 namespace Stowaway.Application.Modules.Storage.Warehouse.Queries.List
 {
-    public sealed class ListWarehouseQueryHandler(IAppDbContext ctx)
+    public sealed class ListWarehouseQueryHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
         : IRequestHandler<ListWarehouseQuery, PageResult<ListWarehouseQueryDto>>
     {
         public async Task<PageResult<ListWarehouseQueryDto>> Handle(ListWarehouseQuery request, CancellationToken cancellationToken)
         {
             var query = ctx.Warehouses.AsNoTracking();
+
+            if (!appCurrentUser.IsAdmin && !appCurrentUser.IsManager)
+            {
+                query = query.Where(x => ctx.WarehouseUsers.Any(wu => wu.WarehouseId == x.Id && wu.UserId == appCurrentUser.UserId));
+            }
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {

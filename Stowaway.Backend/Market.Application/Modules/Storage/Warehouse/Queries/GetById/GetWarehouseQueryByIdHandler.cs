@@ -1,14 +1,20 @@
 ﻿
 namespace Stowaway.Application.Modules.Storage.Warehouse.Queries.GetById
 {
-    public sealed class GetWarehouseQueryByIdHandler(IAppDbContext ctx)
+    public sealed class GetWarehouseQueryByIdHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
         : IRequestHandler<GetWarehouseByIdQuery, GetWarehouseQueryByIdDto>
     {
         public async Task<GetWarehouseQueryByIdDto> Handle(GetWarehouseByIdQuery request, CancellationToken cancellationToken)
         {
-            var warehouse = await ctx.Warehouses
-                .Where(x => x.Id == request.Id)
-                .Select(x => new GetWarehouseQueryByIdDto 
+            var query = ctx.Warehouses.Where(x => x.Id == request.Id);
+
+            if (!appCurrentUser.IsAdmin && !appCurrentUser.IsManager)
+            {
+                query = query.Where(x => ctx.WarehouseUsers.Any(wu => wu.WarehouseId == x.Id && wu.UserId == appCurrentUser.UserId));
+            }
+
+            var warehouse = await query
+                .Select(x => new GetWarehouseQueryByIdDto
                 {
                     Id = x.Id,
                     Name = x.Name,

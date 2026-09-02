@@ -14,6 +14,7 @@ namespace Market.Shared.Constants
         // itself are app-level Permissions, not a per-warehouse concern)
         public const string WarehouseRead = "Warehouse.Read";
         public const string WarehouseUpdate = "Warehouse.Update";
+        public const string WarehouseUsersManage = "WarehouseUsers.Manage";
 
         // Containers within a warehouse
         public const string ContainerRead = "Container.Read";
