@@ -11,18 +11,29 @@ import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
 import { WarehouseAdd } from '../warehouse-add/warehouse-add';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
+import { ItemApiService } from '../../../services/storage/item/item';
+import { ListItemQuery, ListItemQueryDto } from '../../../services/storage/item/item.model';
+
+type ItemTreeNode = ListItemQueryDto & {
+  searchMatch?: boolean;
+  visible?: boolean;
+};
 
 interface ContainerTreeNode extends ListContainersQueryDto {
   expanded: boolean;
   loading: boolean;
   childrenLoaded: boolean;
   children: ContainerTreeNode[];
+  items: ItemTreeNode[];
+  itemsLoaded: boolean;
+  itemsLoading: boolean;
   searchMatch?: boolean;
   visible?: boolean;
   // Bumped on every children-list request for this node; a response is only
   // applied if it's still the most recent request, so an older, slower
   // response can never clobber a newer one that already landed.
   requestToken: number;
+  itemsRequestToken: number;
 }
 
 interface WarehouseTreeNode extends ListWarehousesQueryDto {
@@ -47,6 +58,7 @@ export class Sidebar implements OnInit {
 
   private readonly productPageService = inject(ProductPageService);
   private readonly containerService = inject(ContainerApiService);
+  private readonly itemService = inject(ItemApiService);
   private readonly canvasState = inject(WarehouseCanvasState);
   private readonly warehouseService = inject(WarehouseApiService);
   private readonly router = inject(Router);
@@ -109,15 +121,22 @@ export class Sidebar implements OnInit {
   }
 
   toggleContainer(container: ContainerTreeNode): void {
-    if (!container.hasChildren) {
+    if (!container.hasChildren && container.itemQuantityUsed <= 0) {
       return;
     }
 
     container.expanded = !container.expanded;
-    if (container.expanded && !container.childrenLoaded) {
+    if (container.expanded && container.hasChildren && !container.childrenLoaded) {
       this.loadChildren(container, container.warehouseId, container.id);
     }
+    if (container.expanded && container.itemQuantityUsed > 0 && !container.itemsLoaded) {
+      this.loadItems(container);
+    }
     this.refreshTree();
+  }
+
+  selectItem(item: ListItemQueryDto): void {
+    this.canvasState.selectItem(item.id);
   }
 
   selectWarehouse(warehouse: WarehouseTreeNode): void {
@@ -223,6 +242,37 @@ export class Sidebar implements OnInit {
     });
   }
 
+  private loadItems(node: ContainerTreeNode, callback?: () => void): void {
+    node.itemsLoading = true;
+    const requestToken = ++node.itemsRequestToken;
+    this.refreshTree();
+
+    const query = new ListItemQuery();
+    query.containerId = node.id;
+
+    this.itemService.list(query).subscribe({
+      next: (response) => {
+        if (requestToken !== node.itemsRequestToken) {
+          return;
+        }
+        node.items = response.items ?? [];
+        node.itemsLoaded = true;
+        node.itemsLoading = false;
+        this.refreshTree();
+        callback?.();
+      },
+      error: () => {
+        if (requestToken !== node.itemsRequestToken) {
+          return;
+        }
+        node.itemsLoading = false;
+        this.errorMessage.set('Unable to load items. Please try again.');
+        this.refreshTree();
+        callback?.();
+      },
+    });
+  }
+
   private expandMatchingPath(
     query: string,
     node: WarehouseTreeNode | ContainerTreeNode,
@@ -230,9 +280,11 @@ export class Sidebar implements OnInit {
   ): boolean {
     const matches = (node.name ?? '').toLowerCase().includes(query);
     let hasMatchInChildren = false;
+    let hasMatchInItems = false;
+    const isContainer = this.isContainerNode(node);
 
     if (!node.childrenLoaded && !node.loading) {
-      if (!this.isContainerNode(node)) {
+      if (!isContainer) {
         this.loadChildren(node, node.id, null, () => {
           this.expandMatchingPath(query, node, parent);
           this.refreshTree();
@@ -249,6 +301,14 @@ export class Sidebar implements OnInit {
       }
     }
 
+    if (isContainer && node.itemQuantityUsed > 0 && !node.itemsLoaded && !node.itemsLoading) {
+      this.loadItems(node, () => {
+        this.expandMatchingPath(query, node, parent);
+        this.refreshTree();
+      });
+      return matches;
+    }
+
     if (node.childrenLoaded) {
       node.children.forEach((child) => {
         if (this.expandMatchingPath(query, child, node)) {
@@ -257,12 +317,23 @@ export class Sidebar implements OnInit {
       });
     }
 
-    const shouldShow = matches || hasMatchInChildren;
+    if (isContainer && node.itemsLoaded) {
+      node.items.forEach((item) => {
+        const itemMatches = (item.name ?? '').toLowerCase().includes(query);
+        item.visible = itemMatches;
+        item.searchMatch = itemMatches;
+        if (itemMatches) {
+          hasMatchInItems = true;
+        }
+      });
+    }
+
+    const shouldShow = matches || hasMatchInChildren || hasMatchInItems;
 
     if (shouldShow) {
       node.visible = true;
       node.searchMatch = matches;
-      node.expanded = hasMatchInChildren && !matches;
+      node.expanded = (hasMatchInChildren || hasMatchInItems) && !matches;
 
       if (parent) {
         parent.visible = true;
@@ -283,11 +354,22 @@ export class Sidebar implements OnInit {
     node.visible = false;
     node.expanded = false;
     node.children.forEach((child) => this.clearSearchState(child));
+    if (this.isContainerNode(node)) {
+      node.items.forEach((item) => {
+        item.searchMatch = false;
+        item.visible = false;
+      });
+    }
   }
 
   private resetVisibility(node: WarehouseTreeNode | ContainerTreeNode): void {
     node.visible = true;
     node.children.forEach((child) => this.resetVisibility(child));
+    if (this.isContainerNode(node)) {
+      node.items.forEach((item) => {
+        item.visible = true;
+      });
+    }
   }
 
   private isContainerNode(node: WarehouseTreeNode | ContainerTreeNode): node is ContainerTreeNode {
@@ -301,7 +383,11 @@ export class Sidebar implements OnInit {
       loading: false,
       childrenLoaded: false,
       children: [],
+      items: [],
+      itemsLoaded: false,
+      itemsLoading: false,
       requestToken: 0,
+      itemsRequestToken: 0,
     };
   }
 
@@ -315,18 +401,23 @@ export class Sidebar implements OnInit {
   // level at a time — a tree several levels deep no longer takes several
   // sequential round-trips to catch up.
   private refreshLoadedNodes(): void {
-    const targets: { node: WarehouseTreeNode | ContainerTreeNode; warehouseId: number; parentContainerId: number | null }[] = [];
+    const containerTargets: { node: WarehouseTreeNode | ContainerTreeNode; warehouseId: number; parentContainerId: number | null }[] = [];
+    const itemTargets: ContainerTreeNode[] = [];
 
     const collect = (node: WarehouseTreeNode | ContainerTreeNode, warehouseId: number, parentContainerId: number | null): void => {
+      if (this.isContainerNode(node) && node.itemsLoaded) {
+        itemTargets.push(node);
+      }
       if (!node.childrenLoaded) {
         return;
       }
-      targets.push({ node, warehouseId, parentContainerId });
+      containerTargets.push({ node, warehouseId, parentContainerId });
       node.children.forEach((child) => collect(child, warehouseId, child.id));
     };
 
     this.warehouses().forEach((warehouse) => collect(warehouse, warehouse.id, null));
-    targets.forEach(({ node, warehouseId, parentContainerId }) => this.refreshNodeChildren(node, warehouseId, parentContainerId));
+    containerTargets.forEach(({ node, warehouseId, parentContainerId }) => this.refreshNodeChildren(node, warehouseId, parentContainerId));
+    itemTargets.forEach((node) => this.refreshNodeItems(node));
   }
 
   private refreshNodeChildren(
@@ -360,7 +451,25 @@ export class Sidebar implements OnInit {
     });
   }
 
-  
+  private refreshNodeItems(node: ContainerTreeNode): void {
+    const requestToken = ++node.itemsRequestToken;
+
+    const query = new ListItemQuery();
+    query.containerId = node.id;
+
+    this.itemService.list(query).subscribe({
+      next: (response) => {
+        if (requestToken !== node.itemsRequestToken) {
+          return;
+        }
+        node.items = response.items ?? [];
+        this.refreshTree();
+      },
+      error: () => {},
+    });
+  }
+
+
   goToPriviledges(warehouseId : number) {
     this.router.navigate(['priviledge-group/edit', warehouseId]);
   }

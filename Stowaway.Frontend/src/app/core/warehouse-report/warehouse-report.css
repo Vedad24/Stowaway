@@ -124,6 +124,21 @@
   border-radius: 0.2rem 0.2rem 0 0;
 }
 
+.report-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.report-table th.sortable:hover {
+  background-color: color-mix(in srgb, var(--sage) 20%, var(--sage-soft));
+}
+
+.sort-indicator {
+  margin-left: 0.35rem;
+  font-size: 0.75em;
+  color: var(--gold);
+}
+
 .report-table td {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--sage-soft);
