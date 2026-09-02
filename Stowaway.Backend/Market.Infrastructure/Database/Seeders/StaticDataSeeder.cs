@@ -119,6 +119,7 @@ public static class StaticDataSeeder
         {
             Priviledges.WarehouseRead,
             Priviledges.WarehouseUpdate,
+            Priviledges.WarehouseUsersManage,
             Priviledges.ContainerRead,
             Priviledges.ContainerCreate,
             Priviledges.ContainerUpdate,
