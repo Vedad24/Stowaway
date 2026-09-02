@@ -14,53 +14,55 @@
     <button matButton title="Add warehouse" (click)="addWarehouse()"><mat-icon>add_business</mat-icon></button>
   </div>
 
-  @if (isLoading()) {
-    <div class="tree-state">Loading warehouses…</div>
-  }
-
-
-  @if (!isLoading() && errorMessage()) {
-    <div class="tree-state tree-error">{{ errorMessage() }}</div>
-  }
-
-  @if (!isLoading() && !errorMessage()) {
-    @if (warehouses().length === 0) {
-      <div class="tree-state">Nothing available.</div>
-    } @else {
-      <ul class="tree-list">
-        @for (warehouse of visibleWarehouses(); track warehouse.id) {
-          <li class="tree-node">
-            <div class="tree-row" [class.tree-row-match]="warehouse.searchMatch">
-              <button type="button" class="tree-toggle" (click)="toggleWarehouse(warehouse)">
-                <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
-              </button>
-              <span class="tree-label" (click)="selectWarehouse(warehouse)">{{ warehouse.name }}</span>
-              <button matButton title="Generate report" (click)="openReportDialog(warehouse)"><mat-icon>summarize</mat-icon></button>
-              <button matButton (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
-            </div>
-            @if (warehouse.loading) {
-              <div class="tree-loading">Loading containers…</div>
-            }
-            @if (warehouse.expanded && warehouse.childrenLoaded) {
-              <ul class="tree-children">
-                @for (container of warehouse.children; track container.id) {
-                  @if (container.visible !== false) {
-                    <ng-container
-                      [ngTemplateOutlet]="containerNode"
-                      [ngTemplateOutletContext]="{ $implicit: container, ancestors: [], warehouse: warehouse }"
-                    ></ng-container>
-                  }
-                }
-                @if (warehouse.children.length === 0) {
-                  <li class="tree-empty">No containers.</li>
-                }
-              </ul>
-            }
-          </li>
-        }
-      </ul>
+  <div class="tree-scroll">
+    @if (isLoading()) {
+      <div class="tree-state">Loading warehouses…</div>
     }
-  }
+
+
+    @if (!isLoading() && errorMessage()) {
+      <div class="tree-state tree-error">{{ errorMessage() }}</div>
+    }
+
+    @if (!isLoading() && !errorMessage()) {
+      @if (warehouses().length === 0) {
+        <div class="tree-state">Nothing available.</div>
+      } @else {
+        <ul class="tree-list">
+          @for (warehouse of visibleWarehouses(); track warehouse.id) {
+            <li class="tree-node">
+              <div class="tree-row" [class.tree-row-match]="warehouse.searchMatch">
+                <button type="button" class="tree-toggle" (click)="toggleWarehouse(warehouse)">
+                  <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
+                </button>
+                <span class="tree-label" (click)="selectWarehouse(warehouse)">{{ warehouse.name }}</span>
+                <button matButton title="Generate report" (click)="openReportDialog(warehouse)"><mat-icon>summarize</mat-icon></button>
+                <button matButton (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
+              </div>
+              @if (warehouse.loading) {
+                <div class="tree-loading">Loading containers…</div>
+              }
+              @if (warehouse.expanded && warehouse.childrenLoaded) {
+                <ul class="tree-children">
+                  @for (container of warehouse.children; track container.id) {
+                    @if (container.visible !== false) {
+                      <ng-container
+                        [ngTemplateOutlet]="containerNode"
+                        [ngTemplateOutletContext]="{ $implicit: container, ancestors: [], warehouse: warehouse }"
+                      ></ng-container>
+                    }
+                  }
+                  @if (warehouse.children.length === 0) {
+                    <li class="tree-empty">No containers.</li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+      }
+    }
+  </div>
 </nav>
 
 <ng-template #containerNode let-container let-ancestors="ancestors" let-warehouse="warehouse">
@@ -69,10 +71,10 @@
       <button
         type="button"
         class="tree-toggle"
-        [disabled]="!container.hasChildren"
+        [disabled]="!container.hasChildren && container.itemQuantityUsed <= 0"
         (click)="toggleContainer(container)"
       >
-        <span class="tree-icon" [class.tree-icon-spacer]="!container.hasChildren">
+        <span class="tree-icon" [class.tree-icon-spacer]="!container.hasChildren && container.itemQuantityUsed <= 0">
           {{ container.expanded ? '▾' : '▸' }}
         </span>
       </button>
@@ -81,7 +83,10 @@
     @if (container.loading) {
       <div class="tree-loading">Loading containers…</div>
     }
-    @if (container.expanded && container.childrenLoaded) {
+    @if (container.itemsLoading) {
+      <div class="tree-loading">Loading items…</div>
+    }
+    @if (container.expanded && (container.childrenLoaded || container.itemsLoaded)) {
       <ul class="tree-children">
         @for (child of container.children; track child.id) {
           <ng-container
@@ -89,8 +94,21 @@
             [ngTemplateOutletContext]="{ $implicit: child, ancestors: withAncestor(ancestors, container), warehouse: warehouse }"
           ></ng-container>
         }
-        @if (container.children.length === 0) {
-          <li class="tree-empty">No nested containers.</li>
+        @for (item of container.items; track item.id) {
+          @if (item.visible !== false) {
+            <li class="tree-node">
+              <div class="tree-row tree-item-row" [class.tree-row-match]="item.searchMatch">
+                <span class="tree-toggle tree-toggle-spacer"></span>
+                <mat-icon class="tree-item-icon">inventory_2</mat-icon>
+                <span class="tree-label" (click)="selectItem(item)">
+                  {{ item.name }} <span class="tree-item-qty">×{{ item.quantity }}</span>
+                </span>
+              </div>
+            </li>
+          }
+        }
+        @if (container.children.length === 0 && container.items.length === 0) {
+          <li class="tree-empty">No nested containers or items.</li>
         }
       </ul>
     }

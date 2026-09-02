@@ -6,16 +6,25 @@
 .sidebar-tree {
   height: 100%;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding: 0.75rem 0.75rem 1rem;
   color: var(--text-dark);
   background-color: var(--sage-soft);
 }
 
 .sidebar-toolbar {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 0.4rem;
   margin-bottom: 0.75rem;
+}
+
+.tree-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .sidebar-search {
@@ -137,6 +146,26 @@
 
 .tree-container-row {
   margin-bottom: 0.2rem;
+}
+
+.tree-toggle-spacer {
+  cursor: default;
+}
+
+.tree-item-row {
+  margin-bottom: 0.2rem;
+}
+
+.tree-item-icon {
+  font-size: 1rem;
+  height: 1rem;
+  width: 1rem;
+  color: var(--text-muted);
+}
+
+.tree-item-qty {
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
 .tree-loading,
