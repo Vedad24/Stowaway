@@ -1,98 +1,71 @@
 import { Routes } from '@angular/router';
-import { LandingPage } from './core/landing-page/landing-page';
-import { Warehouse } from './core/warehouse/warehouse/warehouse';
-import { Item } from './core/item/item';
-import { Supplier } from './core/supplier/supplier';
-import { LoginPage } from './core/login-page/login-page';
-import { ChooseModule } from './core/choose-module/choose-module'; 
-import { TestUsers } from './core/identity/test-users/test-users';
-import { TestSales } from './core/sales/test-sales/test-sales';
-import { SignUp } from './core/identity/sign-up/sign-up';
-import { UserSettings } from './core/identity/user-settings/user-settings';
-import { CreateItem } from './core/item/create/create';
-import { CreateSupplier } from './core/supplier/create/create';
-import { CreateWarehouse } from './core/warehouse/warehouse/create/create';
-import { EditItem } from './core/item/edit/edit';
-import { EditSupplier } from './core/supplier/edit/edit';
-import { EditWarehouse } from './core/warehouse/warehouse/edit/edit';
-import { Layout } from './core/layout/layout';
-import { PriviledgeGroupEdit } from './core/priviledges/priviledge-group-edit/priviledge-group-edit';
-import { ProductPage } from './core/sales/product-page/product-page';
-import { Cart } from './core/sales/cart/cart';
 import { routeGuardGuard } from './services/route-guard-guard';
 import { permissionGuard } from './services/permission-guard-guard';
 import { Permissions } from './shared/constants/permissions';
-import { EmployeeManagement } from './core/identity/employee-management/employee-management';
-import { EmployeeAddEdit } from './core/identity/employee-management/employee-add-edit/employee-add-edit';
-import { WarehouseUserManagement } from './core/identity/warehouse-user-management/warehouse-user-management';
-import { PaymentSuccess } from './core/sales/payment/success/payment-success/payment-success';
-import { PaymentCancel } from './core/sales/payment/cancel/payment-cancel/payment-cancel';
-import { WarehouseReport } from './core/warehouse-report/warehouse-report';
-import { permission } from 'process';
 
 export const routes: Routes = [
     {
         path: '',
-        component: LandingPage
+        loadComponent: () => import('./core/landing-page/landing-page').then(m => m.LandingPage)
     },
     //almost all routes should have a route guard on canActivate
     {
         path: 'main',
-        component: Layout,
+        loadComponent: () => import('./core/layout/layout').then(m => m.Layout),
         canActivate: [routeGuardGuard]
     },
     {
         path: 'login',
-        component: LoginPage,
+        loadChildren: () => import('./core/login-page/login.module').then(m => m.LoginModule),
     },
     {
         path: 'choose-module',
-        component: ChooseModule,
+        loadComponent: () => import('./core/choose-module/choose-module').then(m => m.ChooseModule),
         canActivate: [routeGuardGuard]
     },
     {
         path: 'warehouse',
-        component: Warehouse,
+        loadComponent: () => import('./core/warehouse/warehouse/warehouse').then(m => m.Warehouse),
         canActivate: [permissionGuard(Permissions.WarehouseRead)]
     },
     {
         path: 'warehouse/create',
-        component: CreateWarehouse,
+        loadComponent: () => import('./core/warehouse/warehouse/create/create').then(m => m.CreateWarehouse),
         canActivate: [permissionGuard(Permissions.WarehouseCreate)]
     },
     {
         path: 'warehouse/edit/:abc',
-        component: EditWarehouse,
+        loadComponent: () => import('./core/warehouse/warehouse/edit/edit').then(m => m.EditWarehouse),
         canActivate: [permissionGuard(Permissions.WarehouseUpdate)]
     },
     {
         path: 'item',
-        component: Item,
+        loadComponent: () => import('./core/item/item').then(m => m.Item),
         canActivate: [permissionGuard(Permissions.ItemRead)]
     },
     {
         path: 'item/create',
-        component: CreateItem,
+        loadComponent: () => import('./core/item/create/create').then(m => m.CreateItem),
         canActivate: [permissionGuard(Permissions.ItemCreate)]
     },
     {
         path: 'item/edit/:id',
-        component: EditItem,
+        loadComponent: () => import('./core/item/edit/edit').then(m => m.EditItem),
         canActivate: [permissionGuard(Permissions.ItemUpdate)]
     },
     {
         path: 'supplier',
-        component: Supplier,
+        loadComponent: () => import('./core/supplier/supplier').then(m => m.Supplier),
         canActivate: [permissionGuard(Permissions.SupplierRead)]
     },
     {
         path: 'supplier/create',
-        component: CreateSupplier,
+        loadComponent: () => import('./core/supplier/create/create').then(m => m.CreateSupplier),
         canActivate: [permissionGuard(Permissions.SupplierCreate)]
     },
     {
         path: 'supplier/edit/:id',
-        component: EditSupplier,
+        loadComponent: () => import('./core/supplier/edit/edit').then(m => m.EditSupplier),
         canActivate: [permissionGuard(Permissions.SupplierUpdate)]
     },
     // {
@@ -106,54 +79,54 @@ export const routes: Routes = [
     // },
     {
         path: 'sign-up',
-        component: SignUp
+        loadComponent: () => import('./core/identity/sign-up/sign-up').then(m => m.SignUp)
     },
     {
         path: "user/settings",
-        component: UserSettings,
+        loadComponent: () => import('./core/identity/user-settings/user-settings').then(m => m.UserSettings),
         canActivate: [routeGuardGuard]
     },
     {
         path: "priviledge-group/edit/:warehouseId",
-        component: PriviledgeGroupEdit,
+        loadComponent: () => import('./core/priviledges/priviledge-group-edit/priviledge-group-edit').then(m => m.PriviledgeGroupEdit),
         canActivate: [permissionGuard(Permissions.WarehouseUsersManage)]
     },
     {
         path: "report/:warehouseId",
-        component: WarehouseReport,
+        loadComponent: () => import('./core/warehouse-report/warehouse-report').then(m => m.WarehouseReport),
         canActivate: [permissionGuard(Permissions.WarehouseRead)]
     },
     {
         path: 'product-page',
-        component: ProductPage,
+        loadComponent: () => import('./core/sales/product-page/product-page').then(m => m.ProductPage),
         canActivate: [permissionGuard(Permissions.OrderCreate)]
     },
     {
         path: 'cart',
-        component: Cart,
+        loadComponent: () => import('./core/sales/cart/cart').then(m => m.Cart),
         canActivate: [permissionGuard(Permissions.CartManage)]
     },
     {
         path: "payment/success/:orderId",
-        component: PaymentSuccess
+        loadComponent: () => import('./core/sales/payment/success/payment-success/payment-success').then(m => m.PaymentSuccess)
     },
     {
         path: "payment/cancel/:orderId",
-        component: PaymentCancel
+        loadComponent: () => import('./core/sales/payment/cancel/payment-cancel/payment-cancel').then(m => m.PaymentCancel)
     },
     {
         path: 'employee-management',
-        component: EmployeeManagement,
+        loadComponent: () => import('./core/identity/employee-management/employee-management').then(m => m.EmployeeManagement),
         canActivate: [permissionGuard(Permissions.UsersRead)]
     }
     ,{
         path: "employee-management/add-edit",
-        component: EmployeeAddEdit,
+        loadComponent: () => import('./core/identity/employee-management/employee-add-edit/employee-add-edit').then(m => m.EmployeeAddEdit),
         canActivate: [permissionGuard(Permissions.UsersRead)]
     },
     {
         path: "employee-management/warehouse-user-manage/:userId",
-        component: WarehouseUserManagement,
+        loadComponent: () => import('./core/identity/warehouse-user-management/warehouse-user-management').then(m => m.WarehouseUserManagement),
         canActivate: [permissionGuard(Permissions.WarehouseUsersManage)]
     }
 ];
