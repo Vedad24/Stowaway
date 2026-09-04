@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 
 namespace Stowaway.Application.Modules.Sales.Order.Queries.List
 {
-    public class ListOrdersQueryHandler(IAppDbContext db) : IRequestHandler<ListOrdersQuery, PageResult<ListOrdersQueryDto>>
+    public class ListOrdersQueryHandler(IAppDbContext db, IAppCurrentUser currentUser) : IRequestHandler<ListOrdersQuery, PageResult<ListOrdersQueryDto>>
     {
         public async Task<PageResult<ListOrdersQueryDto>> Handle(ListOrdersQuery request, CancellationToken cancellationToken)
         {
             var allOrders = db.Orders.Include(o => o.User).AsNoTracking();
+            if (!currentUser.IsAdmin)
+            {
+                allOrders = allOrders.Where(o => o.UserId == currentUser.UserId);
+            }
             if (!string.IsNullOrEmpty(request.SearchByUserEmail))
             {
                 allOrders = allOrders.Where(o => o.User.Email.Contains(request.SearchByUserEmail));

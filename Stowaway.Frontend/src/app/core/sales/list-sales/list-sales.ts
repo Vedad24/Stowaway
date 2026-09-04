@@ -1,4 +1,5 @@
 import { Component, inject, ViewChild } from '@angular/core';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { OrderService } from '../../../services/sales/order/order-service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ListOrdersQueryDto, ListOrdersQueryResponse } from '../../../services/sales/order/order-service.models';
@@ -9,11 +10,14 @@ import { catchError, Observable, tap } from 'rxjs';
 @Component({
   selector: 'app-list-sales',
   imports: [MatPaginatorModule, MatTableModule],
+  providers: [DatePipe, CurrencyPipe],
   templateUrl: './list-sales.html',
   styleUrl: './list-sales.css',
 })
 export class ListSales {
   orderService = inject(OrderService)
+  private readonly datePipe = inject(DatePipe);
+  private readonly currencyPipe = inject(CurrencyPipe);
   columns = [
     {
           columnDef: 'name',
@@ -28,7 +32,7 @@ export class ListSales {
         {
           columnDef: 'orderDate',
           header: 'Order Date',
-          cell: (order: ListOrdersQueryDto) => `${order.orderDate}`
+          cell: (order: ListOrdersQueryDto) => `${this.datePipe.transform(order.orderDate, 'short')}`
         },
         {
           columnDef: 'status',
@@ -38,12 +42,12 @@ export class ListSales {
                 {
           columnDef: 'subtotal',
           header: 'Subtotal',
-          cell: (order: ListOrdersQueryDto) => `${order.subtotal}`
+          cell: (order: ListOrdersQueryDto) => `${this.currencyPipe.transform(order.subtotal)}`
         },
                 {
           columnDef: 'total',
           header: 'Total',
-          cell: (order: ListOrdersQueryDto) => `${order.total}`
+          cell: (order: ListOrdersQueryDto) => `${this.currencyPipe.transform(order.total)}`
         }
   ]
   displayedColumns = this.columns.map(c => c.columnDef)

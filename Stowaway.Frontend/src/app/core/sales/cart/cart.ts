@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { CartService } from '../../../services/sales/cart/cart-service';
 import { AddToCartCommand, CartItemDto, CartItemStatus } from '../../../services/sales/cart/cart-service.models';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
@@ -9,13 +10,14 @@ import { CreateOrderCommand, CreateOrderCommandDto, SharedOrderCommandContainerT
 import { PaymentService } from '../../../services/sales/payment/payment-service';
 import { CreatePaymentCommand } from '../../../services/sales/payment/payment-service.models';
 import { firstValueFrom } from 'rxjs';
-import { response } from 'express';
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 
 
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatDialogModule],
+  providers: [CurrencyPipe],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
 })
@@ -25,7 +27,9 @@ export class Cart implements OnInit {
   private readonly currentUserService = inject(CurrentUserService)
   private readonly orderService = inject(OrderService);
   private readonly paymentService = inject(PaymentService);
-  
+  private readonly dialog = inject(MatDialog);
+  private readonly currencyPipe = inject(CurrencyPipe);
+
 
   private get userId() { return this.currentUserService.userId}
   public cartItems = signal<CartItemDto[]>([]);
@@ -109,10 +113,26 @@ export class Cart implements OnInit {
   }
 
   goToCheckout() {
-    
-    
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '380px',
+      data: {
+        title: 'Confirm checkout',
+        message: `You're about to place an order for ${this.currencyPipe.transform(this.subtotal)} and leave the site to pay via Stripe. Continue?`,
+        confirmLabel: 'Checkout',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+      this.confirmedCheckout();
+    });
+  }
+
+  private confirmedCheckout() {
     const createOrderCommand : CreateOrderCommand = this.prepareOrder();
-    
+
     this.orderService.create(createOrderCommand).subscribe(
       (createOrderResponse) =>
         {

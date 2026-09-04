@@ -1,4 +1,5 @@
-﻿using Market.Domain.Entities.Identity;
+﻿using Market.Domain.Common;
+using Market.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Storage;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,8 @@ namespace Stowaway.Domain.Entities.Sales
 {
     [Table("Order", Schema = "Sales")]
 
-    public class OrderEntity
+    public class OrderEntity : BaseEntity
     {
-        public int Id { get; set; }
         [ForeignKey(nameof(User))]
         public int UserId { get; set; }
         public UserEntity? User { get; set; }

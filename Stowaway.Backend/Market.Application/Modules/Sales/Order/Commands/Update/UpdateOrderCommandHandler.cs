@@ -21,6 +21,10 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
             {
                 throw new StowawayNotFoundException($"Order with id {request.Id} doesn't exist");
             }
+            if (order.OrderStatusId is OrderStatus.Completed or OrderStatus.Cancelled or OrderStatus.Refunded)
+            {
+                throw new StowawayBusinessRuleException("order.locked", $"Cannot modify an order once it is {order.OrderStatusId}.");
+            }
             #region Convert request container types
             var lstTypes = request.allContainerTypes.Select(ct => ct.ContainerTypeId).ToList();
             #endregion
