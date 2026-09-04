@@ -37,7 +37,7 @@ public static class DynamicDataSeeder
             return;
         var order = new OrderEntity
         {
-            OrderDate = DateTime.Now,
+            OrderDate = DateTime.UtcNow,
             Subtotal = 0,
             Total = 0,
             OrderStatusId = OrderStatus.Draft,

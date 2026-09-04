@@ -26,7 +26,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
                 OrderStatusId = OrderStatus.Draft,
                 //OrderStatus = null //auto
 
-                OrderDate = DateTime.Now,
+                OrderDate = DateTime.UtcNow,
 
                 Total = 0, //calculate
                 Subtotal = 0, //calculate

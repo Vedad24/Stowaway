@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace Stowaway.Application.Modules.Sales.Order.Queries.GetById
 {
-    public class GetOrderByIdQueryHandler(IAppDbContext db) : IRequestHandler<GetOrderByIdQuery, GetOrderByIdQueryDto>
+    public class GetOrderByIdQueryHandler(IAppDbContext db, IAppCurrentUser currentUser) : IRequestHandler<GetOrderByIdQuery, GetOrderByIdQueryDto>
     {
         public async Task<GetOrderByIdQueryDto> Handle(GetOrderByIdQuery request, CancellationToken cancellationToken)
         {
             //Get order with User
             var order = await db.Orders.Include(o => o.User).FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
-            if(order is null)
+            if(order is null || (!currentUser.IsAdmin && order.UserId != currentUser.UserId))
             {
                 throw new StowawayNotFoundException($"Order with ID {request.Id} doesn't exist");
             }
-            
+
             //Get order items of order
             var orderItems = await db.OrderItems.Include(oi => oi.ContainerType).Where(oi => oi.OrderId == request.Id).Select(oi => new GetOrderByIdQueryDtoOrderItem
             {

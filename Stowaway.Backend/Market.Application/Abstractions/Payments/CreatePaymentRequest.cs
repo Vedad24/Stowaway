@@ -6,7 +6,7 @@ namespace Market.Application.Abstractions.Payments
 
         public decimal Amount { get; init; }
 
-        public string Currency { get; init; } = "usd";
+        public string Currency { get; init; } = "bam";
 
         public string SuccessUrl { get; init; } = string.Empty;
 
