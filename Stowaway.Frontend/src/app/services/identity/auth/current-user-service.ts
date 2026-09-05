@@ -64,6 +64,10 @@ export class CurrentUserService {
     return this._currentUser?.permissions ?? [];
   }
 
+  public get isAdmin(): boolean {
+    return this.roleId === RoleName.Admin;
+  }
+
   public get isManager(): boolean {
     if (this.roleId === RoleName.Manager) {
       return true;

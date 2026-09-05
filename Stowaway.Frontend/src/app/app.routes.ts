@@ -72,11 +72,11 @@ export const routes: Routes = [
     //     path: 'test-users',
     //     component: TestUsers
     // },
-    // {
-    //     path: 'orders-test',
-    //     component: TestSales,
-    //     canActivate: [permissionGuard(Permissions.OrderRead)]
-    // },
+    {
+        path: 'orders',
+        loadComponent: () => import('./core/sales/list-orders/list-orders').then(m => m.ListOrders),
+        canActivate: [permissionGuard(Permissions.OrderRead)]
+    },
     {
         path: 'sign-up',
         loadComponent: () => import('./core/identity/sign-up/sign-up').then(m => m.SignUp)

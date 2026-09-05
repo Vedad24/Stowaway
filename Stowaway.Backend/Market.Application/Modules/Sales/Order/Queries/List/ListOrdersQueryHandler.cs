@@ -43,7 +43,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Queries.List
             }
             var resultQuery = allOrders.Select(o => new ListOrdersQueryDto
             {
-                
+                Id = o.Id,
                 OrderStatus = (o.OrderStatus == null) ? "Draft" : Enum.GetName(o.OrderStatusId),
                 User = new ListOrdersQueryDtoUser { Email = o.User.Email, Name = $"{o.User.FirstName} {o.User.LastName}" },
                 OrderDate = o.OrderDate,
