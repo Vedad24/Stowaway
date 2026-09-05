@@ -4,7 +4,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { CurrentUserDto, GetSelfResponseDto } from './auth-service.models';
 import { environment } from '../../../../enviroments/enivroment'
 import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
-
+import { RoleName } from '../user/user-service.models';
 @Injectable({
   providedIn: 'root',
 })
@@ -65,7 +65,7 @@ export class CurrentUserService {
   }
 
   public get isManager(): boolean {
-    if (this.roleId === 1) {
+    if (this.roleId === RoleName.Manager) {
       return true;
     }
     const workerManageCodes = [

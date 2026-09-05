@@ -27,7 +27,11 @@ namespace Stowaway.Application.Modules.Sales.Order.Queries.List
             }
             if(!string.IsNullOrEmpty(request.SearchByWarehouseName))
             {
-                //Implement later perhaps
+                allOrders = allOrders.Where(o => o.OrderItems!.Any(oi => oi.Warehouse!.Name.Contains(request.SearchByWarehouseName)));
+            }
+            if(request.SearchByStatus is not null)
+            {
+                allOrders = allOrders.Where(o => o.OrderStatusId == request.SearchByStatus);
             }
             if(request.CreateTimeMin is not null)
             {

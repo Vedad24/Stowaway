@@ -74,6 +74,7 @@ export class ListSales {
       searchByUserEmail: null,
       searchByUserName: null,
       searchByWarehouseName: null,
+      searchByStatus: null,
       createTimeMin: null,
       createTimeMax: null
     })

@@ -54,6 +54,7 @@ export interface ListOrdersQuery extends BasePagedQuery{
   searchByUserEmail: string | null;
   searchByUserName: string | null;
   searchByWarehouseName: string | null;
+  searchByStatus: number | null;
   createTimeMin: Date | null;
   createTimeMax: Date | null;
 }
