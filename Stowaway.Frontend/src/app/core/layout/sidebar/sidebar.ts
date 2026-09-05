@@ -92,6 +92,27 @@ export class Sidebar implements OnInit {
         }
       });
     });
+
+    // Separate from the effect above on purpose: a warehouse rename doesn't go
+    // through notifyLocationChanged/AffectedContainers (that mechanism only ever
+    // re-fetches container lists), so it needs its own signal to patch the one
+    // place a warehouse's name is mirrored in this tree — its own row.
+    effect(() => {
+      const renamed = this.canvasState.warehouseRenamed();
+      if (!renamed) {
+        return;
+      }
+      // untracked for the same reason as above: refreshTree() rewrites the
+      // `warehouses` signal, and reading `this.warehouses()` in a tracked
+      // context here would make this effect its own trigger.
+      untracked(() => {
+        const warehouse = this.warehouses().find((w) => w.id === renamed.id);
+        if (warehouse) {
+          warehouse.name = renamed.name;
+          this.refreshTree();
+        }
+      });
+    });
   }
 
   ngOnInit(): void {
@@ -154,6 +175,10 @@ export class Sidebar implements OnInit {
 
   selectWarehouse(warehouse: WarehouseTreeNode): void {
     this.canvasState.selectWarehouse({ id: warehouse.id, name: warehouse.name });
+  }
+
+  viewWarehouseDetails(warehouse: WarehouseTreeNode): void {
+    this.canvasState.showWarehouseDetails(warehouse.id);
   }
 
   addWarehouse(): void {

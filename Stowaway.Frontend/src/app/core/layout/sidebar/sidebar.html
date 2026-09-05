@@ -35,9 +35,10 @@
                 <button type="button" class="tree-toggle" (click)="toggleWarehouse(warehouse)">
                   <span class="tree-icon">{{ warehouse.expanded ? '▾' : '▸' }}</span>
                 </button>
-                <span class="tree-label" (click)="selectWarehouse(warehouse)">{{ warehouse.name }}</span>
-                <button matButton title="Generate report" (click)="openReportDialog(warehouse)"><mat-icon>summarize</mat-icon></button>
-                <button matButton (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
+                <span class="tree-label" [title]="warehouse.name" (click)="selectWarehouse(warehouse)">{{ warehouse.name }}</span>
+                <button matButton class="tree-action" title="View details" (click)="viewWarehouseDetails(warehouse)"><mat-icon>info</mat-icon></button>
+                <button matButton class="tree-action" title="Generate report" (click)="openReportDialog(warehouse)"><mat-icon>summarize</mat-icon></button>
+                <button matButton class="tree-action" (click)="goToPriviledges(warehouse.id)"><mat-icon>settings</mat-icon></button>
               </div>
               @if (warehouse.loading) {
                 <div class="tree-loading">Loading containers…</div>
@@ -78,7 +79,7 @@
           {{ container.expanded ? '▾' : '▸' }}
         </span>
       </button>
-      <span class="tree-label" (click)="selectContainer(container, ancestors, warehouse)">{{ container.name }}</span>
+      <span class="tree-label" [title]="container.name" (click)="selectContainer(container, ancestors, warehouse)">{{ container.name }}</span>
     </div>
     @if (container.loading) {
       <div class="tree-loading">Loading containers…</div>
@@ -100,7 +101,7 @@
               <div class="tree-row tree-item-row" [class.tree-row-match]="item.searchMatch">
                 <span class="tree-toggle tree-toggle-spacer"></span>
                 <mat-icon class="tree-item-icon">inventory_2</mat-icon>
-                <span class="tree-label" (click)="selectItem(item)">
+                <span class="tree-label" [title]="item.name" (click)="selectItem(item)">
                   {{ item.name }} <span class="tree-item-qty">×{{ item.quantity }}</span>
                 </span>
               </div>

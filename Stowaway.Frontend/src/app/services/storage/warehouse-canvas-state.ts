@@ -13,7 +13,7 @@ export interface CanvasContainerCrumb {
 }
 
 export interface SelectedEntity {
-  kind: 'item' | 'container';
+  kind: 'item' | 'container' | 'warehouse';
   id: number;
 }
 
@@ -35,6 +35,7 @@ export class WarehouseCanvasState {
   readonly locationChanged = signal(0);
   readonly lastAffectedContainers = signal<AffectedContainers | null>(null);
   readonly selectedEntity = signal<SelectedEntity | null>(null);
+  readonly warehouseRenamed = signal<{ id: number; name: string } | null>(null);
 
   readonly currentContainer = computed<CanvasContainerCrumb | null>(() => {
     const path = this.path();
@@ -79,7 +80,19 @@ export class WarehouseCanvasState {
     this.selectedEntity.set({ kind: 'container', id });
   }
 
+  showWarehouseDetails(id: number): void {
+    this.selectedEntity.set({ kind: 'warehouse', id });
+  }
+
   clearSelection(): void {
     this.selectedEntity.set(null);
+  }
+
+  // Separate from notifyLocationChanged/AffectedContainers on purpose: that
+  // mechanism only ever re-fetches container lists. A warehouse rename doesn't
+  // touch any container, but the sidebar tree still needs to know to patch the
+  // one place a warehouse's name is mirrored — its own tree row.
+  notifyWarehouseRenamed(id: number, name: string): void {
+    this.warehouseRenamed.set({ id, name });
   }
 }
