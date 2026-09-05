@@ -1,5 +1,5 @@
-import { Component, input } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, input, OnInit } from '@angular/core';
+import { FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -22,12 +22,25 @@ import { QuestionBase } from '../question-service/question.models';
   templateUrl: './dynamic-form-question.html',
   styleUrl: './dynamic-form-question.css',
 })
-export class DynamicFormQuestion {
+export class DynamicFormQuestion implements OnInit {
   readonly question = input.required<QuestionBase<string>>();
   readonly form = input.required<FormGroup>();
-  
+
+  isLocked = false;
+
+  ngOnInit(): void {
+    this.isLocked = !!this.question().locked;
+  }
+
   get isValid() {
     return this.form().controls[this.question().key].valid;
   }
-  
+
+  unlock(): void {
+    const control = this.form().controls[this.question().key];
+    control.enable();
+    control.setValidators([Validators.required, Validators.minLength(8)]);
+    control.updateValueAndValidity();
+    this.isLocked = false;
+  }
 }

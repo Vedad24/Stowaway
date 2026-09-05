@@ -12,6 +12,11 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
                 .EmailAddress().WithMessage("Email is not a valid email address.")
                 .When(x => x.Email is not null);
 
+            RuleFor(x => x.Password)
+                .NotEmpty().WithMessage("Password is required.")
+                .MinimumLength(6).WithMessage("Password must be at least 6 characters long.")
+                .When(x => x.Password is not null);
+
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("FirstName cannot be empty.")
                 .When(x => x.FirstName is not null);

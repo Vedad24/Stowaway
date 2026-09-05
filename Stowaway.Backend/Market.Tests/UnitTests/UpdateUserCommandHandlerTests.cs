@@ -1,6 +1,7 @@
 using Market.Application.Common.Exceptions;
 using Market.Domain.Entities.Identity;
 using Market.Tests.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Stowaway.Application.Modules.Identity.Users.Commands.Update;
 using Stowaway.Domain.Entities.Identity;
 
@@ -29,6 +30,7 @@ public class UpdateUserCommandHandlerTests
     {
         Id = id,
         Email = null,
+        Password = null,
         FirstName = null,
         LastName = null,
         Role = role,
@@ -45,7 +47,7 @@ public class UpdateUserCommandHandlerTests
         db.ChangeTracker.Clear();
 
         var currentUser = new FakeCurrentUser { IsManager = true };
-        var handler = new UpdateUserCommandHandler(db, currentUser);
+        var handler = new UpdateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
 
         var result = await handler.Handle(BuildCommand(user.Id, new RoleEntity { Id = Role.Manager }), CancellationToken.None);
 
@@ -61,7 +63,7 @@ public class UpdateUserCommandHandlerTests
         await db.SaveChangesAsync(CancellationToken.None);
 
         var currentUser = new FakeCurrentUser { IsManager = true };
-        var handler = new UpdateUserCommandHandler(db, currentUser);
+        var handler = new UpdateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
 
         await Assert.ThrowsAsync<StowawayUnauthorizedException>(() =>
             handler.Handle(BuildCommand(user.Id, new RoleEntity { Id = Role.Admin }), CancellationToken.None));
@@ -77,7 +79,7 @@ public class UpdateUserCommandHandlerTests
         db.ChangeTracker.Clear();
 
         var currentUser = new FakeCurrentUser { IsAdmin = true };
-        var handler = new UpdateUserCommandHandler(db, currentUser);
+        var handler = new UpdateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
 
         var result = await handler.Handle(BuildCommand(user.Id, new RoleEntity { Id = Role.Admin }), CancellationToken.None);
 

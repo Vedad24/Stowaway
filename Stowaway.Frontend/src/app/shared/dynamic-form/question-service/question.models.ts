@@ -10,6 +10,8 @@ export class QuestionBase<T> {
   type: string;
   options?: { key: string; value: string }[];
   optionInfo: IOptionsInfo;
+  // when true, control renders disabled behind a "Change" button that unlocks it
+  locked: boolean;
 
   constructor(
     options: {
@@ -22,6 +24,7 @@ export class QuestionBase<T> {
       type?: string;
       options?: { key: string; value: string }[] ;
       optionInfo?: IOptionsInfo | null;
+      locked?: boolean;
     } = {},
   ) {
     this.value = options.value;
@@ -33,6 +36,7 @@ export class QuestionBase<T> {
     this.type = options.type || '';
     this.options = options.options;
     this.optionInfo = options.optionInfo ?? { displayName: '' };
+    this.locked = !!options.locked;
   }
 }
 

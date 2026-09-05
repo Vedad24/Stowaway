@@ -9,7 +9,7 @@ import {
   TextboxQuestion,
 } from '../../../../shared/dynamic-form/question-service/question.models';
 import { UserService } from '../../../../services/identity/user/user-service';
-import { ListUserQueryDto, RoleName } from '../../../../services/identity/user/user-service.models';
+import { ListUserQueryDto } from '../../../../services/identity/user/user-service.models';
 
 @Component({
   selector: 'app-employee-add-edit',
@@ -78,10 +78,13 @@ export class EmployeeAddEdit{
   private prefillQuestions(questions: QuestionBase<string>[], data: ListUserQueryDto): void {
     for (const question of questions) {
       if (question.key === 'role') {
-        question.value = question.options?.find((opt) => opt.key === RoleName[data.roleId]) as any;
+        question.value = question.options?.find((opt) => opt.key === String(data.roleId)) as any;
         continue;
       }
       if (question.key === 'password') {
+        // leave the password blank and locked; user must press "Change" to set a new one
+        question.required = false;
+        question.locked = true;
         continue;
       }
       const value = (data as any)[question.key];

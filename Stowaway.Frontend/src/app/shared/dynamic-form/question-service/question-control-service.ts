@@ -13,7 +13,11 @@ export class QuestionControlService {
       const validators: ValidatorFn[] = [];
       if (question.required) validators.push(Validators.required);
       if (question.type === 'email') validators.push(Validators.email);
-      group[question.key] = new FormControl(question.value || '', validators);
+      if (question.type === 'password') validators.push(Validators.minLength(8));
+      group[question.key] = new FormControl(
+        { value: question.value || '', disabled: !!question.locked },
+        validators,
+      );
     });
     return new FormGroup(group);
   }
