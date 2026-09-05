@@ -8,7 +8,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Queries.GetById
         {
             var query = ctx.Warehouses.Where(x => x.Id == request.Id);
 
-            if (!appCurrentUser.IsAdmin && !appCurrentUser.IsManager)
+            if (!appCurrentUser.IsAdmin)
             {
                 query = query.Where(x => ctx.WarehouseUsers.Any(wu => wu.WarehouseId == x.Id && wu.UserId == appCurrentUser.UserId));
             }

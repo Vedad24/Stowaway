@@ -1,9 +1,10 @@
 ﻿
+using Stowaway.Application.Modules.Storage.StorageIdentity;
 using Stowaway.Domain.Entities.Storage;
 
 namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Create
 {
-    public class CreateWarehouseCommandHandler(IAppDbContext ctx) : IRequestHandler<CreateWarehouseCommand, int>
+    public class CreateWarehouseCommandHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser) : IRequestHandler<CreateWarehouseCommand, int>
     {
         public async Task<int> Handle(CreateWarehouseCommand request, CancellationToken cancellationToken)
         {
@@ -30,8 +31,15 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Create
                 isEnabled = request.isEnabled
             };
 
+            if (appCurrentUser.UserId is null)
+            {
+                throw new StowawayUnauthorizedException("Current user could not be resolved.");
+            }
+
             ctx.Warehouses.Add(warehouse);
             await ctx.SaveChangesAsync(cancellationToken);
+
+            await WarehouseOwnerProvisioning.EnsureOwnerAccessAsync(ctx, warehouse.Id, appCurrentUser.UserId.Value, cancellationToken);
 
             return warehouse.Id;
         }

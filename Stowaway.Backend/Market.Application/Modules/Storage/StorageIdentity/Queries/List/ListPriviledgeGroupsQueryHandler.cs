@@ -1,6 +1,6 @@
 namespace Stowaway.Application.Modules.Storage.StorageIdentity.Queries.List
 {
-    public sealed class ListPriviledgeGroupsQueryHandler(IAppDbContext ctx)
+    public sealed class ListPriviledgeGroupsQueryHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
         : IRequestHandler<ListPriviledgeGroupsQuery, List<ListPriviledgeGroupQueryDto>>
     {
         public async Task<List<ListPriviledgeGroupQueryDto>> Handle(ListPriviledgeGroupsQuery request, CancellationToken cancellationToken)
@@ -9,6 +9,11 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Queries.List
                 .AsNoTracking()
                 .Include(x => x.Priviledges)
                 .AsQueryable();
+
+            if (!appCurrentUser.IsAdmin)
+            {
+                query = query.Where(x => ctx.WarehouseUsers.Any(wu => wu.WarehouseId == x.WarehouseId && wu.UserId == appCurrentUser.UserId));
+            }
 
             if (request.WarehouseId.HasValue)
             {
