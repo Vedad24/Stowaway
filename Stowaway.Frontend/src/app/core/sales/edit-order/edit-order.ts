@@ -146,7 +146,16 @@ export class EditOrder implements OnInit {
     const containerTypeId = this.addForm.controls.containerType.value ?? 0;
     const quantity = this.addForm.controls.quantity.value ?? 1;
 
-    this.items.push(this.buildRow({ containerTypeId, warehouseId, quantity }));
+    const existingRow = this.items.controls.find(
+      (row) => row.controls.containerTypeId.value === containerTypeId && row.controls.warehouseId.value === warehouseId,
+    );
+
+    if (existingRow) {
+      existingRow.controls.quantity.setValue(existingRow.controls.quantity.value + quantity);
+    } else {
+      this.items.push(this.buildRow({ containerTypeId, warehouseId, quantity }));
+    }
+
     this.message = null;
     this.addForm.reset({ warehouse: null, containerType: 0, quantity: 1 });
   }
