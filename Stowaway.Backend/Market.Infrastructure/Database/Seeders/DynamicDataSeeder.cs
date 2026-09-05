@@ -344,20 +344,7 @@ public static class DynamicDataSeeder
             Log.Information("✅ Dynamic seed: demo warehouse added.");
         }
 
-        var privilegeCodes = new[]
-        {
-            Priviledges.WarehouseRead,
-            Priviledges.WarehouseUpdate,
-            Priviledges.WarehouseUsersManage,
-            Priviledges.ContainerRead,
-            Priviledges.ContainerCreate,
-            Priviledges.ContainerUpdate,
-            Priviledges.ContainerDelete,
-            Priviledges.ItemRead,
-            Priviledges.ItemCreate,
-            Priviledges.ItemUpdate,
-            Priviledges.ItemDelete,
-        };
+        var privilegeCodes = Priviledges.AllCodes;
 
         var existingPrivileges = await context.Priviledges
             .Where(privilege => privilegeCodes.Contains(privilege.Code))
