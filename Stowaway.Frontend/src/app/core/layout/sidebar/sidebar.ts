@@ -8,11 +8,16 @@ import { ContainerApiService } from '../../../services/storage/container/contain
 import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { AffectedContainers, WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
 import { WarehouseAdd } from '../warehouse-add/warehouse-add';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 import { ItemApiService } from '../../../services/storage/item/item';
 import { ListItemQuery, ListItemQueryDto } from '../../../services/storage/item/item.model';
+import { TagApiService } from '../../../services/storage/tag/tag';
+import { TagDto } from '../../../services/storage/tag/tag.model';
+import { tagColor } from '../../../shared/tag-color';
 
 type ItemTreeNode = ListItemQueryDto & {
   searchMatch?: boolean;
@@ -48,7 +53,7 @@ interface WarehouseTreeNode extends ListWarehousesQueryDto {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule, MatIcon, MatIconModule],
+  imports: [CommonModule, MatIcon, MatIconModule, MatButtonModule, MatMenuModule],
   
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
@@ -61,6 +66,7 @@ export class Sidebar implements OnInit {
   private readonly itemService = inject(ItemApiService);
   private readonly canvasState = inject(WarehouseCanvasState);
   private readonly warehouseService = inject(WarehouseApiService);
+  private readonly tagService = inject(TagApiService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
@@ -68,6 +74,8 @@ export class Sidebar implements OnInit {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
   searchText = signal('');
+  allTags = signal<TagDto[]>([]);
+  selectedTagIds = signal<number[]>([]);
 
   visibleWarehouses = computed(() => this.warehouses().filter((warehouse) => warehouse.visible !== false));
 
@@ -117,18 +125,41 @@ export class Sidebar implements OnInit {
 
   ngOnInit(): void {
     this.loadTree();
+    this.loadTags();
   }
 
   updateSearch(value: string): void {
     this.searchText.set(value);
   }
 
+  toggleTagFilter(tagId: number): void {
+    const current = this.selectedTagIds();
+    this.selectedTagIds.set(
+      current.includes(tagId) ? current.filter((id) => id !== tagId) : [...current, tagId],
+    );
+    this.executeSearch();
+  }
+
+  isTagFilterSelected(tagId: number): boolean {
+    return this.selectedTagIds().includes(tagId);
+  }
+
+  clearTagFilters(): void {
+    this.selectedTagIds.set([]);
+    this.executeSearch();
+  }
+
+  tagChipColor(id: number): string {
+    return tagColor(id);
+  }
+
   executeSearch(): void {
-    const query = this.searchText().trim().toLowerCase();
+    const textQuery = this.searchText().trim().toLowerCase();
+    const tagIds = this.selectedTagIds();
 
     this.warehouses().forEach((warehouse) => this.clearSearchState(warehouse));
 
-    if (!query) {
+    if (!textQuery && tagIds.length === 0) {
       this.warehouses().forEach((warehouse) => {
         warehouse.visible = true;
         warehouse.expanded = false;
@@ -140,10 +171,17 @@ export class Sidebar implements OnInit {
 
     this.warehouses().forEach((warehouse) => {
       warehouse.visible = false;
-      this.expandMatchingPath(query, warehouse, null);
+      this.expandMatchingPath(textQuery, tagIds, warehouse, null);
     });
 
     this.refreshTree();
+  }
+
+  private loadTags(): void {
+    this.tagService.list().subscribe({
+      next: (tags) => this.allTags.set(tags),
+      error: () => {},
+    });
   }
 
   toggleWarehouse(warehouse: WarehouseTreeNode): void {
@@ -312,11 +350,15 @@ export class Sidebar implements OnInit {
   }
 
   private expandMatchingPath(
-    query: string,
+    textQuery: string,
+    tagIds: number[],
     node: WarehouseTreeNode | ContainerTreeNode,
     parent: WarehouseTreeNode | ContainerTreeNode | null,
   ): boolean {
-    const matches = (node.name ?? '').toLowerCase().includes(query);
+    // Tags only apply to items, not containers/warehouses, so a container can
+    // only self-match on its name; with no text query it never self-matches
+    // and only becomes visible by containing a matching item below.
+    const matches = textQuery ? (node.name ?? '').toLowerCase().includes(textQuery) : false;
     let hasMatchInChildren = false;
     let hasMatchInItems = false;
     const isContainer = this.isContainerNode(node);
@@ -324,7 +366,7 @@ export class Sidebar implements OnInit {
     if (!node.childrenLoaded && !node.loading) {
       if (!isContainer) {
         this.loadChildren(node, node.id, null, () => {
-          this.expandMatchingPath(query, node, parent);
+          this.expandMatchingPath(textQuery, tagIds, node, parent);
           this.refreshTree();
         });
         return matches;
@@ -332,7 +374,7 @@ export class Sidebar implements OnInit {
 
       if (node.hasChildren) {
         this.loadChildren(node, node.warehouseId, node.id, () => {
-          this.expandMatchingPath(query, node, parent);
+          this.expandMatchingPath(textQuery, tagIds, node, parent);
           this.refreshTree();
         });
         return matches;
@@ -341,7 +383,7 @@ export class Sidebar implements OnInit {
 
     if (isContainer && node.itemQuantityUsed > 0 && !node.itemsLoaded && !node.itemsLoading) {
       this.loadItems(node, () => {
-        this.expandMatchingPath(query, node, parent);
+        this.expandMatchingPath(textQuery, tagIds, node, parent);
         this.refreshTree();
       });
       return matches;
@@ -349,7 +391,7 @@ export class Sidebar implements OnInit {
 
     if (node.childrenLoaded) {
       node.children.forEach((child) => {
-        if (this.expandMatchingPath(query, child, node)) {
+        if (this.expandMatchingPath(textQuery, tagIds, child, node)) {
           hasMatchInChildren = true;
         }
       });
@@ -357,7 +399,9 @@ export class Sidebar implements OnInit {
 
     if (isContainer && node.itemsLoaded) {
       node.items.forEach((item) => {
-        const itemMatches = (item.name ?? '').toLowerCase().includes(query);
+        const nameMatches = !textQuery || (item.name ?? '').toLowerCase().includes(textQuery);
+        const tagMatches = tagIds.length === 0 || (item.tags ?? []).some((tag) => tagIds.includes(tag.id));
+        const itemMatches = nameMatches && tagMatches;
         item.visible = itemMatches;
         item.searchMatch = itemMatches;
         if (itemMatches) {

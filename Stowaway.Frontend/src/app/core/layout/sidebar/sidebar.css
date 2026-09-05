@@ -16,9 +16,76 @@
 .sidebar-toolbar {
   flex-shrink: 0;
   display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.sidebar-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-add-warehouse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--cream);
+  color: var(--text-dark);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shadow-tint) 15%, transparent);
+  transition: background-color 0.15s ease;
+}
+
+.sidebar-add-warehouse:hover {
+  background-color: var(--surface-hover);
+}
+
+.sidebar-add-warehouse mat-icon {
+  color: var(--sage);
+  flex-shrink: 0;
+}
+
+.tag-filter-button {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.7rem;
+  height: 1.75rem;
+}
+
+.tag-filter-button-active mat-icon {
+  color: var(--sage);
+}
+
+.tag-filter-badge {
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background-color: var(--sage);
+  color: var(--cream);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 2px solid var(--sage-soft);
+  pointer-events: none;
+}
+
+.tag-menu-dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  margin-right: 0.5rem;
 }
 
 .tree-scroll {
@@ -41,6 +108,7 @@
 
 .sidebar-search input {
   flex: 1;
+  min-width: 0;
   border: 0;
   outline: none;
   background: transparent;
@@ -109,6 +177,16 @@
 
 .tree-action {
   flex-shrink: 0;
+  min-width: 0 !important;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 !important;
+}
+
+.tree-action mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 .tree-toggle:disabled {
   cursor: default;
