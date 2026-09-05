@@ -8,5 +8,5 @@ import { BaseCountdownRedirectComponent } from '../../../../base-classes/base-co
   styleUrls: ['./payment-cancel.css'],
 })
 export class PaymentCancel extends BaseCountdownRedirectComponent {
-  protected override targetUrl: any[] = ['/main'];
+  protected override targetUrl: any[] = ['/orders'];
 }

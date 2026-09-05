@@ -2,9 +2,12 @@
   <div class="module-header">
     <div class="brand-badge"><img src="assets/icons/dolly.png" alt=""></div>
     <div>
-      <h1>Welcome {{currentUser.roleId == 1 ? "Admin" : "User"}}</h1>
+      <h1>Welcome {{currentUser.currentUser?.firstName}}</h1>
     </div>
     <app-theme-toggle></app-theme-toggle>
+    <button mat-icon-button type="button" aria-label="User settings" (click)="openUserSettings()">
+      <mat-icon>settings</mat-icon>
+    </button>
   </div>
 
   <div class="module-grid">
@@ -23,6 +26,17 @@
         <h2>Worker management</h2>
         <p>Team members, roles, and warehouse access.</p>
         <button mat-flat-button color="primary" type="button" (click)="openWorkerManagement()">
+          Open
+        </button>
+      </mat-card>
+    }
+
+    @if (canViewOrders) {
+      <mat-card class="module-card">
+        <mat-icon class="module-icon">receipt_long</mat-icon>
+        <h2>Orders</h2>
+        <p>Order history and status.</p>
+        <button mat-flat-button color="primary" type="button" (click)="openOrders()">
           Open
         </button>
       </mat-card>
