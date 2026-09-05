@@ -285,6 +285,8 @@ public static class DynamicDataSeeder
         var admin = new UserEntity
         {
             Email = "admin@market.local",
+            FirstName = "Admin",
+            LastName = "Adminovic",
             PasswordHash = hasher.HashPassword(null!, "Admin123!"),
             RoleId = Role.Admin,
             IsEnabled = true,
@@ -293,6 +295,8 @@ public static class DynamicDataSeeder
         var manager = new UserEntity
         {
             Email = "manager@market.local",
+            FirstName = "Manager",
+            LastName = "Managerovic",
             PasswordHash = hasher.HashPassword(null!, "Manager123!"),
             RoleId = Role.Manager,
             IsEnabled = true,
@@ -301,6 +305,8 @@ public static class DynamicDataSeeder
         var user = new UserEntity
         {
             Email = "user@market.local",
+            FirstName = "User",
+            LastName = "Userovic",
             PasswordHash = hasher.HashPassword(null!, "User123!"),
             RoleId = Role.User,
             IsEnabled = true,

@@ -9,7 +9,7 @@ import { BaseCountdownRedirectComponent } from '../../../../base-classes/base-co
   styleUrls: ['./payment-success.css'],
 })
 export class PaymentSuccess extends BaseCountdownRedirectComponent{
-  protected override targetUrl: any[] = ["/main"]; 
+  protected override targetUrl: any[] = ["/orders"];
   public orderId = signal("0");
   private readonly route = inject(ActivatedRoute);
   override ngOnInit(): void{

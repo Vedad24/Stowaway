@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CurrentUserService } from '../../services/identity/auth/current-user-service';
 import { AuthService } from '../../services/identity/auth/auth-service';
 import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
+import { Permissions } from '../../shared/constants/permissions';
 
 @Component({
   selector: 'app-choose-module',
@@ -18,12 +19,24 @@ export class ChooseModule {
   private readonly authService = inject(AuthService);
   readonly currentUser = inject(CurrentUserService);
 
+  get canViewOrders(): boolean {
+    return this.currentUser.isAdmin || this.currentUser.permissions.includes(Permissions.OrderRead);
+  }
+
   openWarehouseManagement(): void {
     this.router.navigate(['/main']);
   }
 
   openWorkerManagement(): void {
     this.router.navigate(['/employee-management']);
+  }
+
+  openOrders(): void {
+    this.router.navigate(['/orders']);
+  }
+
+  openUserSettings(): void {
+    this.router.navigate(['/user/settings']);
   }
 
   logout(): void {
