@@ -73,6 +73,7 @@ export class TestUsers {
     const command : UpdateUserCommand= {
       id: this.userForm.controls.id.value!,
       email: this.userForm.controls.email.value!,
+      password: null,
       firstName: this.userForm.controls.firstName.value!,
       lastName: this.userForm.controls.lastName.value!,
       role : this.userForm.controls.role.value!,

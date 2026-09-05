@@ -4,7 +4,7 @@ using Stowaway.Domain.Entities.Identity;
 
 namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
 {
-    public class UpdateUserCommandHandler(IAppDbContext context, IAppCurrentUser currentUser) : IRequestHandler<UpdateUserCommand, UpdateUserCommandDto>
+    public class UpdateUserCommandHandler(IAppDbContext context, IAppCurrentUser currentUser, IPasswordHasher<UserEntity> hasher) : IRequestHandler<UpdateUserCommand, UpdateUserCommandDto>
     {
         public async Task<UpdateUserCommandDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
@@ -14,6 +14,8 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
             user.FirstName = request.FirstName ?? user.FirstName;
             user.LastName = request.LastName ?? user.LastName;
             user.IsEnabled = request.IsEnabled ?? user.IsEnabled;
+            if (!string.IsNullOrEmpty(request.Password))
+                user.PasswordHash = hasher.HashPassword(user, request.Password);
             if (request.Role is not null)
             {
                 if (!context.Roles.Any(r => r.Id == request.Role.Id))

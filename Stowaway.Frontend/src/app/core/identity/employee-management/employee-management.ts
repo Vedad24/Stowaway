@@ -217,6 +217,7 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
     {
       id: id,
       email: result.email,
+      password: result.password ? result.password : null,
       firstName: result.firstName,
       lastName: result.lastName,
       role: result.role ? {id: Number(result.role.key)} : null,

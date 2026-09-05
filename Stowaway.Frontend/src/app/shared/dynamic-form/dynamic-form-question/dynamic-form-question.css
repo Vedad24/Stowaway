@@ -18,3 +18,13 @@
   color: var(--text-muted, #5c665d);
   margin-bottom: 4px;
 }
+
+.lockable-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lockable-field .full-width {
+  flex: 1;
+}
