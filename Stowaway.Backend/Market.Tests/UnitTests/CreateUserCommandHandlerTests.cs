@@ -1,5 +1,7 @@
 using Market.Application.Common.Exceptions;
+using Market.Domain.Entities.Identity;
 using Market.Tests.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Stowaway.Application.Modules.Identity.Users.Commands.Create;
 using Stowaway.Domain.Entities.Identity;
 
@@ -21,7 +23,7 @@ public class CreateUserCommandHandlerTests
     {
         await using var db = TestDbContext.Create();
         var currentUser = new FakeCurrentUser { IsAuthenticated = false };
-        var handler = new CreateUserCommandHandler(db, currentUser);
+        var handler = new CreateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
 
         var id = await handler.Handle(BuildCommand(), CancellationToken.None);
 
@@ -35,7 +37,7 @@ public class CreateUserCommandHandlerTests
     {
         await using var db = TestDbContext.Create();
         var currentUser = new FakeCurrentUser { IsAuthenticated = false };
-        var handler = new CreateUserCommandHandler(db, currentUser);
+        var handler = new CreateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
 
         await Assert.ThrowsAsync<StowawayUnauthorizedException>(() =>
             handler.Handle(BuildCommand(new RoleEntity { Id = Role.Admin }), CancellationToken.None));
@@ -46,7 +48,7 @@ public class CreateUserCommandHandlerTests
     {
         await using var db = TestDbContext.Create();
         var currentUser = new FakeCurrentUser { IsManager = true };
-        var handler = new CreateUserCommandHandler(db, currentUser);
+        var handler = new CreateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
 
         await Assert.ThrowsAsync<StowawayUnauthorizedException>(() =>
             handler.Handle(BuildCommand(new RoleEntity { Id = Role.Admin }), CancellationToken.None));
@@ -57,7 +59,7 @@ public class CreateUserCommandHandlerTests
     {
         await using var db = TestDbContext.Create();
         var currentUser = new FakeCurrentUser { IsAdmin = true };
-        var handler = new CreateUserCommandHandler(db, currentUser);
+        var handler = new CreateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
 
         var id = await handler.Handle(BuildCommand(new RoleEntity { Id = Role.Manager }), CancellationToken.None);
 

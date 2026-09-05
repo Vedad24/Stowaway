@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { QuestionBase } from './question.models';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +10,10 @@ export class QuestionControlService {
     const group: any = {};
 
     questions.forEach((question) => {
-      group[question.key] = question.required
-        ? new FormControl(question.value || '', Validators.required)
-        : new FormControl(question.value || '');
+      const validators: ValidatorFn[] = [];
+      if (question.required) validators.push(Validators.required);
+      if (question.type === 'email') validators.push(Validators.email);
+      group[question.key] = new FormControl(question.value || '', validators);
     });
     return new FormGroup(group);
   }

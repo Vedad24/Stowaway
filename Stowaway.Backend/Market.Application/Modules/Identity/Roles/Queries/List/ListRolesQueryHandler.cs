@@ -14,7 +14,7 @@ namespace Stowaway.Application.Modules.Identity.Roles.Queries.List
             {
                 roleId = r.Id,
                 roleName = Enum.GetName(r.Id) ?? "Unknown"
-            }).ToListAsync();
+            }).ToListAsync(cancellationToken);
         }
     }
 }

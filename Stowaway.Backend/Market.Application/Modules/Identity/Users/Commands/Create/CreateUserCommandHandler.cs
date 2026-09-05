@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Stowaway.Application.Modules.Identity.Users.Commands.Create
 {
-    public class CreateUserCommandHandler(IAppDbContext dbContext, IAppCurrentUser currentUser) : IRequestHandler<CreateUserCommand, int>
+    public class CreateUserCommandHandler(IAppDbContext dbContext, IAppCurrentUser currentUser, IPasswordHasher<UserEntity> hasher) : IRequestHandler<CreateUserCommand, int>
     {
         public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
@@ -15,7 +15,6 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Create
             if (roleId != Role.User && !currentUser.IsAdmin)
                 throw new StowawayUnauthorizedException("Only an Admin can assign a role other than User.");
 
-            var hasher = new PasswordHasher<UserEntity>();
             UserEntity user = new()
             {
                 Email = request.Email,

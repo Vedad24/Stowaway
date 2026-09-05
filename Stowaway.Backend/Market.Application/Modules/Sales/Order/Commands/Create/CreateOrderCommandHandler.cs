@@ -41,7 +41,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
             List<ContainerTypeEntity> orderedContainerTypes = await db.ContainerTypes
                 .Where(ct => orderedContainerTypeIds.Contains(ct.Id))
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             Dictionary<int, ContainerTypeEntity> dictionaryIdsContainerTypes = orderedContainerTypes.ToDictionary(oct => oct.Id);
             #endregion

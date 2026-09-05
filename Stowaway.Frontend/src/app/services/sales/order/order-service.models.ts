@@ -73,5 +73,5 @@ export interface ListOrdersQueryDtoUser {
 
 
 export interface ListOrdersQueryResponse extends BasePagedQuery{
-  items: any;
+  items: ListOrdersQueryDto[];
 }
