@@ -10,10 +10,11 @@ namespace Market.Shared.Constants
         public const string ClaimType = "privilege";
         public const string AuthPrefix = "Priviledge:";
 
-        // Warehouse (per-warehouse membership scope; Create/Delete of the warehouse
-        // itself are app-level Permissions, not a per-warehouse concern)
+        // Warehouse (per-warehouse membership scope; Create of the warehouse itself
+        // is an app-level Permission, not a per-warehouse concern)
         public const string WarehouseRead = "Warehouse.Read";
         public const string WarehouseUpdate = "Warehouse.Update";
+        public const string WarehouseDelete = "Warehouse.Delete";
         public const string WarehouseUsersManage = "WarehouseUsers.Manage";
 
         // Containers within a warehouse
@@ -27,5 +28,23 @@ namespace Market.Shared.Constants
         public const string ItemCreate = "Item.Create";
         public const string ItemUpdate = "Item.Update";
         public const string ItemDelete = "Item.Delete";
+
+        // Single source of truth for "every privilege code that exists" — used by
+        // the seeders and by warehouse-creation Owner provisioning so they can't drift apart.
+        public static readonly string[] AllCodes =
+        {
+            WarehouseRead,
+            WarehouseUpdate,
+            WarehouseDelete,
+            WarehouseUsersManage,
+            ContainerRead,
+            ContainerCreate,
+            ContainerUpdate,
+            ContainerDelete,
+            ItemRead,
+            ItemCreate,
+            ItemUpdate,
+            ItemDelete,
+        };
     }
 }

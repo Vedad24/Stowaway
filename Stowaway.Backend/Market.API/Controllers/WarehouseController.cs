@@ -40,6 +40,7 @@ namespace Stowaway.API.Controllers
 
         [HttpDelete("{id:int}")]
         [HasPermission(Permissions.WarehouseDelete)]
+        [HasPriviledge(Priviledges.WarehouseDelete)]
         public async Task Delete(int id, CancellationToken ct)
         {
             await sender.Send(new DeleteWarehouseCommand { Id = id}, ct);

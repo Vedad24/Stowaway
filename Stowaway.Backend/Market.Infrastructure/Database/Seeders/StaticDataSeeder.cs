@@ -115,20 +115,7 @@ public static class StaticDataSeeder
 
     private static async Task SeedPrivilegesAsync(DatabaseContext context)
     {
-        var privilegeNames = new[]
-        {
-            Priviledges.WarehouseRead,
-            Priviledges.WarehouseUpdate,
-            Priviledges.WarehouseUsersManage,
-            Priviledges.ContainerRead,
-            Priviledges.ContainerCreate,
-            Priviledges.ContainerUpdate,
-            Priviledges.ContainerDelete,
-            Priviledges.ItemRead,
-            Priviledges.ItemCreate,
-            Priviledges.ItemUpdate,
-            Priviledges.ItemDelete,
-        };
+        var privilegeNames = Priviledges.AllCodes;
 
         var existingPrivileges = await context.Priviledges
             .Where(permission => privilegeNames.Contains(permission.Code))
