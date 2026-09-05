@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable, of } from 'rxjs';
-import { environment } from '../../../../enviroments/enivroment';
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
 import { buildHttpParams } from '../../../models/build-http-params';
 import {
   ListContainerTypeQueryDto,
@@ -27,21 +26,22 @@ const MOCK_WAREHOUSES_RESPONSE: ListWarehousesQueryResponse = {
 export class ProductPageService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.ProductPage}`;
+  private readonly config = inject(API_CONFIG);
+  private get baseUrl() { return this.config.baseUrl; }
 
   public getUserWarehouses(request?: ListWarehousesQuery): Observable<ListWarehousesQueryResponse> {
     if (!isPlatformBrowser(this.platformId)) {
       return of(MOCK_WAREHOUSES_RESPONSE);
     }
     const params = request ? buildHttpParams(request as any) : undefined;
-    return this.http.get<ListWarehousesQueryResponse>(`${this.baseUrl}/get-user-warehouses`, {
+    return this.http.get<ListWarehousesQueryResponse>(`${this.baseUrl}/${this.config.productPage.getUserWarehouses}`, {
       params
     });
   }
 
   public getContainerTypes(request?: ListContainerTypesQuery): Observable<ListContainerTypesQueryResponse> {
     const params = request ? buildHttpParams(request as any) : undefined;
-    return this.http.get<ListContainerTypesQueryResponse>(`${this.baseUrl}/get-container-types`, {
+    return this.http.get<ListContainerTypesQueryResponse>(`${this.baseUrl}/${this.config.productPage.getContainerTypes}`, {
       params,
     });
   }

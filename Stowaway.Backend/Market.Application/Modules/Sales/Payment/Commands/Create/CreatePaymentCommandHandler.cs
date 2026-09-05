@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Market.Application.Abstractions.Payments;
-using Market.Shared.Constants;
 using Market.Shared.Options;
 using Microsoft.Extensions.Options;
 using Stowaway.Domain.Entities.Sales;
@@ -13,7 +12,9 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
     public class CreatePaymentCommandHandler(
         IAppDbContext db,
         IPaymentProvider paymentProvider,
-        IOptions<FrontendOptions> frontendOptions) : IRequestHandler<CreatePaymentCommand, CreatePaymentResponse>
+        IOptions<FrontendOptions> frontendOptions,
+        IOptions<PaymentOptions> paymentOptions,
+        IOptions<StripeOptions> stripeOptions) : IRequestHandler<CreatePaymentCommand, CreatePaymentResponse>
     {
         public async Task<CreatePaymentResponse> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
@@ -34,10 +35,10 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
         {
             OrderId = order.Id,
             Amount = order.Total,
-            Currency = StripeConstants.Currency,
+            Currency = stripeOptions.Value.Currency,
 
-            SuccessUrl = $"{frontendBaseUrl}/payment/success/{order.Id}",
-            CancelUrl = $"{frontendBaseUrl}/payment/cancel/{order.Id}"
+            SuccessUrl = $"{frontendBaseUrl}/{paymentOptions.Value.SuccessPath}/{order.Id}",
+            CancelUrl = $"{frontendBaseUrl}/{paymentOptions.Value.CancelPath}/{order.Id}"
         };
 
         var paymentResponse =

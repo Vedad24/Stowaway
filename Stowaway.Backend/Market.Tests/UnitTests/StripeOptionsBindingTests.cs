@@ -1,4 +1,4 @@
-using Market.Infrastructure.Payments.Stripe;
+using Market.Shared.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -14,7 +14,8 @@ public class StripeOptionsBindingTests
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["Stripe:ApiKey"] = "sk_test_123",
-                ["Stripe:WebhookSecret"] = "whsec_test_456"
+                ["Stripe:WebhookSecret"] = "whsec_test_456",
+                ["Stripe:Currency"] = "usd"
             })
             .Build();
 
@@ -26,5 +27,6 @@ public class StripeOptionsBindingTests
 
         Assert.Equal("sk_test_123", options.ApiKey);
         Assert.Equal("whsec_test_456", options.WebhookSecret);
+        Assert.Equal("usd", options.Currency);
     }
 }

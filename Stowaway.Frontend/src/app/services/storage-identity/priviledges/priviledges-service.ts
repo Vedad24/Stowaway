@@ -3,8 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import {
   ListPriviledgesQueryDto,
 } from './priviledges-service.models';
-import { environment } from '../../../../enviroments/enivroment';
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -12,10 +11,10 @@ import { Observable } from 'rxjs';
 })
 export class PriviledgesService {
   private readonly http = inject(HttpClient);
-  private readonly priviledgeURL = `${environment.apiUrl}/${ApiEndpoints.StorageIdentityPrivileges}`;
+  private readonly config = inject(API_CONFIG);
 
   public list(): Observable<ListPriviledgesQueryDto[]> {
-    return this.http.get<ListPriviledgesQueryDto[]>(this.priviledgeURL);
+    return this.http.get<ListPriviledgesQueryDto[]>(`${this.config.baseUrl}/${this.config.storageIdentity.privileges}`);
   }
 
   priviledgeData: {

@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../enviroments/enivroment';
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
 import {
   CreatePaymentCommand,
   CreatePaymentResponse,
@@ -14,13 +13,14 @@ import {
 })
 export class PaymentService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.StripePayment}`;
+  private readonly config = inject(API_CONFIG);
+  private get baseUrl() { return this.config.baseUrl; }
 
   public pay(payload: CreatePaymentCommand): Observable<CreatePaymentResponse> {
-    return this.http.post<CreatePaymentResponse>(`${this.baseUrl}/pay`, payload);
+    return this.http.post<CreatePaymentResponse>(`${this.baseUrl}/${this.config.stripePayment.pay}`, payload);
   }
 
   public paymentWebhook(payload: UpdateStripePaymentCommand): Observable<boolean> {
-    return this.http.post<boolean>(`${this.baseUrl}/payment-webhook`, payload);
+    return this.http.post<boolean>(`${this.baseUrl}/${this.config.stripePayment.paymentWebhook}`, payload);
   }
 }

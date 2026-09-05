@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { CurrentUserService } from './current-user-service';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../enviroments/enivroment'
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
 import { catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
@@ -12,10 +11,10 @@ export class AuthService {
 
   backendApi = inject(HttpClient)
   currentUserService : CurrentUserService = inject(CurrentUserService);
-  backendUrl = environment.apiUrl;
+  private readonly config = inject(API_CONFIG);
   login(email: string, password: string) : Observable<boolean>{
 
-    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/login`, {
+    return this.backendApi.post(`${this.config.baseUrl}/${this.config.auth.login}`, {
       email: email,
       password: password,
       fingerprint: ''
@@ -36,7 +35,7 @@ export class AuthService {
   }
 
   refresh(): Observable<boolean> {
-    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/refresh`, {})
+    return this.backendApi.post(`${this.config.baseUrl}/${this.config.auth.refresh}`, {})
       .pipe(
         map(() => true),
         catchError(() => of(false)),
@@ -44,7 +43,7 @@ export class AuthService {
   }
 
   logout(): Observable<boolean> {
-    return this.backendApi.post(`${this.backendUrl}/${ApiEndpoints.Auth}/logout`, {})
+    return this.backendApi.post(`${this.config.baseUrl}/${this.config.auth.logout}`, {})
     .pipe(
       tap(() => this.currentUserService.clearUser()),
       map(() => true),

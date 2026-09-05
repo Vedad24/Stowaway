@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Market.Infrastructure.Payments.Stripe
+namespace Market.Shared.Options
 {
     public class StripeOptions
     {
@@ -15,5 +15,8 @@ namespace Market.Infrastructure.Payments.Stripe
 
         [Required]
         public string WebhookSecret { get; set; } = null!;
+
+        [Required]
+        public string Currency { get; set; } = null!;
     }
 }

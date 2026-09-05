@@ -10,8 +10,7 @@ import { UserService } from '../../../services/identity/user/user-service';
 import { delay, tap } from 'rxjs';
 import { ListUsers } from "../list-users/list-users";
 import { AutocompleteComponent, IOptionsInfo } from '../../../shared/autocomplete-component/autocomplete-component';
-import { environment } from '../../../../enviroments/enivroment';
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
 
 @Component({
   selector: 'app-test-users',
@@ -23,6 +22,7 @@ export class TestUsers {
 
   htpp = inject(HttpClient);
   userService = inject(UserService);
+  private readonly config = inject(API_CONFIG);
   //last resort for NG0100
   cd = inject(ChangeDetectorRef);
 
@@ -34,7 +34,7 @@ export class TestUsers {
 
   ngAfterViewInit()
   {
-    this.htpp.get<any[]>(`${environment.apiUrl}/${ApiEndpoints.Roles}`, {})
+    this.htpp.get<any[]>(`${this.config.baseUrl}/${this.config.roles.list}`, {})
     .subscribe({next :(response) =>
     {
       setTimeout(() => { 
