@@ -5,6 +5,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OrderService } from '../../../services/sales/order/order-service';
 import { ListOrdersQuery, ListOrdersQueryDto, OrderStatus } from '../../../services/sales/order/order-service.models';
@@ -16,8 +18,8 @@ import { RoleName } from '../../../services/identity/user/user-service.models';
 
 @Component({
   selector: 'app-list-orders',
-  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule],
-  providers: [DatePipe, CurrencyPipe],
+  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDatepickerModule],
+  providers: [DatePipe, CurrencyPipe, provideNativeDateAdapter()],
   templateUrl: './list-orders.html',
   styleUrl: './list-orders.css',
 })
@@ -42,6 +44,8 @@ export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListO
   searchByUserEmail = '';
   searchByUserName = '';
   searchByStatus: OrderStatus | null = null;
+  createTimeMin: Date | null = null;
+  createTimeMax: Date | null = null;
 
   columnDef: TableColumnDef<ListOrdersQueryDto>[] = [
     {
@@ -140,6 +144,8 @@ export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListO
     this.request.searchByUserEmail = this.searchByUserEmail || null;
     this.request.searchByUserName = this.searchByUserName || null;
     this.request.searchByStatus = this.searchByStatus;
+    this.request.createTimeMin = this.createTimeMin;
+    this.request.createTimeMax = this.createTimeMax;
     this.paging.page = 1;
     this.loadPagedData();
   }

@@ -25,6 +25,18 @@
                 }
             </mat-select>
         </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Created from</mat-label>
+            <input matInput [matDatepicker]="createTimeMinPicker" [(ngModel)]="createTimeMin" />
+            <mat-datepicker-toggle matIconSuffix [for]="createTimeMinPicker"></mat-datepicker-toggle>
+            <mat-datepicker #createTimeMinPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Created to</mat-label>
+            <input matInput [matDatepicker]="createTimeMaxPicker" [(ngModel)]="createTimeMax" />
+            <mat-datepicker-toggle matIconSuffix [for]="createTimeMaxPicker"></mat-datepicker-toggle>
+            <mat-datepicker #createTimeMaxPicker></mat-datepicker>
+        </mat-form-field>
         <button mat-raised-button (click)="onSearch()">Search</button>
     </div>
 
