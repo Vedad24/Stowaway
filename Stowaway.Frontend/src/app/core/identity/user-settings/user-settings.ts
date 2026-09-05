@@ -6,7 +6,7 @@ import { catchError, tap, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service'; 
 import { UserService } from '../../../services/identity/user/user-service';
 import { GetSelfDto, UpdateSelfCommand, RoleName } from '../../../services/identity/user/user-service.models';
-import { resolveSoa } from 'node:dns';
+
 
 @Component({
   selector: 'app-user-settings',
