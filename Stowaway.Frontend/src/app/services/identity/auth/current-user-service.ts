@@ -2,8 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of } from 'rxjs';
 import { CurrentUserDto, GetSelfResponseDto } from './auth-service.models';
-import { environment } from '../../../../enviroments/enivroment'
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
 import { RoleName } from '../user/user-service.models';
 @Injectable({
   providedIn: 'root',
@@ -11,7 +10,7 @@ import { RoleName } from '../user/user-service.models';
 export class CurrentUserService {
   private _currentUser : CurrentUserDto | null = null;
   private backendApi = inject(HttpClient);
-  private backendUrl = environment.apiUrl;
+  private readonly config = inject(API_CONFIG);
 
   public get currentUser() : CurrentUserDto | null {
     return this._currentUser;
@@ -20,7 +19,7 @@ export class CurrentUserService {
   // Hydrates the in-memory user state from the server, since the access token is an
   // httpOnly cookie now and can't be decoded client-side. Call on app bootstrap and after login.
   loadCurrentUser(): Observable<CurrentUserDto | null> {
-    return this.backendApi.get<GetSelfResponseDto>(`${this.backendUrl}/${ApiEndpoints.User}/me`)
+    return this.backendApi.get<GetSelfResponseDto>(`${this.config.baseUrl}/${this.config.user.self}`)
       .pipe(
         map((response) => {
           const user: CurrentUserDto = {

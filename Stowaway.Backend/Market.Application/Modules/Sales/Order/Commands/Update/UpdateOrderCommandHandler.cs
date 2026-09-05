@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Market.Shared.Constants;
 using Stowaway.Domain.Entities.Sales;
 using System;
 using System.Collections.Generic;
@@ -33,14 +34,14 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
             #endregion
             
             if (request.allContainerTypes.Count <= 0)
-                throw new StowawayBusinessRuleException("O1","Orders must have items in them");
+                throw new StowawayBusinessRuleException(BusinessRuleCodes.OrderEmpty, "Orders must have items in them");
             order.Subtotal = 0;
             order.Total = 0;
             var newItems = request.allContainerTypes.Select(item =>
             {
 
                 Domain.Entities.Storage.ContainerTypeEntity type = typeDictionary[item.ContainerTypeId];
-                decimal discount = 0.05m; //har coded for now 
+                decimal discount = OrderConstants.DefaultDiscount;
                 decimal sub = item.Quantity * type.Price;
                 decimal total = sub * (1-discount);
                 order.Subtotal += sub;

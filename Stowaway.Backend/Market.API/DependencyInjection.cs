@@ -1,6 +1,5 @@
 ﻿using Market.API.Authorization;
 using Market.Infrastructure.Common;
-using Market.Infrastructure.Payments.Stripe;
 using Market.Shared.Dtos;
 using Market.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,6 +41,11 @@ public static class DependencyInjection
 
         services.AddOptions<FrontendOptions>()
             .Bind(configuration.GetSection(FrontendOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<PaymentOptions>()
+            .Bind(configuration.GetSection(PaymentOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

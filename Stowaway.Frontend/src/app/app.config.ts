@@ -10,12 +10,14 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { ThemeService } from './services/theme-service';
 import { CurrentUserService } from './services/identity/auth/current-user-service';
 import { CoreModule } from './core.module';
+import { API_CONFIG, defaultApiConfig } from './core/config/api-config';
 
 registerLocaleData(localeBs);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: LOCALE_ID, useValue: 'bs' },
+    { provide: API_CONFIG, useValue: defaultApiConfig },
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),

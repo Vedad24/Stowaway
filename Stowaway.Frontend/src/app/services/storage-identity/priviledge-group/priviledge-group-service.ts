@@ -7,8 +7,8 @@ import {
   ListPriviledgeGroupQueryDto,
   UpdatePriviledgeGroupCommand,
 } from './priviledge-group-service.models';
-import { environment } from '../../../../enviroments/enivroment';
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
+import { buildUrl } from '../../../models/build-url';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -16,30 +16,29 @@ import { Observable } from 'rxjs';
 })
 export class PriviledgeGroupService {
   private readonly http = inject(HttpClient);
-  private readonly priviledgeGroupURL = `${environment.apiUrl}/${ApiEndpoints.StorageIdentityPrivilegeGroups}`;
-  private readonly warehouseUsersURL = `${environment.apiUrl}/${ApiEndpoints.StorageIdentityWarehouseUsers}`;
+  private readonly config = inject(API_CONFIG);
 
   public list(warehouseId: number): Observable<ListPriviledgeGroupQueryDto[]> {
     const params = { warehouseId: warehouseId.toString() };
-    return this.http.get<ListPriviledgeGroupQueryDto[]>(this.priviledgeGroupURL, { params });
+    return this.http.get<ListPriviledgeGroupQueryDto[]>(`${this.config.baseUrl}/${this.config.storageIdentity.privilegeGroups.list}`, { params });
   }
 
   public create(payload: CreatePriviledgeGroupCommand): Observable<{ id: number }> {
-    return this.http.post<{ id: number }>(this.priviledgeGroupURL, payload);
+    return this.http.post<{ id: number }>(`${this.config.baseUrl}/${this.config.storageIdentity.privilegeGroups.create}`, payload);
   }
 
   public update(id: number, payload: UpdatePriviledgeGroupCommand): Observable<{ id: number }> {
-    return this.http.put<{ id: number }>(`${this.priviledgeGroupURL}/${id}`, payload);
+    return this.http.put<{ id: number }>(`${this.config.baseUrl}/${buildUrl(this.config.storageIdentity.privilegeGroups.byId, { id })}`, payload);
   }
 
   public delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.priviledgeGroupURL}/${id}`);
+    return this.http.delete<void>(`${this.config.baseUrl}/${buildUrl(this.config.storageIdentity.privilegeGroups.byId, { id })}`);
   }
 
   public createUpdateWarehouseUser(
     payload: CreateUpdateWarehouseUserCommand,
   ): Observable<CreateUpdateWarehouseUserCommandDto> {
-    return this.http.put<CreateUpdateWarehouseUserCommandDto>(this.warehouseUsersURL, payload);
+    return this.http.put<CreateUpdateWarehouseUserCommandDto>(`${this.config.baseUrl}/${this.config.storageIdentity.warehouseUsers}`, payload);
   }
 
   priviledgeGroupData: {

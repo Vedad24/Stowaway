@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../enviroments/enivroment';
-import { ApiEndpoints } from '../../../shared/constants/api-endpoints';
+import { API_CONFIG } from '../../../core/config/api-config';
+import { buildUrl } from '../../../models/build-url';
 import {
   AddToCartCommand,
   AddToCartCommandDto,
@@ -17,21 +17,22 @@ import {
 })
 export class CartService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/${ApiEndpoints.Cart}`;
+  private readonly config = inject(API_CONFIG);
+  private get baseUrl() { return this.config.baseUrl; }
 
   public list(userId: number): Observable<ListCartItemsQueryDto> {
-    return this.http.get<ListCartItemsQueryDto>(`${this.baseUrl}/${userId}`);
+    return this.http.get<ListCartItemsQueryDto>(`${this.baseUrl}/${buildUrl(this.config.cart.byUserId, { userId })}`);
   }
 
   public addToCart(payload: AddToCartCommand): Observable<AddToCartCommandDto> {
-    return this.http.post<AddToCartCommandDto>(`${this.baseUrl}/add-to-cart`, payload);
+    return this.http.post<AddToCartCommandDto>(`${this.baseUrl}/${this.config.cart.addToCart}`, payload);
   }
 
   public saveForLater(payload: SaveForLaterCommand): Observable<SaveForLaterCommandDto> {
-    return this.http.post<SaveForLaterCommandDto>(`${this.baseUrl}/save-for-later`, payload);
+    return this.http.post<SaveForLaterCommandDto>(`${this.baseUrl}/${this.config.cart.saveForLater}`, payload);
   }
 
   public clearCart(userId: number): Observable<ClearCartCommandDto> {
-    return this.http.delete<ClearCartCommandDto>(`${this.baseUrl}/clear-cart/${userId}`);
+    return this.http.delete<ClearCartCommandDto>(`${this.baseUrl}/${buildUrl(this.config.cart.clearCart, { userId })}`);
   }
 }

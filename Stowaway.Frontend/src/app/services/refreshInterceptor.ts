@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from './identity/auth/auth-service';
 import { CurrentUserService } from './identity/auth/current-user-service';
-import { ApiEndpoints } from '../shared/constants/api-endpoints';
+import { API_CONFIG } from '../core/config/api-config';
 
 // On a 401 (expired access token cookie), silently refresh via the cookie-driven
 // refresh endpoint and retry the original request once. Skips /api/auth/* itself
@@ -17,8 +17,9 @@ import { ApiEndpoints } from '../shared/constants/api-endpoints';
 export const refreshInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const currentUserService = inject(CurrentUserService);
+  const config = inject(API_CONFIG);
 
-  const isAuthRequest = req.url.includes(`/${ApiEndpoints.Auth}/`);
+  const isAuthRequest = req.url.includes(`/${config.auth.basePath}/`);
 
   return next(req).pipe(
     catchError((error) => {
