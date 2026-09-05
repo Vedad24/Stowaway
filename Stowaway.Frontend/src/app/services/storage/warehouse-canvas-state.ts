@@ -17,6 +17,15 @@ export interface SelectedEntity {
   id: number;
 }
 
+// Reported alongside notifyLocationChanged() so listeners can refresh just the
+// branches that could actually be stale, instead of everything they have loaded.
+// `containerIds` holds every container whose direct contents changed (`null`
+// stands for the warehouse root) — e.g. both the old and new container for a move.
+export interface AffectedContainers {
+  warehouseId: number;
+  containerIds: (number | null)[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -24,6 +33,7 @@ export class WarehouseCanvasState {
   readonly warehouse = signal<CanvasWarehouse | null>(null);
   readonly path = signal<CanvasContainerCrumb[]>([]);
   readonly locationChanged = signal(0);
+  readonly lastAffectedContainers = signal<AffectedContainers | null>(null);
   readonly selectedEntity = signal<SelectedEntity | null>(null);
 
   readonly currentContainer = computed<CanvasContainerCrumb | null>(() => {
@@ -53,7 +63,11 @@ export class WarehouseCanvasState {
     this.path.update(path => path.slice(0, index + 1));
   }
 
-  notifyLocationChanged(): void {
+  // `affected`, when given, scopes what listeners need to refresh. Omit it only
+  // when the affected container(s) genuinely can't be pinned down, so listeners
+  // fall back to refreshing everything they have loaded.
+  notifyLocationChanged(affected?: AffectedContainers): void {
+    this.lastAffectedContainers.set(affected ?? null);
     this.locationChanged.update(v => v + 1);
   }
 

@@ -232,7 +232,13 @@ export class WarehouseCanvas {
         const updated = { ...this.layout() };
         delete updated[this.key(kind, id)];
         this.layout.set(updated);
-        this.canvasState.notifyLocationChanged();
+        const warehouseId = this.warehouse()?.id;
+        const sourceContainerId = this.canvasState.currentContainer()?.id ?? null;
+        this.canvasState.notifyLocationChanged(
+          warehouseId != null
+            ? { warehouseId, containerIds: [sourceContainerId, targetContainerId] }
+            : undefined,
+        );
       },
       error: (err) => this.errorMessage.set(extractErrorMessage(err, `Unable to move the ${kind} into the container.`)),
     });

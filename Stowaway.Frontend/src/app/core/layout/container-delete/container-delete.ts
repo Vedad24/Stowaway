@@ -20,6 +20,10 @@ export interface ContainerDeleteDialogData {
 
 type DeleteMode = 'deleteContents' | 'moveContents';
 
+export interface ContainerDeleteResult {
+  moveTargetId: number | null;
+}
+
 @Component({
   selector: 'app-container-delete',
   standalone: true,
@@ -107,7 +111,10 @@ export class ContainerDelete implements OnInit {
     this.containerService.delete(this.data.id, request).subscribe({
       next: () => {
         this.isSubmitting.set(false);
-        this.dialogRef.close(true);
+        const result: ContainerDeleteResult = {
+          moveTargetId: this.mode() === 'moveContents' ? this.moveTargetId() : null,
+        };
+        this.dialogRef.close(result);
       },
       error: (err) => {
         this.isSubmitting.set(false);
