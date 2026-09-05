@@ -48,7 +48,9 @@ export interface GetOrderByIdQueryDto {
 }
 
 export interface GetOrderByIdQueryDtoOrderItem {
+  id: number;
   containerType: string;
+  containerTypeId: number;
   warehouseId : number;
   quantity: number;
   unitPrice: number;

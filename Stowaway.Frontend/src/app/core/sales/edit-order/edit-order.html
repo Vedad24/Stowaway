@@ -1,0 +1,98 @@
+<section class="edit-order-page">
+  <h2>Edit order #{{ orderId }}</h2>
+
+  @if (isLoading()) {
+    <div class="empty-state">Loading order...</div>
+  }
+
+  @if (!isLoading()) {
+    @if (isLocked()) {
+      <div class="locked-banner">
+        This order is locked and cannot be edited because it is {{ orderStatus() }}.
+      </div>
+    }
+
+    <div class="items-table">
+      <div class="items-header">
+        <span>Container type</span>
+        <span>Warehouse</span>
+        <span>Quantity</span>
+        <span>Line total</span>
+        <span></span>
+      </div>
+
+      @if (items.controls.length === 0) {
+        <div class="empty-state">No items on this order.</div>
+      }
+
+      @for (row of items.controls; track $index) {
+        <div class="items-row">
+          <span>{{ containerTypeName(row.controls.containerTypeId.value) }}</span>
+          <span>{{ warehouseName(row.controls.warehouseId.value) }}</span>
+          <input
+            type="number"
+            min="1"
+            class="qty-input"
+            [formControl]="row.controls.quantity"
+            [disabled]="isLocked()"
+          />
+          <span>{{ rowTotal(row) | currency }}</span>
+          <button type="button" matIconButton [disabled]="isLocked()" (click)="removeRow($index)">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (!isLocked()) {
+      <div class="add-item-form">
+        <h3>Add container type</h3>
+        <form [formGroup]="addForm" class="add-item-fields">
+          <app-autocomplete-component
+            formControlName="warehouse"
+            [options]="warehouses()"
+            [optionInfo]="{ displayName: 'name' }"
+          ></app-autocomplete-component>
+
+          <div class="container-type-list">
+            @for (containerType of containerTypes(); track containerType.id) {
+              <button
+                type="button"
+                mat-stroked-button
+                class="container-type-card"
+                [class.selected]="addForm.controls.containerType.value === containerType.id"
+                (click)="addForm.patchValue({ containerType: containerType.id })"
+              >
+                <span class="container-type-name">{{ containerType.displayName }}</span>
+                <span class="container-type-price">{{ containerType.price | currency }}</span>
+              </button>
+            }
+          </div>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Quantity</mat-label>
+            <input matInput type="number" min="1" formControlName="quantity" />
+          </mat-form-field>
+
+          <button type="button" mat-stroked-button (click)="addRow()">Add container type</button>
+        </form>
+      </div>
+    }
+
+    <div class="order-summary">
+      <span>Order total (preview)</span>
+      <strong>{{ orderTotal | currency }}</strong>
+    </div>
+
+    @if (message) {
+      <p class="message">{{ message }}</p>
+    }
+
+    <div class="actions">
+      <button type="button" mat-stroked-button (click)="cancel()">Cancel</button>
+      <button type="button" mat-flat-button color="primary" [disabled]="isSaving() || isLocked()" (click)="save()">
+        {{ isSaving() ? 'Saving...' : 'Save changes' }}
+      </button>
+    </div>
+  }
+</section>

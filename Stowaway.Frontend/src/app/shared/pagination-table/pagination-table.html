@@ -14,12 +14,16 @@
                         <div class="flex gap-2">
                             @for(btn of column.buttons; track btn.label) {
                                 @if(btn.type === 'icon') {
-                                    <button matIconButton 
+                                    <button matIconButton
+                                            [disabled]="btn.disabled?.(row) ?? false"
+                                            [matTooltip]="btn.tooltip?.(row) ?? ''"
                                             (click)="btn.action(row)">
                                         <mat-icon>{{ btn.icon }}</mat-icon>
                                     </button>
                                 } @else {
-                                    <button mat-raised-button 
+                                    <button mat-raised-button
+                                            [disabled]="btn.disabled?.(row) ?? false"
+                                            [matTooltip]="btn.tooltip?.(row) ?? ''"
                                             (click)="btn.action(row)">
                                         {{ btn.label }}
                                     </button>
