@@ -72,7 +72,7 @@ export class Navbar {
         warehouseId: warehouse.id,
         parentContainerId,
       }).subscribe({
-        next: () => this.canvasState.notifyLocationChanged(),
+        next: () => this.canvasState.notifyLocationChanged({ warehouseId: warehouse.id, containerIds: [parentContainerId] }),
         error: (err) => console.error('Unable to create container.', err),
       });
     });
@@ -98,16 +98,17 @@ export class Navbar {
         return;
       }
       const v = JSON.parse(result);
+      const containerId = Number(v.containerId);
       this.itemService.create({
         name: (v.name ?? '').trim(),
         description: (v.description ?? '').trim(),
         quantity: Number(v.quantity),
         supplierId: Number(v.supplierId),
-        containerId: Number(v.containerId),
+        containerId,
         tagIds: v.tagIds ? JSON.parse(v.tagIds) : [],
         images: v.images ? JSON.parse(v.images) : [],
       }).subscribe({
-        next: () => this.canvasState.notifyLocationChanged(),
+        next: () => this.canvasState.notifyLocationChanged({ warehouseId: warehouse.id, containerIds: [containerId] }),
         error: (err) => console.error('Unable to create item.', err),
       });
     });
