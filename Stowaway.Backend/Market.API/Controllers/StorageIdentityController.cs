@@ -16,6 +16,7 @@ namespace Stowaway.API.Controllers
     {
         [HttpGet("privilege-groups")]
         [HasPermission(Permissions.WarehouseUsersManage)]
+        [HasPriviledge(Priviledges.WarehouseUsersManage, WarehouseResolutionStrategy.QueryStringField, routeKey: "warehouseId")]
         public async Task<ActionResult<List<ListPriviledgeGroupQueryDto>>> ListPrivilegeGroups([FromQuery] int? warehouseId, CancellationToken ct)
         {
             var result = await sender.Send(new ListPriviledgeGroupsQuery { WarehouseId = warehouseId }, ct);

@@ -19,4 +19,7 @@ public enum WarehouseResolutionStrategy
 
     // An int "ContainerId" field on the JSON request body -> look up Container.WarehouseId.
     BodyFieldViaContainer,
+
+    // A query-string value (named by RouteKey) IS the warehouse id.
+    QueryStringField,
 }
