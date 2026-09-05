@@ -1,0 +1,44 @@
+<aside class="detail-panel" [class.detail-panel-open]="isOpen()" aria-label="Warehouse details">
+  @if (isOpen()) {
+    <button type="button" class="panel-close" (click)="close()" aria-label="Close warehouse details"><span>X</span></button>
+
+    @if (errorMessage()) {
+      <p class="panel-error">{{ errorMessage() }}</p>
+    }
+
+    @if (warehouse(); as data) {
+      <div class="panel-icon">🏢</div>
+
+      <h2 class="panel-title">{{ data.name }}</h2>
+
+      <span class="status-pill" [class.status-pill-enabled]="data.isEnabled" [class.status-pill-disabled]="!data.isEnabled">
+        {{ data.isEnabled ? 'Enabled' : 'Disabled' }}
+      </span>
+
+      <dl class="panel-fields">
+        <div class="panel-field">
+          <dt>Description</dt>
+          <dd>{{ data.description || '—' }}</dd>
+        </div>
+        <div class="panel-field">
+          <dt>City</dt>
+          <dd>{{ data.city || '—' }}</dd>
+        </div>
+        <div class="panel-field">
+          <dt>Address</dt>
+          <dd>{{ data.address || '—' }}</dd>
+        </div>
+        <div class="panel-field">
+          <dt>Capacity</dt>
+          <dd>{{ data.capacity }}</dd>
+        </div>
+      </dl>
+
+      <div class="panel-actions">
+        <button mat-button type="button" (click)="edit()">Edit</button>
+      </div>
+    } @else if (isLoading()) {
+      <p class="panel-loading">Loading…</p>
+    }
+  }
+</aside>
