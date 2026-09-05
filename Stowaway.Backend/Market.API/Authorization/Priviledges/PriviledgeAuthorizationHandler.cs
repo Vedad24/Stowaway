@@ -80,6 +80,12 @@ public sealed class PriviledgeAuthorizationHandler(DatabaseContext dbContext, IA
                     .FirstOrDefaultAsync();
             }
 
+            case WarehouseResolutionStrategy.QueryStringField:
+            {
+                var value = httpContext.Request.Query[requirement.RouteKey].FirstOrDefault();
+                return int.TryParse(value, out var parsed) ? parsed : null;
+            }
+
             case WarehouseResolutionStrategy.BodyField:
                 return await ReadIntFromBodyAsync(httpContext, requirement.BodyFieldName);
 
