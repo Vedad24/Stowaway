@@ -34,7 +34,7 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Update
             if(!int.TryParse(eventData.Metadata["OrderId"], out var orderId))
                 throw new ValidationException("Invalid OrderId in metadata.");
             var order = await db.Orders
-                .FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken: default);
+                .FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken: ct);
 
             if (order is null)
                 throw new StowawayNotFoundException($"Order with id {orderId} not found.");
@@ -53,7 +53,7 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Update
             if (!int.TryParse(eventData.Metadata["OrderId"], out var orderId))
                 throw new ValidationException("Invalid OrderId in metadata.");
             var order = await db.Orders
-                .FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken: default);
+                .FirstOrDefaultAsync(x => x.Id == orderId, cancellationToken: ct);
 
             if (order is null)
                 throw new StowawayNotFoundException($"Order with id {orderId} not found.");

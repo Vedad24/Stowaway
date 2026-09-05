@@ -19,7 +19,7 @@ export class OrderService {
   public list(
     payload: ListOrdersQuery
   ): Observable<ListOrdersQueryResponse> {
-    const params = payload ? buildHttpParams(payload as any) : undefined;
+    const params = payload ? buildHttpParams(payload) : undefined;
     return this.http.get<ListOrdersQueryResponse>(this.orderUrl, { params });
   }
 

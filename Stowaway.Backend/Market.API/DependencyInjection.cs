@@ -117,9 +117,12 @@ public static class DependencyInjection
 
         services.AddExceptionHandler<MarketExceptionHandler>();
         services.AddProblemDetails();
-        //Stripe options
-        
-        services.Configure<StripeOptions>(configuration.GetSection("Stripe"));
+
+        services.AddOptions<StripeOptions>()
+            .Bind(configuration.GetSection(StripeOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 }

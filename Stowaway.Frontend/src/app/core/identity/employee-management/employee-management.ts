@@ -191,7 +191,7 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
     });
   }
 
-  private addEmployee(resultString: any) {
+  private addEmployee(resultString: string) {
     const result = JSON.parse(resultString);
     const createPayload : CreateUserCommand =
     {
@@ -211,7 +211,7 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
       )
   }
 
-  private updateEmployee(id: number, resultString: any) {
+  private updateEmployee(id: number, resultString: string) {
     const result = JSON.parse(resultString);
     const updatePayload : UpdateUserCommand =
     {

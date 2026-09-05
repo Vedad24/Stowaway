@@ -22,7 +22,7 @@ export class UserService {
   
   public list(payload : ListUserQuery | null) : Observable<ListUserQueryResponse>{
     
-    const params = payload ? buildHttpParams(payload as any) : undefined;
+    const params = payload ? buildHttpParams(payload) : undefined;
     return this.http.get<ListUserQueryResponse>(this.userURL, { params });
   } 
 

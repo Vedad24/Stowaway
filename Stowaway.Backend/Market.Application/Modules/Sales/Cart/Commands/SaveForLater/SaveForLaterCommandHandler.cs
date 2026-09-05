@@ -19,7 +19,7 @@ namespace Market.Application.Modules.Sales.Cart.Commands.SaveForLater
             }
 
             //find item
-            var existingItem = await db.CartItems.Where(x => x.UserId == request.UserId && x.ContainerType.Id == request.ContainerType.Id).FirstOrDefaultAsync();
+            var existingItem = await db.CartItems.Where(x => x.UserId == request.UserId && x.ContainerType.Id == request.ContainerType.Id).FirstOrDefaultAsync(cancellationToken);
             //if not found add to cart 
             if(existingItem == null)
             {

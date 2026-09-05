@@ -8,7 +8,7 @@ import { HttpParams } from '@angular/common/http';
  *  { ids: [1, 2, 3] }                     → ?ids=1&ids=2&ids=3
  *  { search: null }                       → (skipped)
  */
-export function buildHttpParams(obj: Record<string, any>, prefix: string = ''): HttpParams {
+export function buildHttpParams<T extends object>(obj: T, prefix: string = ''): HttpParams {
   let params = new HttpParams();
 
   if (obj === undefined || obj === null) {
