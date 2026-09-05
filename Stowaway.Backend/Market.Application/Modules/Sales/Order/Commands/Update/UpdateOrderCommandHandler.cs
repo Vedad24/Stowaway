@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Market.Shared.Constants;
+using Stowaway.Application.Modules.Sales.Order.Shared;
 using Stowaway.Domain.Entities.Sales;
 using System;
 using System.Collections.Generic;
@@ -26,18 +27,29 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
             {
                 throw new StowawayBusinessRuleException("order.locked", $"Cannot modify an order once it is {order.OrderStatusId}.");
             }
+            #region Deduplicate requested container types
+            var dedupedContainerTypes = request.allContainerTypes
+                .GroupBy(ct => (ct.ContainerTypeId, ct.WarehouseId))
+                .Select(group => new SharedOrderCommandContainerType
+                {
+                    ContainerTypeId = group.Key.ContainerTypeId,
+                    WarehouseId = group.Key.WarehouseId,
+                    Quantity = group.Sum(item => item.Quantity),
+                })
+                .ToList();
+            #endregion
             #region Convert request container types
-            var lstTypes = request.allContainerTypes.Select(ct => ct.ContainerTypeId).ToList();
+            var lstTypes = dedupedContainerTypes.Select(ct => ct.ContainerTypeId).ToList();
             #endregion
             #region Get containerTypes
             var typeDictionary = db.ContainerTypes.Where(ct => lstTypes.Contains(ct.Id)).ToDictionary(x => (int)x.Id);
             #endregion
-            
-            if (request.allContainerTypes.Count <= 0)
+
+            if (dedupedContainerTypes.Count <= 0)
                 throw new StowawayBusinessRuleException(BusinessRuleCodes.OrderEmpty, "Orders must have items in them");
             order.Subtotal = 0;
             order.Total = 0;
-            var newItems = request.allContainerTypes.Select(item =>
+            var newItems = dedupedContainerTypes.Select(item =>
             {
 
                 Domain.Entities.Storage.ContainerTypeEntity type = typeDictionary[item.ContainerTypeId];

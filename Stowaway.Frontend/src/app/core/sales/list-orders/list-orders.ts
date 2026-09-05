@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { OrderService } from '../../../services/sales/order/order-service';
 import { ListOrdersQuery, ListOrdersQueryDto, OrderStatus } from '../../../services/sales/order/order-service.models';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
@@ -15,6 +16,8 @@ import { BaseListPagedComponent } from '../../base-classes/base-list-paged-compo
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { RoleName } from '../../../services/identity/user/user-service.models';
+import { PaymentService } from '../../../services/sales/payment/payment-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-orders',
@@ -25,12 +28,17 @@ import { RoleName } from '../../../services/identity/user/user-service.models';
 })
 export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListOrdersQuery> implements OnInit {
   private readonly orderService = inject(OrderService);
+  private readonly paymentService = inject(PaymentService);
   private readonly dialog = inject(MatDialog);
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly datePipe = inject(DatePipe);
   private readonly currencyPipe = inject(CurrencyPipe);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
   readonly currentUserService = inject(CurrentUserService);
   readonly roleName = RoleName;
+
+  readonly lockedStatuses = ['Completed', 'Cancelled', 'Refunded'];
 
   readonly statusOptions = [
     { value: OrderStatus.Draft, label: 'Draft' },
@@ -78,6 +86,23 @@ export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListO
       header: 'Total',
       cell: (row: ListOrdersQueryDto) => `${this.currencyPipe.transform(row.total)}`,
     },
+    {
+      columnDef: 'btnPay',
+      header: 'Pay',
+      type: 'action',
+      buttons: [
+        {
+          type: 'text',
+          label: 'Pay',
+          action: (row: ListOrdersQueryDto) => this.onPay(row),
+          disabled: (row: ListOrdersQueryDto) => row.orderStatus !== 'Draft',
+          tooltip: (row: ListOrdersQueryDto) =>
+            row.orderStatus !== 'Draft'
+              ? `Order must be in Draft status to pay (currently ${row.orderStatus}).`
+              : '',
+        },
+      ],
+    },
   ];
 
   constructor() {
@@ -98,6 +123,11 @@ export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListO
               icon: 'edit',
               color: '',
               action: (row: ListOrdersQueryDto) => this.onEdit(row),
+              disabled: (row: ListOrdersQueryDto) => this.lockedStatuses.includes(row.orderStatus),
+              tooltip: (row: ListOrdersQueryDto) =>
+                this.lockedStatuses.includes(row.orderStatus)
+                  ? `Order is locked once ${row.orderStatus}.`
+                  : '',
             },
           ],
         },
@@ -151,7 +181,42 @@ export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListO
   }
 
   onEdit(row: ListOrdersQueryDto): void {
-    // TODO: build the order edit UI/flow
+    this.router.navigate(['/orders/edit', row.id]);
+  }
+
+  onPay(row: ListOrdersQueryDto): void {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '380px',
+      data: {
+        title: 'Pay for order',
+        message: `You're about to pay ${this.currencyPipe.transform(row.total)} for this order and leave the site to pay via Stripe. Continue?`,
+        confirmLabel: 'Pay',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.paymentService.pay({ orderId: row.id }).subscribe({
+        next: (response) => {
+          window.location.href = response.checkoutUrl;
+        },
+        error: () => {
+          this.showPaymentError();
+        },
+      });
+    });
+  }
+
+  showPaymentError(): void {
+    this.snackBar.open('Unable to start payment. Please try again.', 'Dismiss', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['error-snackbar'],
+    });
   }
 
   onDelete(row: ListOrdersQueryDto): void {

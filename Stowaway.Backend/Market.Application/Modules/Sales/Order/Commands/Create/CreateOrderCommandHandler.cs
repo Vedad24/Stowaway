@@ -1,5 +1,6 @@
 ﻿using Market.Shared.Constants;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Stowaway.Application.Modules.Sales.Order.Shared;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
 using System;
@@ -36,8 +37,20 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
             db.Orders.Add(order);
             #endregion
 
+            #region DeduplicateOrderItems
+            List<SharedOrderCommandContainerType> dedupedOrderItems = request.OrderItems
+                .GroupBy(item => (item.ContainerTypeId, item.WarehouseId))
+                .Select(group => new SharedOrderCommandContainerType
+                {
+                    ContainerTypeId = group.Key.ContainerTypeId,
+                    WarehouseId = group.Key.WarehouseId,
+                    Quantity = group.Sum(item => item.Quantity),
+                })
+                .ToList();
+            #endregion
+
             #region getOrderItemMap
-            List<int> orderedContainerTypeIds = request.OrderItems.Select(ct => ct.ContainerTypeId).ToList();
+            List<int> orderedContainerTypeIds = dedupedOrderItems.Select(ct => ct.ContainerTypeId).ToList();
 
             List<ContainerTypeEntity> orderedContainerTypes = await db.ContainerTypes
                 .Where(ct => orderedContainerTypeIds.Contains(ct.Id))
@@ -50,7 +63,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
             #region PrepareOrderItems
             decimal discount = OrderConstants.DefaultDiscount;
 
-            foreach (var item in request.OrderItems)
+            foreach (var item in dedupedOrderItems)
             {
                 var containerType = dictionaryIdsContainerTypes.GetValueOrDefault(item.ContainerTypeId);
                 if (containerType is null)

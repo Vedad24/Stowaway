@@ -20,7 +20,10 @@ namespace Stowaway.Application.Modules.Sales.Order.Queries.GetById
             //Get order items of order
             var orderItems = await db.OrderItems.Include(oi => oi.ContainerType).Where(oi => oi.OrderId == request.Id).Select(oi => new GetOrderByIdQueryDtoOrderItem
             {
+                Id = oi.Id,
                 ContainerType = oi.ContainerType.ToString(),
+                ContainerTypeId = oi.ContainerTypeId,
+                WarehouseId = oi.WarehouseId,
                 Quantity = oi.Quantity,
                 Total = oi.Total,
                 UnitPrice = oi.UnitPrice

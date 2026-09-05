@@ -185,3 +185,15 @@ a:hover {
 .invalid-credentials-snackbar .mdc-snackbar__surface {
   background: transparent;
 }
+
+.error-snackbar {
+  background: var(--cream);
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--shadow-tint) 16%, transparent);
+}
+
+.error-snackbar .mdc-snackbar__surface {
+  background: transparent;
+}

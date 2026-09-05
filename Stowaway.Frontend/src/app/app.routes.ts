@@ -78,6 +78,11 @@ export const routes: Routes = [
         canActivate: [permissionGuard(Permissions.OrderRead)]
     },
     {
+        path: 'orders/edit/:id',
+        loadComponent: () => import('./core/sales/edit-order/edit-order').then(m => m.EditOrder),
+        canActivate: [permissionGuard(Permissions.OrderUpdate)]
+    },
+    {
         path: 'sign-up',
         loadComponent: () => import('./core/identity/sign-up/sign-up').then(m => m.SignUp)
     },

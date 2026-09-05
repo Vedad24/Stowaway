@@ -22,7 +22,10 @@ namespace Stowaway.Application.Modules.Sales.Order.Queries.GetById
 
     public class GetOrderByIdQueryDtoOrderItem
     {
+        public int Id { get; set; }
         public string ContainerType { get; set; }
+        public int ContainerTypeId { get; set; }
+        public int WarehouseId { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Total { get; set; }

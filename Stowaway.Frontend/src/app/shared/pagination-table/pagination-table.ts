@@ -3,10 +3,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from "@angular/material/button";
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-pagination-table',
-  imports: [MatPaginator, MatTableModule, MatIconModule, MatButtonModule],
+  imports: [MatPaginator, MatTableModule, MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './pagination-table.html',
   styleUrl: './pagination-table.css',
 })
@@ -53,6 +54,8 @@ export interface TableColumnDef<TDto>{
     icon?: string; //does nothing if type is text
     color?: string;
     action: (row: TDto) => void;
+    disabled?: (row: TDto) => boolean; // if omitted, button is always enabled
+    tooltip?: (row: TDto) => string; // shown regardless of enabled state if provided
   }[]; // Used if type is 'action'
 
 }

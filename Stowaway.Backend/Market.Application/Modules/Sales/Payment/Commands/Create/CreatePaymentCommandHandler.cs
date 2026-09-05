@@ -26,8 +26,8 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
         if (order is null)
             throw new StowawayNotFoundException($"Order with id {request.OrderId} not found.");
 
-        if (order.OrderStatusId == OrderStatus.Completed)
-            throw new ValidationException("Order has already been paid.");
+        if (order.OrderStatusId != OrderStatus.Draft)
+            throw new ValidationException($"Order cannot be paid for while in status {order.OrderStatusId}.");
 
         var frontendBaseUrl = frontendOptions.Value.BaseUrl;
 
