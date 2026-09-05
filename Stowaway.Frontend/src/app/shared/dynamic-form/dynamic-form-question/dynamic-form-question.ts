@@ -7,6 +7,7 @@ import { AutocompleteComponent } from '../../autocomplete-component/autocomplete
 import { TagPicker } from '../../tag-picker/tag-picker';
 import { ImagePicker } from '../../image-picker/image-picker';
 import { QuestionBase } from '../question-service/question.models';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-dynamic-form-question',
@@ -18,6 +19,7 @@ import { QuestionBase } from '../question-service/question.models';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatButtonModule
   ],
   templateUrl: './dynamic-form-question.html',
   styleUrl: './dynamic-form-question.css',

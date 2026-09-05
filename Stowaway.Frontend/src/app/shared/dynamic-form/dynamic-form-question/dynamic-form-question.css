@@ -21,7 +21,7 @@
 
 .lockable-field {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
 }
 
