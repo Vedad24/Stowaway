@@ -1,4 +1,14 @@
 import { BasePagedQuery } from "../../../models/paging/base-paged-query";
+import { PageResult } from "../../../models/paging/page-result";
+
+// Mirrors Stowaway.Backend/Market.Domain/Entities/Sales/OrderStatusEntity.cs OrderStatus enum.
+export enum OrderStatus {
+  Draft = 1,
+  Processing,
+  Completed,
+  Cancelled,
+  Refunded,
+}
 
 export interface SharedOrderCommandContainerType {
   containerTypeId: number;
@@ -50,15 +60,17 @@ export interface GetOrderByIdQueryDtoUser {
   name: string;
 }
 
-export interface ListOrdersQuery extends BasePagedQuery{
-  searchByUserEmail: string | null;
-  searchByUserName: string | null;
-  searchByWarehouseName: string | null;
-  createTimeMin: Date | null;
-  createTimeMax: Date | null;
+export class ListOrdersQuery extends BasePagedQuery {
+  searchByUserEmail: string | null = null;
+  searchByUserName: string | null = null;
+  searchByWarehouseName: string | null = null;
+  searchByStatus: OrderStatus | null = null;
+  createTimeMin: Date | null = null;
+  createTimeMax: Date | null = null;
 }
 
 export interface ListOrdersQueryDto {
+  id: number;
   user: ListOrdersQueryDtoUser;
   subtotal: number;
   total: number;
@@ -72,6 +84,4 @@ export interface ListOrdersQueryDtoUser {
 }
 
 
-export interface ListOrdersQueryResponse extends BasePagedQuery{
-  items: ListOrdersQueryDto[];
-}
+export interface ListOrdersQueryResponse extends PageResult<ListOrdersQueryDto> {  }

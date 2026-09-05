@@ -1,0 +1,51 @@
+<div class="flex flex-col gap-2">
+    <div class="mb-2">
+        <div>{{ currentUserService.currentUser?.firstName }} {{ currentUserService.currentUser?.lastName }}</div>
+        <div>{{ roleName[currentUserService.roleId] }}</div>
+        @if (currentUserService.isAdmin) {
+            <div>Showing all orders</div>
+        }
+    </div>
+
+    <div class="flex gap-2 items-center flex-wrap">
+        <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Search by email</mat-label>
+            <input matInput [(ngModel)]="searchByUserEmail" (keyup.enter)="onSearch()" />
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Search by name</mat-label>
+            <input matInput [(ngModel)]="searchByUserName" (keyup.enter)="onSearch()" />
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Status</mat-label>
+            <mat-select [(ngModel)]="searchByStatus">
+                <mat-option [value]="null">Any</mat-option>
+                @for (option of statusOptions; track option.value) {
+                    <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Created from</mat-label>
+            <input matInput [matDatepicker]="createTimeMinPicker" [(ngModel)]="createTimeMin" />
+            <mat-datepicker-toggle matIconSuffix [for]="createTimeMinPicker"></mat-datepicker-toggle>
+            <mat-datepicker #createTimeMinPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Created to</mat-label>
+            <input matInput [matDatepicker]="createTimeMaxPicker" [(ngModel)]="createTimeMax" />
+            <mat-datepicker-toggle matIconSuffix [for]="createTimeMaxPicker"></mat-datepicker-toggle>
+            <mat-datepicker #createTimeMaxPicker></mat-datepicker>
+        </mat-form-field>
+        <button mat-raised-button (click)="onSearch()">Search</button>
+    </div>
+
+    <app-pagination-table
+        [columns]="columnDef"
+        [items]="items()"
+        [totalItems]="totalItems()"
+        [pageIndex]="paging.page - 1"
+        [pageSize]="paging.pageSize"
+        (page)="onPage($event)"
+    ></app-pagination-table>
+</div>

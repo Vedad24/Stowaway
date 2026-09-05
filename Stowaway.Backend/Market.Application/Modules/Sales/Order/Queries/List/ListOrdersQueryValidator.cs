@@ -13,6 +13,10 @@ namespace Stowaway.Application.Modules.Sales.Order.Queries.List
             RuleFor(x => x.SearchByWarehouseName)
                 .MaximumLength(200);
 
+            RuleFor(x => x.SearchByStatus)
+                .IsInEnum()
+                .When(x => x.SearchByStatus.HasValue);
+
             RuleFor(x => x.CreateTimeMax)
                 .GreaterThanOrEqualTo(x => x.CreateTimeMin)
                 .WithMessage("CreateTimeMax must be greater than or equal to CreateTimeMin.")

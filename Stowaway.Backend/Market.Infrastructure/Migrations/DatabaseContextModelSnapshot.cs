@@ -151,7 +151,7 @@ namespace Stowaway.Infrastructure.Migrations
 
                     b.HasIndex("ContainerTypeId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("Stowaway.Domain.Entities.Identity.PermissionEntity", b =>

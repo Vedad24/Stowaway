@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.Intrinsics.X86;
 using Market.Domain.Common;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stowaway.Domain.Entities.Storage;
 
 namespace Market.Infrastructure.Database;
@@ -35,10 +36,30 @@ public partial class DatabaseContext
         }
     }
 
+    // SQL Server's datetime2 columns don't persist DateTimeKind - every read comes back Unspecified,
+    // which makes System.Text.Json serialize it with no "Z"/offset, so the frontend misreads our UTC
+    // timestamps as local time. Every DateTime/DateTime? column in this app is UTC by convention
+    // (Utc/UtcNow-named fields), so it's safe to stamp Kind=Utc back on read for all of them.
+    private sealed class UtcDateTimeConverter : ValueConverter<DateTime, DateTime>
+    {
+        public UtcDateTimeConverter() : base(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc)) { }
+    }
+
+    private sealed class UtcNullableDateTimeConverter : ValueConverter<DateTime?, DateTime?>
+    {
+        public UtcNullableDateTimeConverter() : base(
+            v => v,
+            v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v)
+        { }
+    }
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
         configurationBuilder.Properties<decimal?>().HavePrecision(18, 2);
+
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
+        configurationBuilder.Properties<DateTime?>().HaveConversion<UtcNullableDateTimeConverter>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
