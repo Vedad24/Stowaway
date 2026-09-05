@@ -72,7 +72,7 @@ export class Navbar {
         warehouseId: warehouse.id,
         parentContainerId,
       }).subscribe({
-        next: () => this.canvasState.notifyLocationChanged(),
+        next: () => this.canvasState.notifyLocationChanged({ warehouseId: warehouse.id, containerId: parentContainerId }),
         error: (err) => console.error('Unable to create container.', err),
       });
     });
@@ -107,7 +107,7 @@ export class Navbar {
         tagIds: v.tagIds ? JSON.parse(v.tagIds) : [],
         images: v.images ? JSON.parse(v.images) : [],
       }).subscribe({
-        next: () => this.canvasState.notifyLocationChanged(),
+        next: () => this.canvasState.notifyLocationChanged({ warehouseId: warehouse.id, containerId: Number(v.containerId) }),
         error: (err) => console.error('Unable to create item.', err),
       });
     });

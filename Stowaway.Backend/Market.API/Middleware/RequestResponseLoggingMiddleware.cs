@@ -17,6 +17,10 @@ public sealed class RequestResponseLoggingMiddleware(
     private static readonly string[] SensitiveJsonKeys =
         ["password", "accessToken", "refreshToken", "token"];
 
+    // Not sensitive, just huge — base64 image payloads on items/containers flood the
+    // console on every request unless elided here.
+    private static readonly string[] LargeJsonKeys = ["byteImage"];
+
     private static string RedactSensitiveFields(string json)
     {
         foreach (var key in SensitiveJsonKeys)
@@ -27,6 +31,22 @@ public sealed class RequestResponseLoggingMiddleware(
                 "$1\"***REDACTED***\"",
                 RegexOptions.IgnoreCase);
         }
+
+        foreach (var key in LargeJsonKeys)
+        {
+            json = Regex.Replace(
+                json,
+                $"(\"{key}\"\\s*:\\s*)\"[^\"]*\"",
+                "$1\"<omitted>\"",
+                RegexOptions.IgnoreCase);
+        }
+
+        json = Regex.Replace(
+            json,
+            "(\"images\"\\s*:\\s*)\\[[^\\]]*\\]",
+            "$1\"<omitted>\"",
+            RegexOptions.IgnoreCase);
+
         return json;
     }
 

@@ -217,6 +217,7 @@ export class WarehouseCanvas {
     const request = kind === 'container'
       ? this.containerService.moveToContainer(id, targetContainerId)
       : this.itemService.moveToContainer(id, targetContainerId);
+    const oldParentId = this.canvasState.currentContainer()?.id ?? null;
 
     request.subscribe({
       next: () => {
@@ -232,7 +233,15 @@ export class WarehouseCanvas {
         const updated = { ...this.layout() };
         delete updated[this.key(kind, id)];
         this.layout.set(updated);
-        this.canvasState.notifyLocationChanged();
+
+        const warehouse = this.warehouse();
+        if (warehouse) {
+          // Both the branch the entity left and the one it landed in have had
+          // their contents/badge change — pass both in one call.
+          this.canvasState.notifyLocationChanged({ warehouseId: warehouse.id, containerId: [oldParentId, targetContainerId] });
+        } else {
+          this.canvasState.notifyLocationChanged();
+        }
       },
       error: (err) => this.errorMessage.set(extractErrorMessage(err, `Unable to move the ${kind} into the container.`)),
     });

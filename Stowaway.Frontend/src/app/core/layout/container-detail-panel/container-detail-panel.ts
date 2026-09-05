@@ -96,7 +96,7 @@ export class ContainerDetailPanel {
       }).subscribe({
         next: () => {
           this.loadContainer(container.id);
-          this.canvasState.notifyLocationChanged();
+          this.canvasState.notifyLocationChanged({ warehouseId: container.warehouseId, containerId: container.id });
         },
         error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
       });
@@ -114,7 +114,7 @@ export class ContainerDetailPanel {
       next: () => {
         this.isUpdatingStatus.set(false);
         this.loadContainer(container.id);
-        this.canvasState.notifyLocationChanged();
+        this.canvasState.notifyLocationChanged({ warehouseId: container.warehouseId, containerId: container.id });
       },
       error: (err) => {
         this.isUpdatingStatus.set(false);
@@ -141,7 +141,7 @@ export class ContainerDetailPanel {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.canvasState.clearSelection();
-        this.canvasState.notifyLocationChanged();
+        this.canvasState.notifyLocationChanged({ warehouseId: container.warehouseId, containerId: container.parentContainerId });
       }
     });
   }
