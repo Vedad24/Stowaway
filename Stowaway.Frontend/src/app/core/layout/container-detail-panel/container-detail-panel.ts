@@ -6,7 +6,7 @@ import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ContainerStatusName, ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { ContainerEdit } from '../container-edit/container-edit';
-import { ContainerDelete } from '../container-delete/container-delete';
+import { ContainerDelete, ContainerDeleteResult } from '../container-delete/container-delete';
 import { extractErrorMessage } from '../../../models/http-error';
 import { tagColor, tagTextColor } from '../../../shared/tag-color';
 
@@ -96,7 +96,7 @@ export class ContainerDetailPanel {
       }).subscribe({
         next: () => {
           this.loadContainer(container.id);
-          this.canvasState.notifyLocationChanged();
+          this.canvasState.notifyLocationChanged({ warehouseId: container.warehouseId, containerIds: [container.id] });
         },
         error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
       });
@@ -114,7 +114,7 @@ export class ContainerDetailPanel {
       next: () => {
         this.isUpdatingStatus.set(false);
         this.loadContainer(container.id);
-        this.canvasState.notifyLocationChanged();
+        this.canvasState.notifyLocationChanged({ warehouseId: container.warehouseId, containerIds: [container.id] });
       },
       error: (err) => {
         this.isUpdatingStatus.set(false);
@@ -138,10 +138,14 @@ export class ContainerDetailPanel {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: ContainerDeleteResult | false | undefined) => {
       if (result) {
         this.canvasState.clearSelection();
-        this.canvasState.notifyLocationChanged();
+        const containerIds: (number | null)[] = [container.parentContainerId];
+        if (result.moveTargetId != null) {
+          containerIds.push(result.moveTargetId);
+        }
+        this.canvasState.notifyLocationChanged({ warehouseId: container.warehouseId, containerIds });
       }
     });
   }

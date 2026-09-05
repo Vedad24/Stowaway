@@ -150,7 +150,10 @@ export class ItemDetailPanel {
       }).subscribe({
         next: () => {
           this.loadItem(item.id);
-          this.canvasState.notifyLocationChanged();
+          this.canvasState.notifyLocationChanged({
+            warehouseId: warehouse.id,
+            containerIds: [item.container.id, Number(v.containerId)],
+          });
         },
         error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
       });
@@ -177,10 +180,13 @@ export class ItemDetailPanel {
       if (!confirmed) {
         return;
       }
+      const warehouse = this.canvasState.warehouse();
       this.itemService.delete(item.id).subscribe({
         next: () => {
           this.canvasState.clearSelection();
-          this.canvasState.notifyLocationChanged();
+          this.canvasState.notifyLocationChanged(
+            warehouse ? { warehouseId: warehouse.id, containerIds: [item.container.id] } : undefined,
+          );
         },
         error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to delete the item.')),
       });

@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
-import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
+import { AffectedContainers, WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
 import { WarehouseAdd } from '../warehouse-add/warehouse-add';
@@ -77,7 +77,20 @@ export class Sidebar implements OnInit {
       if (version === 0) {
         return;
       }
-      this.refreshLoadedNodes();
+      const affected = this.canvasState.lastAffectedContainers();
+      // The refresh below reads and eventually rewrites `warehouses` (a fresh array
+      // reference on every response, via refreshTree()). Run it untracked so that
+      // rewrite doesn't register as a change to one of THIS effect's own dependencies
+      // — otherwise every refresh response would re-trigger this same effect, which
+      // would refresh again, which would respond again... an infinite request loop.
+      // Only `locationChanged`/`lastAffectedContainers` above should ever re-run this.
+      untracked(() => {
+        if (affected) {
+          this.refreshAffectedContainers(affected);
+        } else {
+          this.refreshAllLoadedNodes();
+        }
+      });
     });
   }
 
@@ -395,12 +408,75 @@ export class Sidebar implements OnInit {
     this.warehouses.update(warehouses => [...warehouses]);
   }
 
-  // After a move, re-fetch every branch of the tree that's currently expanded.
-  // The whole tree is walked up front (synchronously, off the state as it stands
-  // right now) so every branch's request fires at once instead of cascading one
-  // level at a time — a tree several levels deep no longer takes several
-  // sequential round-trips to catch up.
-  private refreshLoadedNodes(): void {
+  // Refreshes only the branches an add/edit/delete could actually have touched:
+  // each affected container's own children/items (if loaded — the change may have
+  // happened directly inside it) plus its parent's children (if loaded — the
+  // container's own row, e.g. its item/child count, may need updating there).
+  // The parent is found by searching the tree we already have loaded, so callers
+  // only ever need to name the container(s) that gained or lost something directly.
+  private refreshAffectedContainers(affected: AffectedContainers): void {
+    const uniqueIds = Array.from(new Set(affected.containerIds));
+    uniqueIds.forEach((containerId) => this.refreshContainerAndItsRow(affected.warehouseId, containerId));
+  }
+
+  private refreshContainerAndItsRow(warehouseId: number, containerId: number | null): void {
+    const warehouse = this.warehouses().find((w) => w.id === warehouseId);
+    if (!warehouse) {
+      return;
+    }
+
+    if (containerId == null) {
+      if (warehouse.childrenLoaded) {
+        this.refreshNodeChildren(warehouse, warehouseId, null);
+      }
+      return;
+    }
+
+    const located = this.findContainerNode(warehouse, containerId);
+    if (!located) {
+      return;
+    }
+    const { node, parent } = located;
+
+    if (node.childrenLoaded) {
+      this.refreshNodeChildren(node, warehouseId, node.id);
+    }
+    if (node.itemsLoaded) {
+      this.refreshNodeItems(node);
+    }
+    if (parent.childrenLoaded) {
+      const parentContainerId = this.isContainerNode(parent) ? parent.id : null;
+      this.refreshNodeChildren(parent, warehouseId, parentContainerId);
+    }
+  }
+
+  private findContainerNode(
+    warehouse: WarehouseTreeNode,
+    containerId: number,
+  ): { node: ContainerTreeNode; parent: WarehouseTreeNode | ContainerTreeNode } | null {
+    const search = (
+      parent: WarehouseTreeNode | ContainerTreeNode,
+    ): { node: ContainerTreeNode; parent: WarehouseTreeNode | ContainerTreeNode } | null => {
+      for (const child of parent.children) {
+        if (child.id === containerId) {
+          return { node: child, parent };
+        }
+        const found = search(child);
+        if (found) {
+          return found;
+        }
+      }
+      return null;
+    };
+    return search(warehouse);
+  }
+
+  // Fallback for callers that can't name the affected container(s): re-fetch every
+  // branch of the tree that's currently expanded. The whole tree is walked up front
+  // (synchronously, off the state as it stands right now) so every branch's request
+  // fires at once instead of cascading one level at a time — a tree several levels
+  // deep no longer takes several sequential round-trips to catch up.
+  private refreshAllLoadedNodes(): void {
     const containerTargets: { node: WarehouseTreeNode | ContainerTreeNode; warehouseId: number; parentContainerId: number | null }[] = [];
     const itemTargets: ContainerTreeNode[] = [];
 
