@@ -12,7 +12,7 @@ namespace Market.Application.Modules.Sales.Cart.Commands.AddToCart
         public async Task<AddToCartCommandDto> Handle(AddToCartCommand request, CancellationToken cancellationToken)
         {
             if (request.UserId != currentUser.UserId && !currentUser.HasPermission(Permissions.CartManageAny))
-                throw new StowawayBusinessRuleException("P-C-S", "Users can only add to their own carts");
+                throw new StowawayBusinessRuleException(BusinessRuleCodes.CartNotOwner, "Users can only add to their own carts");
             if (await db.Warehouses.AnyAsync(w => w.Id == request.WarehouseId) == false)
             {
                 throw new StowawayNotFoundException($"Warehouse with id {request.WarehouseId} not found.");

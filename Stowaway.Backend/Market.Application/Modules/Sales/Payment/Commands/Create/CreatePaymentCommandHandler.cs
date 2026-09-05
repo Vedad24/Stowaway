@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Market.Application.Abstractions.Payments;
+using Market.Shared.Constants;
 using Market.Shared.Options;
 using Microsoft.Extensions.Options;
 using Stowaway.Domain.Entities.Sales;
@@ -33,7 +34,7 @@ namespace Market.Application.Modules.Sales.Payment.Commands.Create
         {
             OrderId = order.Id,
             Amount = order.Total,
-            Currency = "usd",
+            Currency = StripeConstants.Currency,
 
             SuccessUrl = $"{frontendBaseUrl}/payment/success/{order.Id}",
             CancelUrl = $"{frontendBaseUrl}/payment/cancel/{order.Id}"

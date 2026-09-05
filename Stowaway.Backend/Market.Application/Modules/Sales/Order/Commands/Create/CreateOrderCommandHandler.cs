@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Market.Shared.Constants;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Stowaway.Domain.Entities.Sales;
 using Stowaway.Domain.Entities.Storage;
 using System;
@@ -15,7 +16,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
         public async Task<CreateOrderCommandDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             if (request.UserId != currentUser.UserId)
-                throw new StowawayBusinessRuleException("P-O-S", "Users can only place orders for themselves");
+                throw new StowawayBusinessRuleException(BusinessRuleCodes.OrderNotOwner, "Users can only place orders for themselves");
 
             #region MakeOrder
             var order = new OrderEntity
@@ -47,8 +48,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
             #endregion
 
             #region PrepareOrderItems
-            //demo
-            decimal discount = 0.05m; //update somewhere pls
+            decimal discount = OrderConstants.DefaultDiscount;
 
             foreach (var item in request.OrderItems)
             {
@@ -75,7 +75,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
                     UnitPrice = containerType.Price,
                     Quantity = item.Quantity,
 
-                    Discount = discount, //maybe add later
+                    Discount = discount,
                     Subtotal = subtotal,
                     Total = total
                 };
