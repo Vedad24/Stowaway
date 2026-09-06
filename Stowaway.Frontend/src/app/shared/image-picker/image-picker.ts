@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
+import { FileSizePipe } from '../pipes/file-size.pipe';
 
 type QualityPreset = 'balanced' | 'low';
 
@@ -14,7 +15,7 @@ const QUALITY_PRESETS: Record<QualityPreset, { quality: number; maxDimension: nu
 @Component({
   selector: 'app-image-picker',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, ImageCropperComponent],
+  imports: [CommonModule, MatButtonModule, ImageCropperComponent, FileSizePipe],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -100,10 +101,6 @@ export class ImagePicker implements ControlValueAccessor {
   estimateBytes(base64: string): number {
     const raw = base64.includes(',') ? base64.split(',')[1] : base64;
     return Math.round((raw.length * 3) / 4);
-  }
-
-  formatBytes(bytes: number): string {
-    return bytes < 1024 ? `${bytes} B` : `${Math.round(bytes / 1024)} KB`;
   }
 
   removeImage(index: number): void {
