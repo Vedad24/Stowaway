@@ -4,8 +4,6 @@ public sealed class UserEntityConfiguration : IEntityTypeConfiguration<UserEntit
 {
     public void Configure(EntityTypeBuilder<UserEntity> b)
     {
-        b.ToTable("Users");
-
         b.HasKey(x => x.Id);
 
         b.HasIndex(x => x.Email)

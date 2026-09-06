@@ -6,7 +6,6 @@ using Stowaway.Domain.Entities.Identity;
 
 namespace Stowaway.Domain.Entities.Identity;
 [Table("User", Schema = "Identity")]
-
 public sealed class UserEntity : BaseEntity
 {
     public string Email { get; set; }

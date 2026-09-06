@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Stowaway.Domain.Entities.Storage;
 
 namespace Stowaway.Domain.Entities.Sales
 {
+    [Table("CartItem", Schema = "Sales")]
     public class CartItemEntity
     {
         public int Id { get; set; }
