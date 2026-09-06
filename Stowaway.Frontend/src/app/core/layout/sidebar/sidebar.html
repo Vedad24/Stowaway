@@ -1,18 +1,54 @@
 <nav class="sidebar-tree" aria-label="Warehouse navigation">
   <div class="sidebar-toolbar">
-    <label class="sidebar-search" for="sidebar-search">
-      <span class="search-icon">🔎</span>
-      <input
-        id="sidebar-search"
-        type="text"
-        placeholder="Search here..."
-        [value]="searchText()"
-        (input)="updateSearch($any($event.target).value)"
-        (keydown.enter)="executeSearch()"
-      />
-    </label>
-    <button matButton title="Add warehouse" (click)="addWarehouse()"><mat-icon>add_business</mat-icon></button>
+    <div class="sidebar-toolbar-row">
+      <label class="sidebar-search" for="sidebar-search">
+        <span class="search-icon">🔎</span>
+        <input
+          id="sidebar-search"
+          type="text"
+          placeholder="Search here..."
+          [value]="searchText()"
+          (input)="updateSearch($any($event.target).value)"
+          (keydown.enter)="executeSearch()"
+        />
+      </label>
+      @if (allTags().length > 0) {
+        <button
+          matButton
+          class="tag-filter-button"
+          [class.tag-filter-button-active]="selectedTagIds().length > 0"
+          title="Filter by tag"
+          [matMenuTriggerFor]="tagMenu"
+        >
+          <mat-icon>filter_list</mat-icon>
+          @if (selectedTagIds().length > 0) {
+            <span class="tag-filter-badge">{{ selectedTagIds().length }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <button type="button" class="sidebar-add-warehouse" (click)="addWarehouse()">
+      <mat-icon>add_business</mat-icon>
+      <span>Add warehouse</span>
+    </button>
   </div>
+
+  <mat-menu #tagMenu="matMenu" class="tag-filter-menu">
+    @for (tag of allTags(); track tag.id) {
+      <button mat-menu-item (click)="$event.stopPropagation(); toggleTagFilter(tag.id)">
+        <mat-icon>{{ isTagFilterSelected(tag.id) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+        <span class="tag-menu-dot" [style.background]="tagChipColor(tag.id)"></span>
+        {{ tag.name }}
+      </button>
+    }
+    @if (selectedTagIds().length > 0) {
+      <button mat-menu-item (click)="$event.stopPropagation(); clearTagFilters()">
+        <mat-icon>clear</mat-icon>
+        Clear tag filters
+      </button>
+    }
+  </mat-menu>
 
   <div class="tree-scroll">
     @if (isLoading()) {
