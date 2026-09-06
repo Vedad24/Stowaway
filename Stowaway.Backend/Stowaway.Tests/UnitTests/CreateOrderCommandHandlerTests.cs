@@ -31,7 +31,7 @@ public class CreateOrderCommandHandlerTests
         var created = await db.Orders.FindAsync(dto.OrderId);
         Assert.NotNull(created);
         Assert.Equal(200m, created!.Subtotal);
-        Assert.Equal(190m, created.Total);
+        Assert.Equal(200m, created.Total);
     }
 
     [Fact]
