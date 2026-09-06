@@ -4,26 +4,27 @@
   align-items: center;
   padding: 32px;
   min-height: calc(100vh - 80px);
-  background: #f5f7fb;
+  background: var(--cream);
 }
 
 .user-settings-card {
   width: min(540px, 100%);
   padding: 32px;
   border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  background: var(--cream);
+  border: 1px solid color-mix(in srgb, var(--sage) 25%, transparent);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--shadow-tint) 8%, transparent);
 }
 
 .user-settings-card h1 {
   margin: 0 0 8px;
   font-size: 1.9rem;
-  color: #111827;
+  color: var(--text-dark);
 }
 
 .subtitle {
   margin: 0 0 24px;
-  color: #6b7280;
+  color: var(--text-muted);
   line-height: 1.6;
 }
 
@@ -34,23 +35,23 @@
 
 .user-settings-form label {
   font-size: 0.95rem;
-  color: #374151;
+  color: var(--text-dark);
 }
 
 .user-settings-form input {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--surface-border);
   border-radius: 10px;
   font-size: 1rem;
-  background: #f9fafb;
-  color: #111827;
+  background: var(--surface-sunken);
+  color: var(--text-dark);
 }
 
 .user-settings-form input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 20%, transparent);
 }
 
 .button-row {
@@ -71,8 +72,8 @@
 }
 
 .primary-button {
-  color: #ffffff;
-  background: #2563eb;
+  color: var(--cream);
+  background: var(--sage);
 }
 
 .primary-button:disabled {
@@ -81,8 +82,8 @@
 }
 
 .secondary-button {
-  color: #374151;
-  background: #e5e7eb;
+  color: var(--text-dark);
+  background: var(--surface-hover);
 }
 
 .message {
@@ -91,9 +92,9 @@
 }
 
 .message.success {
-  color: #16a34a;
+  color: var(--sage);
 }
 
 .message.error {
-  color: #dc2626;
+  color: var(--danger);
 }
