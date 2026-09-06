@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
 import { CreateUserCommand, ListUserQuery, ListUserQueryDto, RoleName, UpdateUserCommand } from '../../../services/identity/user/user-service.models';
@@ -14,7 +17,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-management',
-  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
   templateUrl: './employee-management.html',
   styleUrl: './employee-management.css',
 })

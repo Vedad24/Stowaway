@@ -1,4 +1,12 @@
 <div class="flex flex-col gap-2">
+    <button
+        mat-icon-button
+        type="button"
+        matTooltip="Back to modules"
+        routerLink="/choose-module"
+    >
+        <mat-icon>arrow_back</mat-icon>
+    </button>
     <div class="mb-2">
         <div>{{ currentUserService.currentUser?.firstName }} {{ currentUserService.currentUser?.lastName }}</div>
         <div>{{ roleName[currentUserService.roleId] }}</div>
