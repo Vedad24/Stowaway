@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API_CONFIG } from '../../../core/config/api-config';
-import { CreateItemCommand, GetItemByIdDto, ListItemQuery, ListItemQueryDto, ListItemQueryResponse, MoveItemCommand, UpdateCanvasPositionCommand, UpdateItemCommand } from './item.model';
+import { CreateItemCommand, GetItemByIdDto, ListItemQuery, ListItemQueryDto, ListItemQueryResponse, MoveItemCommand, SetFavouriteCommand, UpdateCanvasPositionCommand, UpdateItemCommand } from './item.model';
 import { Observable, onErrorResumeNextWith } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
 import { buildUrl } from '../../../models/build-url';
@@ -43,5 +43,10 @@ export class ItemApiService {
   moveToContainer(id: number, containerId: number): Observable<void>{
     const payload: MoveItemCommand = { containerId };
     return this.http.put<void>(`${this.baseUrl}/${buildUrl(this.config.item.moveToContainer, { id })}`, payload);
+  }
+
+  setFavourite(id: number, isFavourite: boolean): Observable<void>{
+    const payload: SetFavouriteCommand = { isFavourite };
+    return this.http.put<void>(`${this.baseUrl}/${buildUrl(this.config.item.favourite, { id })}`, payload);
   }
 }

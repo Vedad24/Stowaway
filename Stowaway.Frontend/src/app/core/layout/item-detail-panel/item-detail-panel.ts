@@ -1,6 +1,7 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { ItemApiService } from '../../../services/storage/item/item';
@@ -14,7 +15,7 @@ import { tagColor, tagTextColor } from '../../../shared/tag-color';
 @Component({
   selector: 'app-item-detail-panel',
   standalone: true,
-  imports: [CommonModule, MatButtonModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './item-detail-panel.html',
   styleUrl: './item-detail-panel.css',
 })
@@ -45,6 +46,22 @@ export class ItemDetailPanel {
         return;
       }
       this.loadItem(id);
+    });
+
+    // Other places that can change this item's data (the sidebar's own favourite
+    // toggle, edits/moves elsewhere) all signal through notifyLocationChanged — so
+    // re-fetch here too, otherwise this panel can go stale while still open.
+    effect(() => {
+      const version = this.canvasState.locationChanged();
+      if (version === 0) {
+        return;
+      }
+      untracked(() => {
+        const id = this.selectedItemId();
+        if (id != null) {
+          this.loadItem(id);
+        }
+      });
     });
   }
 
@@ -109,6 +126,25 @@ export class ItemDetailPanel {
 
   close(): void {
     this.canvasState.clearSelection();
+  }
+
+  toggleFavourite(): void {
+    const data = this.item();
+    if (!data) {
+      return;
+    }
+    const next = !data.isFavourite;
+    this.itemService.setFavourite(data.id, next).subscribe({
+      next: () => {
+        this.item.update((current) => (current ? { ...current, isFavourite: next } : current));
+        // This panel can be opened straight from an item row without the warehouse/path
+        // signals ever being set (those only get set by clicking a warehouse or container
+        // row), so there's no reliable warehouseId to scope the refresh to — omitting
+        // `affected` falls back to refreshing every loaded branch instead.
+        this.canvasState.notifyLocationChanged();
+      },
+      error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to update favourite.')),
+    });
   }
 
   edit(): void {

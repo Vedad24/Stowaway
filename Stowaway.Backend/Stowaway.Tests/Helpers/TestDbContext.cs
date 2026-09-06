@@ -23,6 +23,7 @@ public sealed class TestDbContext : DbContext, IAppDbContext
     public DbSet<ContainerStatusHistoryEntity> ContainerStatusHistories => Set<ContainerStatusHistoryEntity>();
     public DbSet<ItemEntity> Item => Set<ItemEntity>();
     public DbSet<Item_TagEntity> ItemTags => Set<Item_TagEntity>();
+    public DbSet<Item_UserFavouriteEntity> ItemFavourites => Set<Item_UserFavouriteEntity>();
     public DbSet<ItemImageEntity> ItemImages => Set<ItemImageEntity>();
     public DbSet<TagEntity> Tags => Set<TagEntity>();
     public DbSet<SupplierEntity> Suppliers => Set<SupplierEntity>();

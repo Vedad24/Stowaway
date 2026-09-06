@@ -10,7 +10,7 @@ using Stowaway.Application.Modules.Storage.Supplier.Shared;
 
 namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
 {
-    public class GetItemByIdQueryHandler(IAppDbContext ctx)
+    public class GetItemByIdQueryHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
         : IRequestHandler<GetItemByIdQuery, GetItemByIdQueryDto>
     {
         public async Task<GetItemByIdQueryDto> Handle(GetItemByIdQuery request, CancellationToken cancellationToken)
@@ -47,6 +47,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.GetById
                     .OrderBy(i => i.SortOrder)
                     .Select(i => new SharedItemImageDto { Id = i.Id, ByteImage = i.ByteImage, SortOrder = i.SortOrder })
                     .ToList(),
+                IsFavourite = ctx.ItemFavourites.Any(f => f.ItemId == x.Id && f.UserId == appCurrentUser.UserId),
             }).FirstOrDefaultAsync(cancellationToken);
 
             if (item == null)
