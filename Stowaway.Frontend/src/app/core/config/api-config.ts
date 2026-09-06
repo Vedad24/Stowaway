@@ -3,7 +3,7 @@ import { environment } from '../../../enviroments/enivroment';
 
 // Every backend route the frontend calls, grouped by controller. Templates use ":token"
 // placeholders for path segments that need a real value at call time - see buildUrl().
-// Mirrors Stowaway.Backend/Market.API/Controllers - keep in sync.
+// Mirrors Stowaway.Backend/Stowaway.API/Controllers - keep in sync.
 export interface ApiConfig {
   baseUrl: string;
 

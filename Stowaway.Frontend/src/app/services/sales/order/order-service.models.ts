@@ -1,7 +1,7 @@
 import { BasePagedQuery } from "../../../models/paging/base-paged-query";
 import { PageResult } from "../../../models/paging/page-result";
 
-// Mirrors Stowaway.Backend/Market.Domain/Entities/Sales/OrderStatusEntity.cs OrderStatus enum.
+// Mirrors Stowaway.Backend/Stowaway.Domain/Entities/Sales/OrderStatusEntity.cs OrderStatus enum.
 export enum OrderStatus {
   Draft = 1,
   Processing,
