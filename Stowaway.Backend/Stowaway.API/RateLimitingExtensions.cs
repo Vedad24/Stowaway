@@ -1,9 +1,10 @@
-using Market.Shared.Options;
+
 using Stowaway.Shared.Dtos;
+using Stowaway.Shared.Options;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
 
-namespace Market.API;
+namespace Stowaway.API;
 
 public static class RateLimitingExtensions
 {

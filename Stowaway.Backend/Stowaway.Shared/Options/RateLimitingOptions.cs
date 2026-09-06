@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Market.Shared.Options
+namespace Stowaway.Shared.Options
 {
     public class RateLimitingOptions
     {

@@ -4,7 +4,7 @@ using Stowaway.Shared.Dtos;
 using Stowaway.Shared.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-
+using Stowaway.API;
 namespace Stowaway.API;
 
 public static class DependencyInjection
