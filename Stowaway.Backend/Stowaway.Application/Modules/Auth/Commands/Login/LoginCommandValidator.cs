@@ -11,8 +11,7 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
             .NotEmpty().WithMessage("Email is required.");
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password is required.")
-            .MinimumLength(5).WithMessage("Password must be at least 6 characters long.");
+            .NotEmpty().WithMessage("Password is required.");
 
         // Fingerprint is optional, but if provided, you can limit its length
         RuleFor(x => x.Fingerprint)
