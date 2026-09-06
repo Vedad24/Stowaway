@@ -90,7 +90,7 @@
                 @for (row of sortedContainerRows(); track row.id) {
                   <tr>
                     <td>{{ row.name }}</td>
-                    <td>{{ row.ancestorPath }}</td>
+                    <td>{{ row.ancestorPath | truncate }}</td>
                     <td>{{ row.typeName }}</td>
                     <td>{{ row.itemsUsed }} / {{ row.maxItems }}</td>
                     <td>{{ row.containersUsed }} / {{ row.maxContainers }}</td>
@@ -151,7 +151,7 @@
                     <td>{{ row.containerPath }}</td>
                     <td>{{ row.quantity }}</td>
                     <td>{{ row.supplierName }}</td>
-                    <td>{{ row.tags }}</td>
+                    <td>{{ row.tags | truncate }}</td>
                   </tr>
                 }
               </tbody>

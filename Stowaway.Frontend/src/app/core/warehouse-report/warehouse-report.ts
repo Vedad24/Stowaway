@@ -11,6 +11,7 @@ import { ItemApiService } from '../../services/storage/item/item';
 import { ListItemQuery } from '../../services/storage/item/item.model';
 import { extractErrorMessage } from '../../models/http-error';
 import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 
 export type WarehouseReportType = 'containers' | 'items' | 'both';
 
@@ -51,7 +52,7 @@ const MAX_PAGE_SIZE = 100;
 @Component({
   selector: 'app-warehouse-report',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, ThemeToggle],
+  imports: [CommonModule, MatButtonModule, MatIconModule, ThemeToggle, TruncatePipe],
   templateUrl: './warehouse-report.html',
   styleUrl: './warehouse-report.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
