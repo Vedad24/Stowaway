@@ -4,7 +4,7 @@
       @for (img of images(); track $index) {
         <div class="image-picker-thumb">
           <img [src]="'data:image/jpeg;base64,' + img" alt="" />
-          <span class="image-picker-thumb-size">{{ formatBytes(estimateBytes(img)) }}</span>
+          <span class="image-picker-thumb-size">{{ estimateBytes(img) | fileSize }}</span>
           <button
             type="button"
             class="image-picker-remove"
@@ -48,7 +48,7 @@
         <div class="image-picker-preview">
           <img [src]="previewSrc" alt="Preview at selected quality" />
           @if (livePreviewBytes(); as bytes) {
-            <p class="image-picker-size-hint">Estimated size: {{ formatBytes(bytes) }}</p>
+            <p class="image-picker-size-hint">Estimated size: {{ bytes | fileSize }}</p>
           }
         </div>
       }
