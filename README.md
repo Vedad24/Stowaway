@@ -14,12 +14,12 @@ Multi-tenant warehouse/inventory management system with an ASP.NET Core backend,
 
 The backend follows Clean Architecture, split into five projects under [Stowaway.Backend/](Stowaway.Backend):
 
-- **Market.Domain** — entities and base types, no dependencies on other layers.
-- **Market.Application** — CQRS use cases (MediatR commands/queries + handlers + FluentValidation validators), organized by bounded module under `Modules/`: `Auth`, `Identity`, `Sales`, `Storage`.
-- **Market.Infrastructure** — EF Core `DatabaseContext`, entity configurations, migrations, database seeders, Stripe payment integration.
-- **Market.API** — controllers, authentication/authorization (JWT + custom privilege attributes), middleware, DI wiring, `Program.cs`.
-- **Market.Shared** — cross-cutting DTOs, constants (`Permissions`, `Priviledges`), and options classes shared by API/Application/Infrastructure.
-- **Market.Tests** — integration/unit tests using `CustomWebApplicationFactory`.
+- **Stowaway.Domain** — entities and base types, no dependencies on other layers.
+- **Stowaway.Application** — CQRS use cases (MediatR commands/queries + handlers + FluentValidation validators), organized by bounded module under `Modules/`: `Auth`, `Identity`, `Sales`, `Storage`.
+- **Stowaway.Infrastructure** — EF Core `DatabaseContext`, entity configurations, migrations, database seeders, Stripe payment integration.
+- **Stowaway.API** — controllers, authentication/authorization (JWT + custom privilege attributes), middleware, DI wiring, `Program.cs`.
+- **Stowaway.Shared** — cross-cutting DTOs, constants (`Permissions`, `Priviledges`), and options classes shared by API/Application/Infrastructure.
+- **Stowaway.Tests** — integration/unit tests using `CustomWebApplicationFactory`.
 
 See [Stowaway.Backend/layers.png](Stowaway.Backend/layers.png) for the layer diagram.
 
@@ -51,7 +51,7 @@ Most write endpoints combine both: a `[HasPermission]` role gate plus a `[HasPri
 ```bash
 cd Stowaway.Backend
 dotnet restore
-dotnet run --project Market.API
+dotnet run --project Stowaway.API
 ```
 
 On startup the app runs `ctx.Database.MigrateAsync()` and then seeds:
@@ -70,7 +70,7 @@ password: Admin123!
 
 API docs (Swagger) are available at the app's root when running in Development.
 
-Configuration lives in [Stowaway.Backend/Market.API/appsettings.json](Stowaway.Backend/Market.API/appsettings.json) (`ConnectionStrings:Main`, `Jwt`, `Cors:AllowedOrigins`, `Frontend:BaseUrl`, Serilog sinks). Override per-environment via `appsettings.Development.json`, environment variables, or user-secrets.
+Configuration lives in [Stowaway.Backend/Stowaway.API/appsettings.json](Stowaway.Backend/Stowaway.API/appsettings.json) (`ConnectionStrings:Main`, `Jwt`, `Cors:AllowedOrigins`, `Frontend:BaseUrl`, Serilog sinks). Override per-environment via `appsettings.Development.json`, environment variables, or user-secrets.
 
 ### Running tests
 
@@ -100,11 +100,11 @@ The frontend's API base URL is set in `src/enviroments/enivroment.ts` (`apiUrl`)
 ## Running the full stack locally
 
 1. Start SQL Server and make sure the connection string in `appsettings.json` (or Development overrides) points at it.
-2. `dotnet run --project Stowaway.Backend/Market.API` — API comes up (default `http://localhost:5177`), migrates + seeds the database automatically.
+2. `dotnet run --project Stowaway.Backend/Stowaway.API` — API comes up (default `http://localhost:5177`), migrates + seeds the database automatically.
 3. `npm start` inside `Stowaway.Frontend` — SPA comes up on `http://localhost:4200` and talks to the API via the configured `apiUrl`.
 4. Log in with the seeded admin account above, or sign up a new user.
 
 ## Payments
 
-Stripe checkout is proxied entirely through the backend (`StripePaymentController`, `Market.Infrastructure/Payments/Stripe`) — no Stripe key is ever exposed to the frontend. Configure `Stripe:ApiKey` (and, once wired, `Stripe:WebhookSecret`) via user-secrets or environment variables; do not commit real keys to `appsettings.json`.
+Stripe checkout is proxied entirely through the backend (`StripePaymentController`, `Stowaway.Infrastructure/Payments/Stripe`) — no Stripe key is ever exposed to the frontend. Configure `Stripe:ApiKey` (and, once wired, `Stripe:WebhookSecret`) via user-secrets or environment variables; do not commit real keys to `appsettings.json`.
 

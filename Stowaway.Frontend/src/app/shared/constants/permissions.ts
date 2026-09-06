@@ -1,4 +1,4 @@
-// Mirrors Stowaway.Backend/Market.Shared/Constants/Permissions.cs — keep in sync.
+// Mirrors Stowaway.Backend/Stowaway.Shared/Constants/Permissions.cs — keep in sync.
 export const Permissions = {
   UsersRead: 'Users.Read',
   UsersCreate: 'Users.Create',
