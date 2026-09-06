@@ -35,7 +35,19 @@
         }
       </div>
 
-      <h2 class="panel-title">{{ data.name }}</h2>
+      <div class="panel-title-row">
+        <h2 class="panel-title">{{ data.name }}</h2>
+        <button
+          mat-icon-button
+          type="button"
+          class="panel-favourite-toggle"
+          [class.panel-favourite-toggle-active]="data.isFavourite"
+          title="Toggle favourite"
+          (click)="toggleFavourite()"
+        >
+          <mat-icon>{{ data.isFavourite ? 'star' : 'star_border' }}</mat-icon>
+        </button>
+      </div>
 
       @if (data.tags.length) {
         <div class="panel-tags">

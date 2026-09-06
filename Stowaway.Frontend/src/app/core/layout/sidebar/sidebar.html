@@ -12,20 +12,18 @@
           (keydown.enter)="executeSearch()"
         />
       </label>
-      @if (allTags().length > 0) {
-        <button
-          matButton
-          class="tag-filter-button"
-          [class.tag-filter-button-active]="selectedTagIds().length > 0"
-          title="Filter by tag"
-          [matMenuTriggerFor]="tagMenu"
-        >
-          <mat-icon>filter_list</mat-icon>
-          @if (selectedTagIds().length > 0) {
-            <span class="tag-filter-badge">{{ selectedTagIds().length }}</span>
-          }
-        </button>
-      }
+      <button
+        matButton
+        class="tag-filter-button"
+        [class.tag-filter-button-active]="hasActiveFilters()"
+        title="Filter items"
+        [matMenuTriggerFor]="tagMenu"
+      >
+        <mat-icon>filter_list</mat-icon>
+        @if (hasActiveFilters()) {
+          <span class="tag-filter-badge">{{ activeFilterCount() }}</span>
+        }
+      </button>
     </div>
 
     <button type="button" class="sidebar-add-warehouse" (click)="addWarehouse()">
@@ -35,17 +33,25 @@
   </div>
 
   <mat-menu #tagMenu="matMenu" class="tag-filter-menu">
-    @for (tag of allTags(); track tag.id) {
-      <button mat-menu-item (click)="$event.stopPropagation(); toggleTagFilter(tag.id)">
-        <mat-icon>{{ isTagFilterSelected(tag.id) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
-        <span class="tag-menu-dot" [style.background]="tagChipColor(tag.id)"></span>
-        {{ tag.name }}
-      </button>
+    <button mat-menu-item (click)="$event.stopPropagation(); toggleFavouritesOnly()">
+      <mat-icon>{{ favouritesOnly() ? 'star' : 'star_border' }}</mat-icon>
+      Favourites only
+    </button>
+    @if (allTags().length > 0) {
+      <mat-divider></mat-divider>
+      @for (tag of allTags(); track tag.id) {
+        <button mat-menu-item (click)="$event.stopPropagation(); toggleTagFilter(tag.id)">
+          <mat-icon>{{ isTagFilterSelected(tag.id) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+          <span class="tag-menu-dot" [style.background]="tagChipColor(tag.id)"></span>
+          {{ tag.name }}
+        </button>
+      }
     }
-    @if (selectedTagIds().length > 0) {
-      <button mat-menu-item (click)="$event.stopPropagation(); clearTagFilters()">
+    @if (hasActiveFilters()) {
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="$event.stopPropagation(); clearFilters()">
         <mat-icon>clear</mat-icon>
-        Clear tag filters
+        Clear filters
       </button>
     }
   </mat-menu>
@@ -140,6 +146,15 @@
                 <span class="tree-label" [title]="item.name" (click)="selectItem(item)">
                   {{ item.name }} <span class="tree-item-qty">×{{ item.quantity }}</span>
                 </span>
+                <button
+                  matButton
+                  class="tree-favourite-toggle"
+                  [class.tree-favourite-toggle-active]="item.isFavourite"
+                  title="Toggle favourite"
+                  (click)="$event.stopPropagation(); toggleItemFavourite(item, container)"
+                >
+                  <mat-icon>{{ item.isFavourite ? 'star' : 'star_border' }}</mat-icon>
+                </button>
               </div>
             </li>
           }

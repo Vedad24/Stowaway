@@ -4,6 +4,7 @@ import { PageResult } from "../../../models/paging/page-result";
 export class ListItemQuery extends BasePagedQuery{
     search?: string | null;
     containerId?: number | null;
+    favouritesOnly?: boolean | null;
 }
 
 export interface SharedSupplierDto{
@@ -37,7 +38,8 @@ export interface ListItemQueryDto {
     container: SharedContainerDto,
     tags: SharedTagDto[],
     canvasX: number | null,
-    canvasY: number | null
+    canvasY: number | null,
+    isFavourite: boolean
 }
 
 export interface ListItemQueryResponse extends PageResult<ListItemQueryDto>{ }
@@ -51,7 +53,8 @@ export interface GetItemByIdDto{
     supplier: SharedSupplierDto,
     container: SharedContainerDto,
     tags: SharedTagDto[],
-    images: SharedItemImageDto[]
+    images: SharedItemImageDto[],
+    isFavourite: boolean
 }
 
 export interface CreateItemCommand{
@@ -83,4 +86,8 @@ export interface UpdateCanvasPositionCommand{
 
 export interface MoveItemCommand{
     containerId: number
+}
+
+export interface SetFavouriteCommand{
+    isFavourite: boolean
 }
