@@ -3,6 +3,7 @@ using Stowaway.Shared.Constants;
 using Stowaway.Application.Modules.Storage.Items.Commands.Create;
 using Stowaway.Application.Modules.Storage.Items.Commands.Delete;
 using Stowaway.Application.Modules.Storage.Items.Commands.Move;
+using Stowaway.Application.Modules.Storage.Items.Commands.SetFavourite;
 using Stowaway.Application.Modules.Storage.Items.Commands.Update;
 using Stowaway.Application.Modules.Storage.Items.Commands.UpdateCanvasPosition;
 using Stowaway.Application.Modules.Storage.Items.Queries.GetById;
@@ -62,6 +63,17 @@ namespace Stowaway.API.Controllers
         [HasPermission(Permissions.ItemUpdate)]
         [HasPriviledge(Priviledges.ItemUpdate, WarehouseResolutionStrategy.ItemRouteId)]
         public async Task UpdateCanvasPosition(int id, UpdateItemCanvasPositionCommand payload, CancellationToken cancellationToken)
+        {
+            payload.Id = id;
+            await sender.Send(payload, cancellationToken);
+        }
+
+        // Gated on ItemRead rather than ItemUpdate: favouriting is a personal marker for the
+        // current user, not a mutation of the item's own data, so read-only access is sufficient.
+        [HttpPut("{id:int}/favourite")]
+        [HasPermission(Permissions.ItemRead)]
+        [HasPriviledge(Priviledges.ItemRead, WarehouseResolutionStrategy.ItemRouteId)]
+        public async Task SetFavourite(int id, SetItemFavouriteCommand payload, CancellationToken cancellationToken)
         {
             payload.Id = id;
             await sender.Send(payload, cancellationToken);

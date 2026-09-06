@@ -10,6 +10,7 @@ import { AffectedContainers, WarehouseCanvasState } from '../../../services/stor
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
 import { WarehouseAdd } from '../warehouse-add/warehouse-add';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
@@ -53,7 +54,7 @@ interface WarehouseTreeNode extends ListWarehousesQueryDto {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule, MatIcon, MatIconModule, MatButtonModule, MatMenuModule],
+  imports: [CommonModule, MatIcon, MatIconModule, MatButtonModule, MatMenuModule, MatDividerModule],
   
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
@@ -76,6 +77,7 @@ export class Sidebar implements OnInit {
   searchText = signal('');
   allTags = signal<TagDto[]>([]);
   selectedTagIds = signal<number[]>([]);
+  favouritesOnly = signal(false);
 
   visibleWarehouses = computed(() => this.warehouses().filter((warehouse) => warehouse.visible !== false));
 
@@ -144,9 +146,37 @@ export class Sidebar implements OnInit {
     return this.selectedTagIds().includes(tagId);
   }
 
-  clearTagFilters(): void {
+  clearFilters(): void {
     this.selectedTagIds.set([]);
+    this.favouritesOnly.set(false);
     this.executeSearch();
+  }
+
+  hasActiveFilters(): boolean {
+    return this.selectedTagIds().length > 0 || this.favouritesOnly();
+  }
+
+  activeFilterCount(): number {
+    return this.selectedTagIds().length + (this.favouritesOnly() ? 1 : 0);
+  }
+
+  toggleFavouritesOnly(): void {
+    this.favouritesOnly.update((v) => !v);
+    this.executeSearch();
+  }
+
+  toggleItemFavourite(item: ItemTreeNode, container: ContainerTreeNode): void {
+    const next = !item.isFavourite;
+    this.itemService.setFavourite(item.id, next).subscribe({
+      next: () => {
+        item.isFavourite = next;
+        this.refreshTree();
+        // Lets the item detail panel (or any other open view of this item) know to
+        // refresh, same as every other item mutation in this app signals through.
+        this.canvasState.notifyLocationChanged({ warehouseId: container.warehouseId, containerIds: [container.id] });
+      },
+      error: () => {},
+    });
   }
 
   tagChipColor(id: number): string {
@@ -156,10 +186,11 @@ export class Sidebar implements OnInit {
   executeSearch(): void {
     const textQuery = this.searchText().trim().toLowerCase();
     const tagIds = this.selectedTagIds();
+    const favouritesOnly = this.favouritesOnly();
 
     this.warehouses().forEach((warehouse) => this.clearSearchState(warehouse));
 
-    if (!textQuery && tagIds.length === 0) {
+    if (!textQuery && tagIds.length === 0 && !favouritesOnly) {
       this.warehouses().forEach((warehouse) => {
         warehouse.visible = true;
         warehouse.expanded = false;
@@ -171,7 +202,7 @@ export class Sidebar implements OnInit {
 
     this.warehouses().forEach((warehouse) => {
       warehouse.visible = false;
-      this.expandMatchingPath(textQuery, tagIds, warehouse, null);
+      this.expandMatchingPath(textQuery, tagIds, favouritesOnly, warehouse, null);
     });
 
     this.refreshTree();
@@ -352,6 +383,7 @@ export class Sidebar implements OnInit {
   private expandMatchingPath(
     textQuery: string,
     tagIds: number[],
+    favouritesOnly: boolean,
     node: WarehouseTreeNode | ContainerTreeNode,
     parent: WarehouseTreeNode | ContainerTreeNode | null,
   ): boolean {
@@ -366,7 +398,7 @@ export class Sidebar implements OnInit {
     if (!node.childrenLoaded && !node.loading) {
       if (!isContainer) {
         this.loadChildren(node, node.id, null, () => {
-          this.expandMatchingPath(textQuery, tagIds, node, parent);
+          this.expandMatchingPath(textQuery, tagIds, favouritesOnly, node, parent);
           this.refreshTree();
         });
         return matches;
@@ -374,7 +406,7 @@ export class Sidebar implements OnInit {
 
       if (node.hasChildren) {
         this.loadChildren(node, node.warehouseId, node.id, () => {
-          this.expandMatchingPath(textQuery, tagIds, node, parent);
+          this.expandMatchingPath(textQuery, tagIds, favouritesOnly, node, parent);
           this.refreshTree();
         });
         return matches;
@@ -383,7 +415,7 @@ export class Sidebar implements OnInit {
 
     if (isContainer && node.itemQuantityUsed > 0 && !node.itemsLoaded && !node.itemsLoading) {
       this.loadItems(node, () => {
-        this.expandMatchingPath(textQuery, tagIds, node, parent);
+        this.expandMatchingPath(textQuery, tagIds, favouritesOnly, node, parent);
         this.refreshTree();
       });
       return matches;
@@ -391,7 +423,7 @@ export class Sidebar implements OnInit {
 
     if (node.childrenLoaded) {
       node.children.forEach((child) => {
-        if (this.expandMatchingPath(textQuery, tagIds, child, node)) {
+        if (this.expandMatchingPath(textQuery, tagIds, favouritesOnly, child, node)) {
           hasMatchInChildren = true;
         }
       });
@@ -401,7 +433,8 @@ export class Sidebar implements OnInit {
       node.items.forEach((item) => {
         const nameMatches = !textQuery || (item.name ?? '').toLowerCase().includes(textQuery);
         const tagMatches = tagIds.length === 0 || (item.tags ?? []).some((tag) => tagIds.includes(tag.id));
-        const itemMatches = nameMatches && tagMatches;
+        const favouriteMatches = !favouritesOnly || item.isFavourite;
+        const itemMatches = nameMatches && tagMatches && favouriteMatches;
         item.visible = itemMatches;
         item.searchMatch = itemMatches;
         if (itemMatches) {

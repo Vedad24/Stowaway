@@ -55,6 +55,11 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                 query = query.Where(x => x.Quantity <= request.MaxQuantity.Value);
             }
 
+            if (request.FavouritesOnly == true)
+            {
+                query = query.Where(x => ctx.ItemFavourites.Any(f => f.ItemId == x.Id && f.UserId == appCurrentUser.UserId));
+            }
+
             var projectedQuery = query.Select(x => new ListItemQueryDto
             {
                 Id = x.Id,
@@ -82,6 +87,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     .ToList(),
                 CanvasX = x.CanvasX,
                 CanvasY = x.CanvasY,
+                IsFavourite = ctx.ItemFavourites.Any(f => f.ItemId == x.Id && f.UserId == appCurrentUser.UserId),
             });
 
             return await PageResult<ListItemQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);

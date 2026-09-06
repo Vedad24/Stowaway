@@ -21,5 +21,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
         public required List<SharedTagDto> Tags { get; init; }
         public double? CanvasX { get; init; }
         public double? CanvasY { get; init; }
+        public required bool IsFavourite { get; init; }
     }
 }

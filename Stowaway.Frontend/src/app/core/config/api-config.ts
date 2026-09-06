@@ -71,6 +71,7 @@ export interface ApiConfig {
     delete: string;
     canvasPosition: string;
     moveToContainer: string;
+    favourite: string;
   };
 
   container: {
@@ -175,6 +176,7 @@ export const defaultApiConfig: ApiConfig = {
     delete: 'Item/:id',
     canvasPosition: 'Item/:id/canvas-position',
     moveToContainer: 'Item/:id/container',
+    favourite: 'Item/:id/favourite',
   },
 
   container: {

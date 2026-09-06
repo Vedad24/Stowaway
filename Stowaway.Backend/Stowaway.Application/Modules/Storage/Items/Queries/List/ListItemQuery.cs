@@ -14,5 +14,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
         public List<int>? TagIds { get; init; }
         public int? MinQuantity { get; init; }
         public int? MaxQuantity { get; init; }
+        public bool? FavouritesOnly { get; init; }
     }
 }

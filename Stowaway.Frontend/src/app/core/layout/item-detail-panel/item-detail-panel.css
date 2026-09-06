@@ -125,10 +125,26 @@
   background: #fff;
 }
 
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
 .panel-title {
-  margin: 0.9rem 0 0;
+  margin: 0;
   font-size: 1.25rem;
   color: var(--text-dark);
+}
+
+.panel-favourite-toggle {
+  flex-shrink: 0;
+}
+
+.panel-favourite-toggle-active mat-icon {
+  color: var(--sage);
 }
 
 .panel-tags {
