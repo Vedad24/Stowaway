@@ -127,6 +127,8 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddRateLimitingPolicies(configuration);
+
         return services;
     }
 }

@@ -4,6 +4,7 @@ using Stowaway.Application.Modules.Auth.Commands.Logout;
 using Stowaway.Application.Modules.Auth.Commands.Refresh;
 using Stowaway.Shared.Options;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -13,6 +14,7 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
 {
     [HttpPost("login")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken ct)
     {
         var tokens = await mediator.Send(command, ct);
@@ -26,6 +28,7 @@ public sealed class AuthController(IMediator mediator, IAntiforgery antiforgery,
 
     [HttpPost("refresh")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> Refresh(CancellationToken ct)
     {
         if (!Request.Cookies.TryGetValue(AuthCookies.RefreshTokenCookieName, out var refreshToken) || string.IsNullOrEmpty(refreshToken))
