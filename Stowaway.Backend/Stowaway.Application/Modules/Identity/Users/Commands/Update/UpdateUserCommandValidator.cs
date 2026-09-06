@@ -14,7 +14,7 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(6).WithMessage("Password must be at least 6 characters long.")
+                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
                 .When(x => x.Password is not null);
 
             RuleFor(x => x.FirstName)
