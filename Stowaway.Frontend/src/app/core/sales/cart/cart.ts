@@ -2,6 +2,10 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
 import { CartService } from '../../../services/sales/cart/cart-service';
 import { AddToCartCommand, CartItemDto, CartItemStatus } from '../../../services/sales/cart/cart-service.models';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
@@ -16,7 +20,7 @@ import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 @Component({
   selector: 'app-cart',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatDialogModule],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
   providers: [CurrencyPipe],
   templateUrl: './cart.html',
   styleUrl: './cart.css',

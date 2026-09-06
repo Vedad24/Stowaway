@@ -16,7 +16,9 @@ import { AddToCartCommand } from '../../../services/sales/cart/cart-service.mode
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 import { AuthService } from '../../../services/identity/auth/auth-service';
 import { MatButton } from '@angular/material/button';
-import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-product-page',
@@ -29,7 +31,10 @@ import { Router } from '@angular/router';
     MatSelectModule,
     MatButtonModule,
     AutocompleteComponent,
-    MatButton
+    MatButton,
+    MatIconModule,
+    MatTooltipModule,
+    RouterLink
   ],
   templateUrl: './product-page.html',
   styleUrl: './product-page.css',

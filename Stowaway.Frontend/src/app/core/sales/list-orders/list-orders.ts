@@ -9,6 +9,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrderService } from '../../../services/sales/order/order-service';
 import { ListOrdersQuery, ListOrdersQueryDto, OrderStatus } from '../../../services/sales/order/order-service.models';
 import { PaginationTable, TableColumnDef } from '../../../shared/pagination-table/pagination-table';
@@ -17,11 +19,11 @@ import { CurrentUserService } from '../../../services/identity/auth/current-user
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { RoleName } from '../../../services/identity/user/user-service.models';
 import { PaymentService } from '../../../services/sales/payment/payment-service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-list-orders',
-  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDatepickerModule],
+  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDatepickerModule, MatIconModule, MatTooltipModule, RouterLink],
   providers: [DatePipe, CurrencyPipe, provideNativeDateAdapter()],
   templateUrl: './list-orders.html',
   styleUrl: './list-orders.css',

@@ -1,7 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { ResolveStart, Router } from '@angular/router';
+import { ResolveStart, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { catchError, tap, throwError } from 'rxjs';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service'; 
 import { UserService } from '../../../services/identity/user/user-service';
@@ -11,7 +14,7 @@ import { GetSelfDto, UpdateSelfCommand, RoleName } from '../../../services/ident
 @Component({
   selector: 'app-user-settings',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
   templateUrl: './user-settings.html',
   styleUrls: ['./user-settings.css'],
 })
@@ -86,7 +89,7 @@ export class UserSettings implements OnInit {
   }
 
   cancel(): void {
-    this.router.navigate(['/main']);
+    this.router.navigate(['/choose-module']);
   }
 }
 
