@@ -4,8 +4,6 @@ public sealed class RefreshTokenEntityConfiguration : IEntityTypeConfiguration<R
 {
     public void Configure(EntityTypeBuilder<RefreshTokenEntity> b)
     {
-        b.ToTable("RefreshTokens");
-
         b.HasKey(x => x.Id);
 
         b.HasIndex(x => new { x.UserId, x.TokenHash })
