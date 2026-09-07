@@ -10,6 +10,7 @@ import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas
 import { ItemApiService } from '../../../services/storage/item/item';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ThemeToggle } from '../../../shared/theme-toggle/theme-toggle';
+import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 
 @Component({
   selector: 'app-navbar',
@@ -22,6 +23,7 @@ export class Navbar {
   private readonly canvasState = inject(WarehouseCanvasState);
   private readonly itemService = inject(ItemApiService);
   private readonly containerService = inject(ContainerApiService);
+  readonly currentUser = inject(CurrentUserService);
 
   readonly warehouse = this.canvasState.warehouse;
   readonly currentContainer = this.canvasState.currentContainer;

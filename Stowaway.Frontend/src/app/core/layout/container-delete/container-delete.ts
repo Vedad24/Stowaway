@@ -6,6 +6,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatIconModule } from '@angular/material/icon';
 import { ContainerApiService } from '../../../services/storage/container/container';
 import { ContainerTreeService, ContainerOption } from '../../../services/storage/container/container-tree';
 import { ItemApiService } from '../../../services/storage/item/item';
@@ -27,7 +28,7 @@ export interface ContainerDeleteResult {
 @Component({
   selector: 'app-container-delete',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatRadioModule, MatButtonModule],
+  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatRadioModule, MatButtonModule, MatIconModule],
   templateUrl: './container-delete.html',
   styleUrl: './container-delete.css',
 })
