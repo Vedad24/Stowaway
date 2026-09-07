@@ -43,5 +43,16 @@
     <mat-icon>shopping_cart</mat-icon>
     Get containers
   </button>
+  @if (currentUser.isManager) {
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      routerLink="/supplier"
+    >
+      <mat-icon>local_shipping</mat-icon>
+      Suppliers
+    </button>
+  }
   <app-theme-toggle></app-theme-toggle>
 </div>

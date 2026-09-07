@@ -6,7 +6,10 @@ import { WarehouseCanvasState } from '../../../services/storage/warehouse-canvas
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 import { GetWarehouseByIdDto } from '../../../services/storage/warehouse/warehouse.model';
 import { WarehouseEdit } from '../warehouse-edit/warehouse-edit';
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 import { extractErrorMessage } from '../../../models/http-error';
+import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
+import { Permissions } from '../../../shared/constants/permissions';
 
 @Component({
   selector: 'app-warehouse-detail-panel',
@@ -19,12 +22,17 @@ export class WarehouseDetailPanel {
   private readonly canvasState = inject(WarehouseCanvasState);
   private readonly warehouseService = inject(WarehouseApiService);
   private readonly dialog = inject(MatDialog);
+  private readonly currentUser = inject(CurrentUserService);
 
   private requestToken = 0;
 
   readonly warehouse = signal<GetWarehouseByIdDto | null>(null);
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
+
+  readonly canDelete = computed(() =>
+    this.currentUser.isAdmin || this.currentUser.permissions.includes(Permissions.WarehouseDelete),
+  );
 
   private readonly selectedWarehouseId = computed(() => {
     const entity = this.canvasState.selectedEntity();
@@ -88,6 +96,36 @@ export class WarehouseDetailPanel {
           this.canvasState.notifyWarehouseRenamed(warehouse.id, name);
         },
         error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to save changes.')),
+      });
+    });
+  }
+
+  delete(): void {
+    const warehouse = this.warehouse();
+    if (!warehouse || !this.canDelete()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '380px',
+      data: {
+        title: 'Delete warehouse',
+        message: `Are you sure you want to delete "${warehouse.name}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        danger: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+      this.warehouseService.delete(warehouse.id).subscribe({
+        next: () => {
+          this.canvasState.clearSelection();
+          this.canvasState.notifyWarehouseDeleted(warehouse.id);
+        },
+        error: (err) => this.errorMessage.set(extractErrorMessage(err, 'Unable to delete the warehouse.')),
       });
     });
   }

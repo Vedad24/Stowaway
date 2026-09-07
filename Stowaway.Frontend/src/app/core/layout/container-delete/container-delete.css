@@ -1,13 +1,62 @@
 .dialog-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 8px 4px;
-  min-width: 360px;
+  gap: 16px;
+  padding: 20px 22px 18px;
+  min-width: 380px;
 }
 
-.full-width {
-  width: 100%;
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.dialog-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--sage-soft, #c7d3c0);
+}
+
+.dialog-icon mat-icon {
+  color: var(--sage, #8fa28a) !important;
+}
+
+.dialog-icon-danger {
+  background: color-mix(in srgb, var(--mat-sys-error, #b3261e) 16%, transparent);
+}
+
+.dialog-icon-danger mat-icon {
+  color: var(--mat-sys-error, #b3261e) !important;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-dark, #2f352f);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted, #5c665d);
+  line-height: 1.4;
+}
+
+.contents-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--surface-border);
 }
 
 .mode-group {
@@ -16,15 +65,22 @@
   gap: 4px;
 }
 
+.full-width {
+  width: 100%;
+}
+
 .error {
   color: var(--mat-sys-error, #b3261e);
   margin: 0;
+  padding: 8px 10px;
   font-size: 0.875rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, #b3261e 8%, transparent);
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 4px;
 }

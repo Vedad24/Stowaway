@@ -1,17 +1,25 @@
 <div class="dialog-card">
-  <h2>Delete container</h2>
+  <div class="dialog-header">
+    <span class="dialog-icon dialog-icon-danger">
+      <mat-icon>warning</mat-icon>
+    </span>
+    <div>
+      <h2>Delete container</h2>
+      @if (isLoading()) {
+        <p class="subtitle">Checking what's inside "{{ data.name }}"…</p>
+      } @else if (!hasContents()) {
+        <p class="subtitle">Are you sure you want to delete "{{ data.name }}"? This cannot be undone.</p>
+      } @else {
+        <p class="subtitle">
+          "{{ data.name }}" contains {{ childContainerCount() }} container{{ childContainerCount() === 1 ? '' : 's' }}
+          and {{ childItemCount() }} item{{ childItemCount() === 1 ? '' : 's' }}. What should happen to them?
+        </p>
+      }
+    </div>
+  </div>
 
-  @if (isLoading()) {
-    <p>Checking what's inside "{{ data.name }}"…</p>
-  } @else {
-    @if (!hasContents()) {
-      <p>Are you sure you want to delete "{{ data.name }}"? This cannot be undone.</p>
-    } @else {
-      <p>
-        "{{ data.name }}" contains {{ childContainerCount() }} container{{ childContainerCount() === 1 ? '' : 's' }}
-        and {{ childItemCount() }} item{{ childItemCount() === 1 ? '' : 's' }}. What should happen to them?
-      </p>
-
+  @if (!isLoading() && hasContents()) {
+    <div class="contents-box">
       <mat-radio-group [ngModel]="mode()" (ngModelChange)="selectMode($event)" class="mode-group">
         <mat-radio-button value="deleteContents">Delete everything inside</mat-radio-button>
         <mat-radio-button value="moveContents">Move contents to another container</mat-radio-button>
@@ -34,11 +42,11 @@
           }
         </mat-form-field>
       }
-    }
+    </div>
+  }
 
-    @if (errorMessage()) {
-      <p class="error">{{ errorMessage() }}</p>
-    }
+  @if (errorMessage()) {
+    <p class="error">{{ errorMessage() }}</p>
   }
 
   <div class="actions">

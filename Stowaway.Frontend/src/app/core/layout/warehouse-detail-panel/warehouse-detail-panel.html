@@ -36,6 +36,9 @@
 
       <div class="panel-actions">
         <button mat-button type="button" (click)="edit()">Edit</button>
+        @if (canDelete()) {
+          <button mat-flat-button color="warn" type="button" (click)="delete()">Delete</button>
+        }
       </div>
     } @else if (isLoading()) {
       <p class="panel-loading">Loading…</p>

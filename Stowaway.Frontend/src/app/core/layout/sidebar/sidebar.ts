@@ -123,6 +123,19 @@ export class Sidebar implements OnInit {
         }
       });
     });
+
+    // Same rationale as the rename effect above: a deleted warehouse never
+    // touches a container list, so it needs its own signal to know to drop
+    // the row from the tree.
+    effect(() => {
+      const deletedId = this.canvasState.warehouseDeleted();
+      if (deletedId == null) {
+        return;
+      }
+      untracked(() => {
+        this.warehouses.update((list) => list.filter((w) => w.id !== deletedId));
+      });
+    });
   }
 
   ngOnInit(): void {

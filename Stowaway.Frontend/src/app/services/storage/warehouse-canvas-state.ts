@@ -36,6 +36,7 @@ export class WarehouseCanvasState {
   readonly lastAffectedContainers = signal<AffectedContainers | null>(null);
   readonly selectedEntity = signal<SelectedEntity | null>(null);
   readonly warehouseRenamed = signal<{ id: number; name: string } | null>(null);
+  readonly warehouseDeleted = signal<number | null>(null);
 
   readonly currentContainer = computed<CanvasContainerCrumb | null>(() => {
     const path = this.path();
@@ -94,5 +95,12 @@ export class WarehouseCanvasState {
   // one place a warehouse's name is mirrored — its own tree row.
   notifyWarehouseRenamed(id: number, name: string): void {
     this.warehouseRenamed.set({ id, name });
+  }
+
+  // Same rationale as notifyWarehouseRenamed(): a deleted warehouse never goes
+  // through a container list, so the sidebar tree needs its own signal to know
+  // to drop the row instead of refetching it.
+  notifyWarehouseDeleted(id: number): void {
+    this.warehouseDeleted.set(id);
   }
 }
