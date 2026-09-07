@@ -107,6 +107,10 @@ export interface ApiConfig {
     };
     warehouseUsers: string;
   };
+
+  dashboard: {
+    globalStats: string;
+  };
 }
 
 export const defaultApiConfig: ApiConfig = {
@@ -211,6 +215,10 @@ export const defaultApiConfig: ApiConfig = {
       byId: 'StorageIdentity/privilege-groups/:id',
     },
     warehouseUsers: 'StorageIdentity/warehouse-users',
+  },
+
+  dashboard: {
+    globalStats: 'Dashboard',
   },
 };
 
