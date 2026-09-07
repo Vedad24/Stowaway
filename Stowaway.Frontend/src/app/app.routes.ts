@@ -24,6 +24,11 @@ export const routes: Routes = [
         canActivate: [routeGuardGuard]
     },
     {
+        path: 'dashboard',
+        loadComponent: () => import('./core/dashboard/dashboard').then(m => m.Dashboard),
+        canActivate: [routeGuardGuard]
+    },
+    {
         path: 'warehouse',
         loadComponent: () => import('./core/warehouse/warehouse/warehouse').then(m => m.Warehouse),
         canActivate: [permissionGuard(Permissions.WarehouseRead)]

@@ -1,0 +1,53 @@
+<div class="dashboard-shell">
+  <div class="dashboard-header">
+    <button mat-icon-button type="button" aria-label="Back" (click)="back()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1>Dashboard</h1>
+    <app-theme-toggle></app-theme-toggle>
+  </div>
+
+  @if (loading()) {
+    <p class="status-message">Loading...</p>
+  } @else if (errorMessage()) {
+    <p class="status-message error">{{ errorMessage() }}</p>
+  } @else if (stats(); as data) {
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">group</mat-icon>
+        <span class="stat-value">{{ data.totalUsers }}</span>
+        <span class="stat-label">Users</span>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">warehouse</mat-icon>
+        <span class="stat-value">{{ data.totalWarehouses }}</span>
+        <span class="stat-label">Warehouses</span>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">inventory_2</mat-icon>
+        <span class="stat-value">{{ data.totalContainers }}</span>
+        <span class="stat-label">Containers</span>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">category</mat-icon>
+        <span class="stat-value">{{ data.totalItems }}</span>
+        <span class="stat-label">Items</span>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">local_shipping</mat-icon>
+        <span class="stat-value">{{ data.totalSuppliers }}</span>
+        <span class="stat-label">Suppliers</span>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-icon class="stat-icon">receipt_long</mat-icon>
+        <span class="stat-value">{{ data.totalOrders }}</span>
+        <span class="stat-label">Orders</span>
+      </mat-card>
+    </div>
+  }
+</div>

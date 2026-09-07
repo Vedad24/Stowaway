@@ -35,6 +35,10 @@ export class ChooseModule {
     this.router.navigate(['/orders']);
   }
 
+  openDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
   openUserSettings(): void {
     this.router.navigate(['/user/settings']);
   }
