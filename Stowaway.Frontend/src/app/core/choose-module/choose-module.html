@@ -41,6 +41,15 @@
         </button>
       </mat-card>
     }
+
+    <mat-card class="module-card">
+      <mat-icon class="module-icon">dashboard</mat-icon>
+      <h2>Dashboard</h2>
+      <p>Global stats across the whole system.</p>
+      <button mat-flat-button color="primary" type="button" (click)="openDashboard()">
+        Open
+      </button>
+    </mat-card>
   </div>
 
   <button mat-stroked-button class="logout-button" type="button" (click)="logout()">
