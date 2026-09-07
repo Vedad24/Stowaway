@@ -7,17 +7,24 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Update
     {
         public async Task<int> Handle(UpdatePriviledgeGroupCommand request, CancellationToken cancellationToken)
         {
-            bool priviledgeGroupExists = await ctx.PriviledgeGroups
-                .AnyAsync(x => x.Id == request.PriviledgeId, cancellationToken);
-            
-            if(!priviledgeGroupExists)
+            var priviledgeGroup = await ctx.PriviledgeGroups
+                .Include(x => x.Priviledges)
+                .FirstOrDefaultAsync(x => x.Id == request.PriviledgeId, cancellationToken);
+
+            if (priviledgeGroup is null)
             {
                 throw new StowawayNotFoundException("Privilege group with the supplied id was not found.");
             }
 
-            var priviledgeGroup = await ctx.PriviledgeGroups
-                .Include(x => x.Priviledges)
-                .FirstOrDefaultAsync(x => x.Id == request.PriviledgeId, cancellationToken);
+            // The caller's WarehouseUsers.Manage privilege is checked against request.WarehouseId
+            // (see WarehouseResolutionStrategy.BodyField on this endpoint's policy) - without this,
+            // a manager of warehouse A could name warehouse A in the body while targeting a group
+            // id that actually belongs to warehouse B, and edit B's group despite having no rights
+            // there. The group's own warehouse is the source of truth and must match.
+            if (priviledgeGroup.WarehouseId != request.WarehouseId)
+            {
+                throw new StowawayBusinessRuleException("priviledge-group.wrong-warehouse", "Privilege group does not belong to the supplied warehouse.");
+            }
 
             var normalizedName = request.Name?.Trim();
 
@@ -34,7 +41,7 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Update
 
             var duplicates = await ctx.PriviledgeGroups
                 .AnyAsync(x => x.WarehouseId == request.WarehouseId && x.Name == normalizedName, cancellationToken)
-                && normalizedName != priviledgeGroup?.Name;
+                && normalizedName != priviledgeGroup.Name;
 
             if (duplicates)
             {
@@ -56,8 +63,7 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Update
                 throw new StowawayBusinessRuleException("priviledge-group.invalid-priviledges", "One or more privilege ids are invalid.");
             }
 
-            priviledgeGroup!.Name = normalizedName;
-            priviledgeGroup!.WarehouseId = request.WarehouseId;
+            priviledgeGroup.Name = normalizedName;
 
             var existingAssociations = await ctx.PriviledgeGroupsPriviledges
                 .Where(x => x.PriviledgeGroupId == priviledgeGroup.Id)
