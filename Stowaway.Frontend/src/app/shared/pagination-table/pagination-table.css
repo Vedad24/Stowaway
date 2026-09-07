@@ -1,0 +1,23 @@
+table {
+  width: 100%;
+}
+
+th.mat-mdc-header-cell {
+  background-color: var(--sage-soft);
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+td.mat-mdc-cell,
+th.mat-mdc-header-cell {
+  border-bottom-color: var(--surface-border);
+}
+
+tr.mat-mdc-row:hover {
+  background-color: var(--surface-hover);
+}
+
+mat-paginator {
+  background-color: var(--cream);
+  border-top: 1px solid var(--surface-border);
+}
