@@ -20,7 +20,7 @@
 
   @if (!isLoading() && hasContents()) {
     <div class="contents-box">
-      <mat-radio-group [ngModel]="mode()" (ngModelChange)="selectMode($event)" class="mode-group">
+      <mat-radio-group [formControl]="modeControl" class="mode-group">
         <mat-radio-button value="deleteContents">Delete everything inside</mat-radio-button>
         <mat-radio-button value="moveContents">Move contents to another container</mat-radio-button>
       </mat-radio-group>
@@ -28,11 +28,7 @@
       @if (mode() === 'moveContents') {
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Move to</mat-label>
-          <mat-select
-            [ngModel]="moveTargetId()"
-            (ngModelChange)="moveTargetId.set($event)"
-            [disabled]="isLoadingMoveOptions()"
-          >
+          <mat-select [formControl]="moveTargetIdControl">
             @for (option of moveOptions(); track option.id) {
               <mat-option [value]="option.id">{{ option.label }}</mat-option>
             }

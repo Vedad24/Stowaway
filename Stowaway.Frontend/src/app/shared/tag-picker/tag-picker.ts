@@ -1,6 +1,6 @@
 import { Component, OnInit, forwardRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,7 +11,7 @@ import { tagColor, tagTextColor } from '../tag-color';
 @Component({
   selector: 'app-tag-picker',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -27,7 +27,7 @@ export class TagPicker implements ControlValueAccessor, OnInit {
 
   readonly allTags = signal<TagDto[]>([]);
   readonly selectedIds = signal<number[]>([]);
-  readonly newTagName = signal('');
+  readonly newTagNameControl = new FormControl('', { nonNullable: true });
   readonly isLoading = signal(false);
   readonly isCreating = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -73,7 +73,7 @@ export class TagPicker implements ControlValueAccessor, OnInit {
   }
 
   addCustomTag(): void {
-    const name = this.newTagName().trim();
+    const name = this.newTagNameControl.value.trim();
     if (!name || this.disabled()) {
       return;
     }
@@ -82,7 +82,7 @@ export class TagPicker implements ControlValueAccessor, OnInit {
     this.tagService.create({ name }).subscribe({
       next: (tag) => {
         this.isCreating.set(false);
-        this.newTagName.set('');
+        this.newTagNameControl.setValue('');
         if (!this.allTags().some((t) => t.id === tag.id)) {
           this.allTags.update((tags) => [...tags, tag].sort((a, b) => a.name.localeCompare(b.name)));
         }

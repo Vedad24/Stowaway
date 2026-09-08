@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { firstValueFrom } from 'rxjs';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,7 +29,7 @@ export interface ContainerDeleteResult {
 @Component({
   selector: 'app-container-delete',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatRadioModule, MatButtonModule, MatIconModule],
+  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatRadioModule, MatButtonModule, MatIconModule],
   templateUrl: './container-delete.html',
   styleUrl: './container-delete.css',
 })
@@ -44,8 +45,10 @@ export class ContainerDelete implements OnInit {
   childItemCount = signal(0);
   readonly hasContents = computed(() => this.childContainerCount() > 0 || this.childItemCount() > 0);
 
-  mode = signal<DeleteMode>('deleteContents');
-  moveTargetId = signal<number | null>(null);
+  readonly modeControl = new FormControl<DeleteMode>('deleteContents', { nonNullable: true });
+  readonly moveTargetIdControl = new FormControl<number | null>(null);
+  readonly mode = toSignal(this.modeControl.valueChanges, { initialValue: this.modeControl.value });
+  readonly moveTargetId = toSignal(this.moveTargetIdControl.valueChanges, { initialValue: this.moveTargetIdControl.value });
   moveOptions = signal<ContainerOption[]>([]);
   isLoadingMoveOptions = signal(false);
 
@@ -60,6 +63,8 @@ export class ContainerDelete implements OnInit {
   });
 
   ngOnInit(): void {
+    this.modeControl.valueChanges.subscribe(mode => this.selectMode(mode));
+
     const itemQuery = new ListItemQuery();
     itemQuery.containerId = this.data.id;
 
@@ -77,20 +82,22 @@ export class ContainerDelete implements OnInit {
   }
 
   selectMode(mode: DeleteMode): void {
-    this.mode.set(mode);
     if (mode !== 'moveContents' || this.moveOptions().length > 0 || this.isLoadingMoveOptions()) {
       return;
     }
 
     this.isLoadingMoveOptions.set(true);
+    this.moveTargetIdControl.disable();
     this.containerTree.loadOptions(this.data.warehouseId, this.data.id).then(options => {
       this.moveOptions.set(options);
       this.isLoadingMoveOptions.set(false);
+      this.moveTargetIdControl.enable();
       if (this.moveTargetId() == null && options.length) {
-        this.moveTargetId.set(options[0].id);
+        this.moveTargetIdControl.setValue(options[0].id);
       }
     }).catch(() => {
       this.isLoadingMoveOptions.set(false);
+      this.moveTargetIdControl.enable();
       this.errorMessage.set('Unable to load other containers.');
     });
   }

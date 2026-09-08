@@ -29,36 +29,6 @@ export const routes: Routes = [
         canActivate: [routeGuardGuard]
     },
     {
-        path: 'warehouse',
-        loadComponent: () => import('./core/warehouse/warehouse/warehouse').then(m => m.Warehouse),
-        canActivate: [permissionGuard(Permissions.WarehouseRead)]
-    },
-    {
-        path: 'warehouse/create',
-        loadComponent: () => import('./core/warehouse/warehouse/create/create').then(m => m.CreateWarehouse),
-        canActivate: [permissionGuard(Permissions.WarehouseCreate)]
-    },
-    {
-        path: 'warehouse/edit/:abc',
-        loadComponent: () => import('./core/warehouse/warehouse/edit/edit').then(m => m.EditWarehouse),
-        canActivate: [permissionGuard(Permissions.WarehouseUpdate)]
-    },
-    {
-        path: 'item',
-        loadComponent: () => import('./core/item/item').then(m => m.Item),
-        canActivate: [permissionGuard(Permissions.ItemRead)]
-    },
-    {
-        path: 'item/create',
-        loadComponent: () => import('./core/item/create/create').then(m => m.CreateItem),
-        canActivate: [permissionGuard(Permissions.ItemCreate)]
-    },
-    {
-        path: 'item/edit/:id',
-        loadComponent: () => import('./core/item/edit/edit').then(m => m.EditItem),
-        canActivate: [permissionGuard(Permissions.ItemUpdate)]
-    },
-    {
         path: 'supplier',
         loadComponent: () => import('./core/supplier/supplier').then(m => m.Supplier),
         canActivate: [permissionGuard(Permissions.SupplierRead)]

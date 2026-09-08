@@ -4,12 +4,12 @@ import {
   ListWarehouseQuery, ListWarehouseQueryDto
 } from '../../../services/storage/warehouse/warehouse.model';
 import { BaseListPagedComponent } from '../../base-classes/base-list-paged-component';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-warehouse',
-  imports: [FormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './warehouse.html',
   styleUrl: './warehouse.css',
 })
@@ -21,7 +21,7 @@ export class Warehouse
   private warehouseApiService = inject(WarehouseApiService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  searchTerm = "";
+  readonly searchControl = new FormControl('', { nonNullable: true });
   
   constructor() {
     super();
@@ -61,7 +61,7 @@ export class Warehouse
   }
 
   searchData() {
-    this.request.search = this.searchTerm;
+    this.request.search = this.searchControl.value;
     this.request.paging.page = 1;
     this.loadPagedData();
   }
