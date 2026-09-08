@@ -16,7 +16,7 @@ public static class StaticDataSeeder
 {
     public static async Task SeedAsync(DatabaseContext context, bool resetIdentitySeeds)
     {
-        if (resetIdentitySeeds) //Only good for one-time resetting, after that there is no need, it screws up priviledge groups 
+        if (resetIdentitySeeds) //Only good for one-time resetting, like after adding or removing priviledges after that there is no need.
         {
             await ResetPermissionsAsync(context);
             await ResetPriviledgesAsync(context);
@@ -41,7 +41,7 @@ public static class StaticDataSeeder
 
     private static async Task ResetPriviledgesAsync(DatabaseContext context)
     {
-        //I did this only once to reset the things, i am not going to do it every time because it screws up priviledge groups 
+        
         // PriviledgeGroup_Priviledge FKs into Priviledges. DynamicDataSeeder.SeedStorageIdentityAsync
         // rebuilds these links idempotently — but only runs in Dev/Test, so this reset must only be
         // invoked with resetIdentitySeeds: true from those same environments (see DatabaseInitializer).

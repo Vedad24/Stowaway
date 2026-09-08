@@ -40,8 +40,9 @@ namespace Stowaway.API.Controllers
         }
 
         
-        //stripe listen --forward-to localhost:5177/StripePayment/payment-webhook
-        //Change wehbook secret in appsettings.Development.json
+        //stripe listen --forward-to [backendUrl]/StripePayment/payment-webhook
+        //Webhook secret in User-Secrets
+        //backendUrl in appsettings.json
         [HttpPost("payment-webhook")]
         [AllowAnonymous]
         public async Task<ActionResult> PaymentWebhook()
