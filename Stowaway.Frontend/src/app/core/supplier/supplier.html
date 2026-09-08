@@ -29,7 +29,7 @@
         <div class="supplier-search">
           <mat-form-field subscriptSizing="dynamic">
             <mat-label>Search</mat-label>
-            <input matInput [(ngModel)]="searchTerm" (keyup.enter)="searchData()" />
+            <input matInput [formControl]="searchControl" (keyup.enter)="searchData()" />
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
           <button mat-stroked-button type="button" (click)="searchData()">Search</button>

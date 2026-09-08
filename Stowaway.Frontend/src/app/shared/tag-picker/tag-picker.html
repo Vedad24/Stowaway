@@ -30,14 +30,12 @@
       <mat-label>New tag</mat-label>
       <input
         matInput
-        [ngModel]="newTagName()"
-        (ngModelChange)="newTagName.set($event)"
-        [ngModelOptions]="{ standalone: true }"
+        [formControl]="newTagNameControl"
         (keydown.enter)="$event.preventDefault(); addCustomTag()"
         placeholder="Type a tag name…"
       />
     </mat-form-field>
-    <button mat-stroked-button type="button" [disabled]="isCreating() || !newTagName().trim()" (click)="addCustomTag()">
+    <button mat-stroked-button type="button" [disabled]="isCreating() || !newTagNameControl.value.trim()" (click)="addCustomTag()">
       Add
     </button>
   </div>
