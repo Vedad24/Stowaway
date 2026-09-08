@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -23,7 +23,7 @@ import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-list-orders',
-  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDatepickerModule, MatIconModule, MatTooltipModule, RouterLink],
+  imports: [PaginationTable, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatDatepickerModule, MatIconModule, MatTooltipModule, RouterLink],
   providers: [DatePipe, CurrencyPipe, provideNativeDateAdapter()],
   templateUrl: './list-orders.html',
   styleUrl: './list-orders.css',
@@ -51,11 +51,13 @@ export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListO
   ];
 
   // Search fields, bound to their own backend params (ANDed server-side, not a unified search box)
-  searchByUserEmail = '';
-  searchByUserName = '';
-  searchByStatus: OrderStatus | null = null;
-  createTimeMin: Date | null = null;
-  createTimeMax: Date | null = null;
+  searchForm = new FormGroup({
+    searchByUserEmail: new FormControl(''),
+    searchByUserName: new FormControl(''),
+    searchByStatus: new FormControl<OrderStatus | null>(null),
+    createTimeMin: new FormControl<Date | null>(null),
+    createTimeMax: new FormControl<Date | null>(null),
+  });
 
   columnDef: TableColumnDef<ListOrdersQueryDto>[] = [
     {
@@ -173,11 +175,12 @@ export class ListOrders extends BaseListPagedComponent<ListOrdersQueryDto, ListO
   }
 
   onSearch(): void {
-    this.request.searchByUserEmail = this.searchByUserEmail || null;
-    this.request.searchByUserName = this.searchByUserName || null;
-    this.request.searchByStatus = this.searchByStatus;
-    this.request.createTimeMin = this.createTimeMin;
-    this.request.createTimeMax = this.createTimeMax;
+    const { searchByUserEmail, searchByUserName, searchByStatus, createTimeMin, createTimeMax } = this.searchForm.value;
+    this.request.searchByUserEmail = searchByUserEmail || null;
+    this.request.searchByUserName = searchByUserName || null;
+    this.request.searchByStatus = searchByStatus ?? null;
+    this.request.createTimeMin = createTimeMin ?? null;
+    this.request.createTimeMax = createTimeMax ?? null;
     this.paging.page = 1;
     this.loadPagedData();
   }

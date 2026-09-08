@@ -15,18 +15,18 @@
         }
     </div>
 
-    <div class="flex gap-2 items-center flex-wrap">
+    <div class="flex gap-2 items-center flex-wrap" [formGroup]="searchForm">
         <mat-form-field subscriptSizing="dynamic">
             <mat-label>Search by email</mat-label>
-            <input matInput [(ngModel)]="searchByUserEmail" (keyup.enter)="onSearch()" />
+            <input matInput formControlName="searchByUserEmail" (keyup.enter)="onSearch()" />
         </mat-form-field>
         <mat-form-field subscriptSizing="dynamic">
             <mat-label>Search by name</mat-label>
-            <input matInput [(ngModel)]="searchByUserName" (keyup.enter)="onSearch()" />
+            <input matInput formControlName="searchByUserName" (keyup.enter)="onSearch()" />
         </mat-form-field>
         <mat-form-field subscriptSizing="dynamic">
             <mat-label>Status</mat-label>
-            <mat-select [(ngModel)]="searchByStatus">
+            <mat-select formControlName="searchByStatus">
                 <mat-option [value]="null">Any</mat-option>
                 @for (option of statusOptions; track option.value) {
                     <mat-option [value]="option.value">{{ option.label }}</mat-option>
@@ -35,13 +35,13 @@
         </mat-form-field>
         <mat-form-field subscriptSizing="dynamic">
             <mat-label>Created from</mat-label>
-            <input matInput [matDatepicker]="createTimeMinPicker" [(ngModel)]="createTimeMin" />
+            <input matInput [matDatepicker]="createTimeMinPicker" formControlName="createTimeMin" />
             <mat-datepicker-toggle matIconSuffix [for]="createTimeMinPicker"></mat-datepicker-toggle>
             <mat-datepicker #createTimeMinPicker></mat-datepicker>
         </mat-form-field>
         <mat-form-field subscriptSizing="dynamic">
             <mat-label>Created to</mat-label>
-            <input matInput [matDatepicker]="createTimeMaxPicker" [(ngModel)]="createTimeMax" />
+            <input matInput [matDatepicker]="createTimeMaxPicker" formControlName="createTimeMax" />
             <mat-datepicker-toggle matIconSuffix [for]="createTimeMaxPicker"></mat-datepicker-toggle>
             <mat-datepicker #createTimeMaxPicker></mat-datepicker>
         </mat-form-field>

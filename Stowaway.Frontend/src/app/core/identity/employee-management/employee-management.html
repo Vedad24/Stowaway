@@ -11,7 +11,7 @@
         <div class="flex gap-2 items-center">
             <mat-form-field class="flex justify-center items-center" subscriptSizing="dynamic">
                 <mat-label>Search</mat-label>
-                <input matInput [(ngModel)]="searchField" (keyup.enter)="onSearch()" />
+                <input matInput [formControl]="searchField" (keyup.enter)="onSearch()" />
             </mat-form-field>
             <button mat-raised-button (click)="onSearch()">Search</button>
         </div>

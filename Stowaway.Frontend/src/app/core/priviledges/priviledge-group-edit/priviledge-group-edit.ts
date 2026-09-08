@@ -1,6 +1,6 @@
 import { CommonModule, Location } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -29,7 +29,7 @@ interface PrivilegeToggleOption {
 @Component({
   selector: 'app-priviledge-group-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatListModule, MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, MatSlideToggleModule, MatDividerModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, ReactiveFormsModule, MatListModule, MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, MatSlideToggleModule, MatDividerModule, MatFormFieldModule, MatInputModule],
   templateUrl: './priviledge-group-edit.html',
   styleUrl: './priviledge-group-edit.css',
 })
@@ -49,7 +49,7 @@ export class PriviledgeGroupEdit implements OnInit {
   selectedPrivileges: PrivilegeToggleOption[] = [];
   isSaving = signal(false);
 
-  warehouseName = '';
+  warehouseName = new FormControl({ value: '', disabled: true }, { nonNullable: true });
   isEditingName = false;
   isSavingName = signal(false);
 
@@ -70,7 +70,7 @@ export class PriviledgeGroupEdit implements OnInit {
     }
     this.warehouseApiService.getById(warehouseId).subscribe({
       next: (response) => {
-        this.warehouseName = response.name;
+        this.warehouseName.setValue(response.name);
         this.cdr.detectChanges();
       },
     });
@@ -79,6 +79,7 @@ export class PriviledgeGroupEdit implements OnInit {
   toggleNameEdit(): void {
     if (!this.isEditingName) {
       this.isEditingName = true;
+      this.warehouseName.enable();
       return;
     }
     this.saveWarehouseName();
@@ -91,9 +92,10 @@ export class PriviledgeGroupEdit implements OnInit {
     }
 
     this.isSavingName.set(true);
-    this.warehouseApiService.updateName(warehouseId, { name: this.warehouseName }).subscribe({
+    this.warehouseApiService.updateName(warehouseId, { name: this.warehouseName.value }).subscribe({
       next: (response) => {
-        this.warehouseName = response.name;
+        this.warehouseName.setValue(response.name);
+        this.warehouseName.disable();
         this.isEditingName = false;
         this.isSavingName.set(false);
       },

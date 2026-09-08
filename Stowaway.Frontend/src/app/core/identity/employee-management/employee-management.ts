@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-management',
-  imports: [PaginationTable, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
+  imports: [PaginationTable, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
   templateUrl: './employee-management.html',
   styleUrl: './employee-management.css',
 })
@@ -30,7 +30,7 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
   private router = inject(Router);
 
   //Search field
-  searchField = '';
+  searchField = new FormControl('');
 
   //Column definitions for the table
   /*
@@ -175,7 +175,7 @@ export class EmployeeManagement extends BaseListPagedComponent<ListUserQueryDto,
   }
 
   onSearch(): void {
-    this.request.search = this.searchField || null;
+    this.request.search = this.searchField.value || null;
     this.paging.page = 1;
     this.loadPagedData();
   }
