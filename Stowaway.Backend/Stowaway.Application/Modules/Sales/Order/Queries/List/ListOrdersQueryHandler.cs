@@ -23,7 +23,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Queries.List
             }
             if (!string.IsNullOrEmpty(request.SearchByUserName))
             {
-                allOrders = allOrders.Where(o => $"{o.User.FirstName}{o.User.LastName}".Contains(request.SearchByUserName));
+                allOrders = allOrders.Where(o => (o.User.FirstName + " " + o.User.LastName).Contains(request.SearchByUserName));
             }
             if(!string.IsNullOrEmpty(request.SearchByWarehouseName))
             {
