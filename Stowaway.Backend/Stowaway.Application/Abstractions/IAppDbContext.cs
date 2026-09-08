@@ -10,7 +10,6 @@ namespace Stowaway.Application.Abstractions;
 public interface IAppDbContext
 {
     public DbSet<ContainerTypeEntity> ContainerTypes { get;}
-    //DbSet<ContainerEntity> Containers { get; }
     DbSet<WarehouseEntity> Warehouses { get; }
     DbSet<ContainerEntity> Containers { get; }
     DbSet<ContainerStatusEntity> ContainerStatuses { get; }
