@@ -3,12 +3,26 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { SupplierApiService } from '../../../services/storage/supplier/supplier';
 import { BaseFormComponent } from '../../base-classes/base-form-component';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { GetSupplierByIdDto, CreateSupplierCommand } from '../../../services/storage/supplier/supplier.model';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-create',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   templateUrl: './create.html',
   styleUrl: './create.css',
 })

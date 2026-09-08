@@ -1,0 +1,100 @@
+:host {
+  display: block;
+  min-height: 100%;
+  background: linear-gradient(135deg, var(--cream) 0%, var(--sage-soft) 100%);
+}
+
+.create-supplier-page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 64px;
+  padding: 0 1.5rem;
+  background: var(--cream);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.logoName {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.logo {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.create-supplier-content {
+  flex: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 3rem;
+}
+
+.create-supplier-sheet {
+  background: var(--cream);
+  border: 1px solid color-mix(in srgb, var(--sage) 25%, transparent);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--shadow-tint) 8%, transparent);
+  padding: 2rem;
+}
+
+.create-supplier-header {
+  border-bottom: 2px solid var(--sage-soft);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.create-supplier-header h1 {
+  margin: 0 0 0.25rem;
+  color: var(--text-dark);
+}
+
+.create-supplier-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.supplier-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.supplier-form mat-form-field {
+  width: 100%;
+}
+
+.supplier-form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.supplier-form-row mat-form-field {
+  flex: 1;
+}
+
+.supplier-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border);
+}

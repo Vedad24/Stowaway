@@ -141,8 +141,6 @@
           @if (item.visible !== false) {
             <li class="tree-node">
               <div class="tree-row tree-item-row" [class.tree-row-match]="item.searchMatch">
-                <span class="tree-toggle tree-toggle-spacer"></span>
-                <mat-icon class="tree-item-icon">inventory_2</mat-icon>
                 <span class="tree-label" [title]="item.name" (click)="selectItem(item)">
                   {{ item.name }} <span class="tree-item-qty">×{{ item.quantity }}</span>
                 </span>
