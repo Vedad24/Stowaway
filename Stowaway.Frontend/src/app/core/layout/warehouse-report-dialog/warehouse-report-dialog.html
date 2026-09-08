@@ -2,7 +2,7 @@
   <h2>Generate report</h2>
   <p>Choose what to include in the report for "{{ data.warehouseName }}".</p>
 
-  <mat-radio-group [ngModel]="reportType()" (ngModelChange)="reportType.set($event)" class="type-group">
+  <mat-radio-group [formControl]="reportType" class="type-group">
     <mat-radio-button value="containers">Containers only</mat-radio-button>
     <mat-radio-button value="items">Items only</mat-radio-button>
     <mat-radio-button value="both">Containers and items</mat-radio-button>

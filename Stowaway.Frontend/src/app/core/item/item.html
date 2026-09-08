@@ -3,7 +3,7 @@
   <!-- Search -->
   <div class="flex gap-2">
     <input
-      [(ngModel)]="searchTerm"
+      [formControl]="searchControl"
       placeholder="Search..."
       class="w-full max-w-sm rounded-lg border border-gray-300 px-4 py-2
              focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"

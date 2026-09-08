@@ -4,7 +4,7 @@ import {
   ListSupplierQuery, ListSupplierQueryDto
 } from '../../services/storage/supplier/supplier.model';
 import { BaseListPagedComponent } from '../base-classes/base-list-paged-component';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -20,7 +20,7 @@ import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
   selector: 'app-supplier',
   imports: [
     PaginationTable,
-    FormsModule,
+    ReactiveFormsModule,
     RouterLink,
     MatFormFieldModule,
     MatInputModule,
@@ -39,7 +39,7 @@ export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListS
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  searchTerm = "";
+  readonly searchControl = new FormControl('', { nonNullable: true });
 
   columnDef: TableColumnDef<ListSupplierQueryDto>[] = [
     {
@@ -120,7 +120,7 @@ export class Supplier extends BaseListPagedComponent<ListSupplierQueryDto, ListS
   }
 
   searchData() {
-    this.request.search = this.searchTerm;
+    this.request.search = this.searchControl.value;
     this.request.paging.page = 1;
     this.loadPagedData();
   }
