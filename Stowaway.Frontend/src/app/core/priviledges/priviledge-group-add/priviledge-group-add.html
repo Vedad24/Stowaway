@@ -4,7 +4,7 @@
 
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Name</mat-label>
-    <input matInput [(ngModel)]="name" name="name" required />
+    <input matInput [formControl]="name" required />
   </mat-form-field>
 
   <div class="actions">

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +9,7 @@ import { PriviledgeGroupService } from '../../../services/storage-identity/privi
 @Component({
   selector: 'app-priviledge-group-add',
   standalone: true,
-  imports: [FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   templateUrl: './priviledge-group-add.html',
   styleUrl: './priviledge-group-add.css',
 })
@@ -18,18 +18,18 @@ export class PriviledgeGroupAdd {
   private readonly priviledgeGroupService = inject(PriviledgeGroupService);
   private readonly data = inject(MAT_DIALOG_DATA) as { warehouseId: number | null } | undefined;
 
-  name = '';
+  name = new FormControl('', { nonNullable: true, validators: Validators.required });
   isSubmitting = false;
 
   submit(): void {
-    if (!this.name.trim()) {
+    if (!this.name.value.trim()) {
       return;
     }
 
     this.isSubmitting = true;
 
     const payload = {
-      name: this.name.trim(),
+      name: this.name.value.trim(),
       warehouseId: this.data?.warehouseId ?? 0,
       privilegeIds: [],
     };

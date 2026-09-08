@@ -15,8 +15,7 @@
         <input
         matInput
         type="text"
-        [(ngModel)]="warehouseName"
-        [disabled]="!isEditingName"
+        [formControl]="warehouseName"
       />
     </mat-form-field>
     <button mat-flat-button color="primary" type="button" (click)="toggleNameEdit()" [disabled]="isSavingName()">
