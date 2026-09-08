@@ -17,7 +17,6 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Update
     {
         public async Task<bool> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
         {
-            //Trebalo bi biti sporo, ali bi trebalo da radi...pa sad...
             var order = await db.Orders.Include(o => o.OrderItems).FirstOrDefaultAsync(o => o.Id == request.Id);
             if (order == null)
             {
