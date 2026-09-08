@@ -74,7 +74,7 @@ export class LoginPage {
   }
 
   loginForm = new FormGroup({
-    email: new FormControl('admin@market.local', [Validators.email, Validators.required]),
-    password: new FormControl('Admin123!', Validators.required),
+    email: new FormControl('', [Validators.email, Validators.required]),
+    password: new FormControl('', Validators.required),
   });
 }
