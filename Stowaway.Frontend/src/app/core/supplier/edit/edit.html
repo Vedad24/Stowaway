@@ -1,73 +1,64 @@
-<div class="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow space-y-6">
-
-  <h2 class="text-xl font-bold text-gray-800">Edit Item</h2>
-
-  <form [formGroup]="editForm" (ngSubmit)="save()" class="space-y-4">
-
-    <!-- Name -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Name</label>
-      <input
-        type="text"
-        formControlName="name"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
-               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-      />
+<div class="edit-supplier-page">
+  <header class="app-header">
+    <div class="logoName">
+      <button mat-icon-button type="button" matTooltip="Back to suppliers" routerLink="/supplier">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <img class="logo" src="assets/icons/dolly.png" alt="" />
+      <h1 class="app-title">Stowaway</h1>
     </div>
+  </header>
 
-    <!-- Description -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Description</label>
-      <textarea
-        formControlName="description"
-        rows="3"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
-               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-      ></textarea>
+  <main class="edit-supplier-content">
+    <div class="edit-supplier-sheet">
+      <header class="edit-supplier-header">
+        <h1>Edit supplier</h1>
+        <p class="edit-supplier-subtitle">Update the supplier's details below.</p>
+      </header>
+
+      @if (isLoading) {
+        <p class="supplier-state">Loading…</p>
+      } @else {
+        <form [formGroup]="editForm" (ngSubmit)="save()" class="supplier-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+            @if (editForm.get('name')?.touched && editForm.get('name')?.invalid) {
+              <mat-error>Name is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="3"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" />
+          </mat-form-field>
+
+          <div class="supplier-form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Total deliveries</mat-label>
+              <input matInput type="number" formControlName="totalDeliveries" min="0" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Failed deliveries</mat-label>
+              <input matInput type="number" formControlName="failedDeliveries" min="0" />
+            </mat-form-field>
+          </div>
+
+          <div class="supplier-form-actions">
+            <button mat-stroked-button type="button" routerLink="/supplier">Cancel</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="editForm.invalid">
+              <mat-icon>save</mat-icon>
+              Save changes
+            </button>
+          </div>
+        </form>
+      }
     </div>
-
-    <!-- Address -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Address</label>
-      <input
-        type="text"
-        formControlName="address"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
-               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-      />
-    </div>
-
-    <!-- TotalDeliveries -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Total Deliveries</label>
-      <input
-        type="number"
-        formControlName="totalDeliveries"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
-               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-      />
-    </div>
-
-    <!-- FailedDeliveries -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Failed Deliveries</label>
-      <input
-        type="number"
-        formControlName="failedDeliveries"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2
-               focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
-      />
-    </div>
-
-    <!-- Submit -->
-    <button
-      type="submit"
-      class="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg
-             hover:bg-blue-700 transition"
-      [disabled]="editForm.invalid"
-    >
-      Save Changes
-    </button>
-
-  </form>
+  </main>
 </div>

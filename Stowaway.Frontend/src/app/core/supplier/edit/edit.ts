@@ -1,16 +1,31 @@
-import { Component, inject, numberAttribute } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, numberAttribute } from '@angular/core';
 import { BaseFormComponent } from '../../base-classes/base-form-component';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { GetSupplierByIdDto } from '../../../services/storage/supplier/supplier.model';
 import { SupplierApiService } from '../../../services/storage/supplier/supplier';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 @Component({
   selector: 'app-edit',
-  imports: [FormsModule, CommonModule, ReactiveFormsModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   templateUrl: './edit.html',
   styleUrl: './edit.css',
 })
@@ -20,6 +35,7 @@ export class EditSupplier
     private api = inject(SupplierApiService)
     private router = inject(Router)
     private route = inject(ActivatedRoute);
+    private cdr = inject(ChangeDetectorRef);
     private supplierDto: GetSupplierByIdDto | null = null;
     private formBuilder = inject(FormBuilder)
     editForm: FormGroup = this.formBuilder.group({
@@ -44,9 +60,11 @@ export class EditSupplier
           this.supplierDto = response;
           this.editForm.patchValue(response);
           this.stopLoading();
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.stopLoading();
+          this.cdr.detectChanges();
         }
       })
     }
