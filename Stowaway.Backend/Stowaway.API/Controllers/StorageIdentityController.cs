@@ -52,7 +52,7 @@ namespace Stowaway.API.Controllers
         }
 
         [HttpGet("privileges")]
-        [AllowAnonymous] //this should stay anon, but probably cached instead of hitting the db always
+        [AllowAnonymous] //This should stay anonymous
         public async Task<ActionResult<List<ListPriviledgesQueryDto>>> ListPrivileges(CancellationToken ct)
         {
             var result = await sender.Send(new ListPriviledgesQuery(), ct);

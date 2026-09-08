@@ -21,13 +21,6 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
                 throw new StowawayBusinessRuleException("item.name-required", "Item name is required");
             }
 
-            //bool exists = await ctx.Item.AnyAsync(x => x.Name == normalizedName, cancellationToken);
-
-            //if (exists) 
-            //{
-            //    throw new Exception($"Item with {normalizedName} already exists");            
-            //}
-
             var supplier = await ctx.Suppliers.Where(x => x.Id == request.SupplierId).FirstOrDefaultAsync(cancellationToken);
 
             if (supplier == null)

@@ -66,7 +66,6 @@ public partial class DatabaseContext
     {
         base.OnModelCreating(modelBuilder);
 
-        //bugfix 27.10.2025 after class - load all configurations from Infrastructure.Database.Configurations
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
 
         ApplyGlobalFielters(modelBuilder);

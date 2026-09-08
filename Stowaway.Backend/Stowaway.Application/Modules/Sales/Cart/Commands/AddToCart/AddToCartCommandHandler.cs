@@ -26,7 +26,6 @@ namespace Stowaway.Application.Modules.Sales.Cart.Commands.AddToCart
             //if not found add to cart 
             if(existingItem == null)
             {
-                //throw new NotImplementedException();
                 var CartItem = new CartItemEntity
                 {
                     UserId = request.UserId,

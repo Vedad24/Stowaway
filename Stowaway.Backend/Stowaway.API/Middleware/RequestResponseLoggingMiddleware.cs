@@ -117,7 +117,7 @@ public sealed class RequestResponseLoggingMiddleware(
 
             logger.LogInformation("{Log}", logMessage.ToString());
 
-            // >>> Bugfix 27.10.2025: IMPORTANT: restore the original stream and copy the body back so the JSON error message is visible
+            //Restore the original stream and copy the body back so the JSON error message is visible
             context.Response.Body = originalBodyStream;
             await responseBody.CopyToAsync(originalBodyStream);
         }
