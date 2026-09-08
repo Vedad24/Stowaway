@@ -1,79 +1,60 @@
-<form
-  [formGroup]="form"
-  (ngSubmit)="submit()"
-  class="space-y-6 max-w-xl bg-white p-6 rounded-lg shadow"
->
+<div class="create-supplier-page">
+  <header class="app-header">
+    <div class="logoName">
+      <button mat-icon-button type="button" matTooltip="Back to suppliers" routerLink="/supplier">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <img class="logo" src="assets/icons/dolly.png" alt="" />
+      <h1 class="app-title">Stowaway</h1>
+    </div>
+  </header>
 
-  <!-- Name -->
-  <div class="flex flex-col gap-1">
-    <label class="text-sm font-medium text-gray-700">Name</label>
+  <main class="create-supplier-content">
+    <div class="create-supplier-sheet">
+      <header class="create-supplier-header">
+        <h1>Add supplier</h1>
+        <p class="create-supplier-subtitle">Enter the supplier's details below.</p>
+      </header>
 
-    <input
-      type="text"
-      formControlName="name"
-      class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
+      <form [formGroup]="form" (ngSubmit)="submit()" class="supplier-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" />
+          @if (form.get('name')?.touched && form.get('name')?.invalid) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
 
-    @if (form.get('name')?.touched && form.get('name')?.invalid) {
-      <span class="text-xs text-red-600">
-        Name is required
-      </span>
-    }
-  </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
 
-  <!-- Description -->
-  <div class="flex flex-col gap-1">
-    <label class="text-sm font-medium text-gray-700">Description</label>
+        <mat-form-field appearance="outline">
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address" />
+        </mat-form-field>
 
-    <textarea
-      formControlName="description"
-      rows="3"
-      class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    ></textarea>
-  </div>
+        <div class="supplier-form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Total deliveries</mat-label>
+            <input matInput type="number" formControlName="totalDeliveries" min="0" />
+          </mat-form-field>
 
-  <div class="flex flex-col gap-1">
-    <label class="text-sm font-medium text-gray-700">Address</label>
-    <input
-      type="text"
-      formControlName="address"
-      class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-  </div>
+          <mat-form-field appearance="outline">
+            <mat-label>Failed deliveries</mat-label>
+            <input matInput type="number" formControlName="failedDeliveries" min="0" />
+          </mat-form-field>
+        </div>
 
-  <div class="flex flex-col gap-1">
-  <label class="text-sm font-medium text-gray-700">Total Deliveries</label>
-
-  <input
-    type="number"
-    formControlName="totalDeliveries"
-    min="0"
-    class="rounded-md border border-gray-300 px-3 py-2 text-sm
-           focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-  </div>
-
-  <div class="flex flex-col gap-1">
-  <label class="text-sm font-medium text-gray-700">Failed Deliveries</label>
-  <input
-    type="number"
-    formControlName="failedDeliveries"
-    min="0"
-    class="rounded-md border border-gray-300 px-3 py-2 text-sm
-           focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
+        <div class="supplier-form-actions">
+          <button mat-stroked-button type="button" routerLink="/supplier">Cancel</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+            <mat-icon>add</mat-icon>
+            Add supplier
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
 </div>
-
-  <!-- Submit -->
-  <div class="pt-4">
-    <button
-      type="submit"
-      class="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white
-             hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-      [disabled]="form.invalid"
-    >
-      Add Item
-    </button>
-  </div>
-
-</form>
