@@ -14,7 +14,7 @@ import { GetSelfDto, UpdateSelfCommand, RoleName } from '../../../services/ident
 @Component({
   selector: 'app-user-settings',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './user-settings.html',
   styleUrls: ['./user-settings.css'],
 })

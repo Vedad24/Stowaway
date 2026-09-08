@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { PriviledgeGroupService } from '../../../services/storage-identity/priviledge-group/priviledge-group-service';
 import { PriviledgesService } from '../../../services/storage-identity/priviledges/priviledges-service';
@@ -28,7 +29,7 @@ interface PrivilegeToggleOption {
 @Component({
   selector: 'app-priviledge-group-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatListModule, MatCardModule, MatButtonModule, MatIconModule, MatSlideToggleModule, MatDividerModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, FormsModule, MatListModule, MatCardModule, MatButtonModule, MatIconModule, MatTooltipModule, MatSlideToggleModule, MatDividerModule, MatFormFieldModule, MatInputModule],
   templateUrl: './priviledge-group-edit.html',
   styleUrl: './priviledge-group-edit.css',
 })
@@ -39,6 +40,7 @@ export class PriviledgeGroupEdit implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly location = inject(Location);
 
   groups: ListPriviledgeGroupQueryDto[] = [];
   privileges: ListPriviledgesQueryDto[] = [];
@@ -55,6 +57,10 @@ export class PriviledgeGroupEdit implements OnInit {
     this.loadGroups();
     this.loadPrivileges();
     this.loadWarehouseName();
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   loadWarehouseName(): void {

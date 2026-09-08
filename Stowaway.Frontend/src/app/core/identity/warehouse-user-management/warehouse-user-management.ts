@@ -1,6 +1,9 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 import { ListWarehouseQuery, ListWarehouseQueryDto } from '../../../services/storage/warehouse/warehouse.model';
 import { PriviledgesService } from '../../../services/storage-identity/priviledges/priviledges-service';
@@ -12,7 +15,7 @@ import { EditWarehouseUserPriviledgeGroup } from './edit-warehouse-user-priviled
 
 @Component({
   selector: 'app-warehouse-user-management',
-  imports: [PaginationTable],
+  imports: [PaginationTable, MatButtonModule, MatIconModule, MatTooltipModule, RouterLink],
   templateUrl: './warehouse-user-management.html',
   styleUrl: './warehouse-user-management.css',
 })
