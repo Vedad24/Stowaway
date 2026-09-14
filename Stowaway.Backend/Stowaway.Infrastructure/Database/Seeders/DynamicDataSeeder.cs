@@ -76,12 +76,12 @@ public static class DynamicDataSeeder
 
         var suppliers = new List<SupplierEntity>
         {
-            new() { Name = "AquaTerm", Description = "Beverage company", Address = "Ulica Kralja Tomislava, Mostar", TotalDeliveries = 50, FailedDeliveries = 3 },
-            new() { Name = "NovaCircuit", Description = "Consumer electronics distributor", Address = "Tehnoloski Park 12, Sarajevo", TotalDeliveries = 30, FailedDeliveries = 1 },
-            new() { Name = "PackRight", Description = "Packaging materials supplier", Address = "Industrijska bb, Tuzla", TotalDeliveries = 75, FailedDeliveries = 5 },
-            new() { Name = "GreenField Produce", Description = "Fresh produce supplier", Address = "Poljoprivredna 4, Banja Luka", TotalDeliveries = 60, FailedDeliveries = 8 },
-            new() { Name = "IronWorks Hardware", Description = "Hardware and fasteners supplier", Address = "Zanatska 9, Zenica", TotalDeliveries = 40, FailedDeliveries = 2 },
-            new() { Name = "Woven Threads", Description = "Textile goods company", Address = "Tekstilna 21, Mostar", TotalDeliveries = 20, FailedDeliveries = 0 },
+            new() { Name = "AquaTerm", Description = "Beverage company", Address = "King Tomfame Street, Mostar", TotalDeliveries = 50, FailedDeliveries = 3 },
+            new() { Name = "NovaCircuit", Description = "Consumer electronics distributor", Address = "Technology Park 12, Sarajevo", TotalDeliveries = 30, FailedDeliveries = 1 },
+            new() { Name = "PackRight", Description = "Packaging materials supplier", Address = "Industrial bb, Tuzla", TotalDeliveries = 75, FailedDeliveries = 5 },
+            new() { Name = "GreenField Produce", Description = "Fresh produce supplier", Address = "Agriculture 4, Banja Luka", TotalDeliveries = 60, FailedDeliveries = 8 },
+            new() { Name = "IronWorks Hardware", Description = "Hardware and fasteners supplier", Address = "Handywork 9, Zenica", TotalDeliveries = 40, FailedDeliveries = 2 },
+            new() { Name = "Woven Threads", Description = "Textile goods company", Address = "Textile 21, Mostar", TotalDeliveries = 20, FailedDeliveries = 0 },
         };
 
         context.Suppliers.AddRange(suppliers);
@@ -98,11 +98,11 @@ public static class DynamicDataSeeder
 
         var warehouses = new List<WarehouseEntity>
         {
-            new() { Name = "North Distribution Center", Description = "Main hub for inbound stock.", City = "Sarajevo", Address = "Industrijska zona bb", Capacity = 60, isEnabled = true },
-            new() { Name = "South Depot", Description = "Regional depot for southern deliveries.", City = "Mostar", Address = "Brace Fejica 30", Capacity = 45, isEnabled = true },
-            new() { Name = "East Storage Facility", Description = "Overflow and bulk storage.", City = "Tuzla", Address = "Skladisna 5", Capacity = 30, isEnabled = true },
-            new() { Name = "West Cold Store", Description = "Refrigerated storage for perishables.", City = "Banja Luka", Address = "Hladnjaca 2", Capacity = 20, isEnabled = true },
-            new() { Name = "Old Riverside Warehouse", Description = "Legacy site, being phased out.", City = "Mostar", Address = "Rijecna 8", Capacity = 15, isEnabled = false },
+            new() { Name = "North Distribution Center", Description = "Main hub for inbound stock.", City = "Sarajevo", Address = "Industry zone bb", Capacity = 60, isEnabled = true },
+            new() { Name = "South Depot", Description = "Regional depot for southern deliveries.", City = "Mostar", Address = "Brothers Fejic 30", Capacity = 45, isEnabled = true },
+            new() { Name = "East Storage Facility", Description = "Overflow and bulk storage.", City = "Tuzla", Address = "Warehouse 5", Capacity = 30, isEnabled = true },
+            new() { Name = "West Cold Store", Description = "Refrigerated storage for perishables.", City = "Banja Luka", Address = "Coldroom 2", Capacity = 20, isEnabled = true },
+            new() { Name = "Old Riverside Warehouse", Description = "Legacy site, being phased out.", City = "Mostar", Address = "River 8", Capacity = 15, isEnabled = false },
         };
 
         context.Warehouses.AddRange(warehouses);
@@ -291,7 +291,7 @@ public static class DynamicDataSeeder
         {
             Email = "admin@market.local",
             FirstName = "Admin",
-            LastName = "Adminovic",
+            LastName = "AdminLastName",
             PasswordHash = hasher.HashPassword(null!, "Admin123!"),
             RoleId = Role.Admin,
             IsEnabled = true,
@@ -301,7 +301,7 @@ public static class DynamicDataSeeder
         {
             Email = "manager@market.local",
             FirstName = "Manager",
-            LastName = "Managerovic",
+            LastName = "ManagerLastName",
             PasswordHash = hasher.HashPassword(null!, "Manager123!"),
             RoleId = Role.Manager,
             IsEnabled = true,
@@ -311,7 +311,7 @@ public static class DynamicDataSeeder
         {
             Email = "user@market.local",
             FirstName = "User",
-            LastName = "Userovic",
+            LastName = "UserLastName",
             PasswordHash = hasher.HashPassword(null!, "User123!"),
             RoleId = Role.User,
             IsEnabled = true,
