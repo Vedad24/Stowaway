@@ -85,4 +85,39 @@ public class UpdateUserCommandHandlerTests
 
         Assert.Equal(Role.Admin, result.Role!.Id);
     }
+
+    [Fact]
+    public async Task Handle_AdminCaller_CanUpdateExistingAdminUser()
+    {
+        await using var db = TestDbContext.Create();
+        var user = await SeedUser(db, Role.Admin);
+        await db.SaveChangesAsync(CancellationToken.None);
+        db.ChangeTracker.Clear();
+
+        var currentUser = new FakeCurrentUser { IsAdmin = true };
+        var handler = new UpdateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
+
+        var command = BuildCommand(user.Id, null);
+        command.FirstName = "Updated";
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.Equal("Updated", result.FirstName);
+    }
+
+    [Fact]
+    public async Task Handle_ManagerCaller_CannotUpdateExistingAdminUser()
+    {
+        await using var db = TestDbContext.Create();
+        var user = await SeedUser(db, Role.Admin);
+        await db.SaveChangesAsync(CancellationToken.None);
+
+        var currentUser = new FakeCurrentUser { IsManager = true };
+        var handler = new UpdateUserCommandHandler(db, currentUser, new PasswordHasher<UserEntity>());
+
+        var command = BuildCommand(user.Id, null);
+        command.FirstName = "Updated";
+
+        await Assert.ThrowsAsync<StowawayUnauthorizedException>(() =>
+            handler.Handle(command, CancellationToken.None));
+    }
 }
