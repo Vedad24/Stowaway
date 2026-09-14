@@ -68,7 +68,9 @@
       <span>Subtotal</span>
       <strong>{{ subtotal | currency }}</strong>
     </div>
-    <button type="button" class="checkout-btn" (click)="goToCheckout()">Checkout</button>
+    <button type="button" class="checkout-btn" [disabled]="isCheckingOut()" (click)="goToCheckout()">
+      {{ isCheckingOut() ? 'Processing…' : 'Checkout' }}
+    </button>
     @if (message) {
       <p class="message">{{ message }}</p>
     }
