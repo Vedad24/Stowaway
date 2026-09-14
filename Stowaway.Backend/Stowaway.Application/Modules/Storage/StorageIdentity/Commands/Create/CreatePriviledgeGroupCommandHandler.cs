@@ -42,20 +42,22 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Commands.Create
             {
                 Name = normalizedName,
                 WarehouseId = request.WarehouseId,
-                Priviledges = new List<PriviledgeGroup_PriviledgeEntity>()
+                Priviledges = validPrivilegeIds.Select(priviledgId =>
+                    new PriviledgeGroup_PriviledgeEntity{PriviledgeId = priviledgId}
+                ).ToList()
             };
 
             ctx.PriviledgeGroups.Add(group);
-            await ctx.SaveChangesAsync(cancellationToken);
+            // await ctx.SaveChangesAsync(cancellationToken);
 
-            foreach (var privilegeId in validPrivilegeIds)
-            {
-                ctx.PriviledgeGroupsPriviledges.Add(new PriviledgeGroup_PriviledgeEntity
-                {
-                    PriviledgeGroupId = group.Id,
-                    PriviledgeId = privilegeId,
-                });
-            }
+            // foreach (var privilegeId in validPrivilegeIds)
+            // {
+            //     ctx.PriviledgeGroupsPriviledges.Add(new PriviledgeGroup_PriviledgeEntity
+            //     {
+            //         PriviledgeGroupId = group.Id,
+            //         PriviledgeId = privilegeId,
+            //     });
+            // }
 
             await ctx.SaveChangesAsync(cancellationToken);
 
