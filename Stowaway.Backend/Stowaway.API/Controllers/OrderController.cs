@@ -17,6 +17,7 @@ namespace Stowaway.API.Controllers
         [HasPermission(Permissions.OrderCreate)]
         public async Task<CreateOrderCommandDto> CreateOrder(CreateOrderCommand command, CancellationToken ct)
         {
+            
             CreateOrderCommandDto result = await sender.Send(command, ct);
             return result;
         }
