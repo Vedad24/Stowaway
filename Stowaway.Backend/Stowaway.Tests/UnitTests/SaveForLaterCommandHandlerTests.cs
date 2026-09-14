@@ -50,4 +50,38 @@ public class SaveForLaterCommandHandlerTests
 
         Assert.True(await db.CartItems.AnyAsync(x => x.UserId == 1));
     }
+
+    [Fact]
+    public async Task Handle_CreatesDistinctCartEntries_WhenSameContainerTypeSavedForDifferentWarehouses()
+    {
+        await using var db = TestDbContext.Create();
+        db.Warehouses.Add(new WarehouseEntity { Id = 1, Name = "WarehouseA", Description = "d", City = "c", Address = "a", Capacity = 100, isEnabled = true });
+        db.Warehouses.Add(new WarehouseEntity { Id = 2, Name = "WarehouseB", Description = "d", City = "c", Address = "a", Capacity = 100, isEnabled = true });
+        var containerType = new ContainerTypeEntity { Id = 1, MaxItems = 50, MaxContainers = 5, Price = 10m };
+        db.ContainerTypes.Add(containerType);
+        await db.SaveChangesAsync(CancellationToken.None);
+
+        var handler = new SaveForLaterCommandHandler(db, new FakeCurrentUser { UserId = 1 });
+
+        await handler.Handle(new SaveForLaterCommand
+        {
+            UserId = 1,
+            WarehouseId = 1,
+            ContainerType = containerType,
+            Quantity = 1
+        }, CancellationToken.None);
+
+        await handler.Handle(new SaveForLaterCommand
+        {
+            UserId = 1,
+            WarehouseId = 2,
+            ContainerType = containerType,
+            Quantity = 1
+        }, CancellationToken.None);
+
+        var cartItems = await db.CartItems.Where(x => x.UserId == 1).ToListAsync();
+        Assert.Equal(2, cartItems.Count);
+        Assert.Contains(cartItems, x => x.WarehouseId == 1 && x.Quantity == 1);
+        Assert.Contains(cartItems, x => x.WarehouseId == 2 && x.Quantity == 1);
+    }
 }
