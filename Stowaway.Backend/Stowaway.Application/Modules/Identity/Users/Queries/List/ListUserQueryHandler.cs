@@ -8,7 +8,7 @@ using Stowaway.Domain.Entities.Identity;
 
 namespace Stowaway.Application.Modules.Identity.Users.Queries.List
 {
-    public class ListUserQueryHandler(IAppDbContext context) : IRequestHandler<ListUserQuery, PageResult<ListUserQueryDto>>
+    public class ListUserQueryHandler(IAppDbContext context, IAppCurrentUser currentUser) : IRequestHandler<ListUserQuery, PageResult<ListUserQueryDto>>
     {
         public async Task<PageResult<ListUserQueryDto>> Handle(ListUserQuery request, CancellationToken cancellationToken)
         {
@@ -20,6 +20,11 @@ namespace Stowaway.Application.Modules.Identity.Users.Queries.List
             if (request.RoleId is not null)
             {
                 users = users.Where(u => (u.RoleId ?? 0) == request.RoleId).AsNoTracking();
+            }
+            if(!currentUser.IsAdmin)
+            {
+                //Prevent managers from even seeing admins in list
+                users = users.Where(u => u.RoleId != Role.Admin);
             }
             var result = users.Select(u => new ListUserQueryDto
                 {

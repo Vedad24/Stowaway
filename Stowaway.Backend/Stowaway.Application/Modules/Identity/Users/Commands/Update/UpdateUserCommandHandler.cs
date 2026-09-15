@@ -10,6 +10,8 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
         {
             var user = await context.Users.FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken)
                 ?? throw new StowawayNotFoundException($"User with id {request.Id} not found.");
+            if(user.RoleId == Role.Admin && !currentUser.IsAdmin)
+                throw new StowawayUnauthorizedException("You do not have permission to edit this user");
             user.Email = request.Email ?? user.Email;
             user.FirstName = request.FirstName ?? user.FirstName;
             user.LastName = request.LastName ?? user.LastName;

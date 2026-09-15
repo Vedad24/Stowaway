@@ -47,8 +47,11 @@ public static class Permissions
     //Order Permissions
     public const string OrderRead = "Order.Read";
     public const string OrderCreate = "Order.Create";
+    public const string OrderCreateAny = "Order.Create.Any";
     public const string OrderUpdate = "Order.Update";
     public const string OrderDelete = "Order.Delete";
+    
+
 
     //Supplier Permissions
     public const string SupplierRead = "Supplier.Read";

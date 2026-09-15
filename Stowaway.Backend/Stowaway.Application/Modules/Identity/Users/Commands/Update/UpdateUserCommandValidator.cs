@@ -1,8 +1,13 @@
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Stowaway.Application.Abstractions;
+using Stowaway.Application.Common.Exceptions;
+
 namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
 {
     public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     {
-        public UpdateUserCommandValidator()
+        public UpdateUserCommandValidator(IAppDbContext dbContext)
         {
             RuleFor(x => x.Id)
                 .GreaterThan(0);
@@ -10,6 +15,16 @@ namespace Stowaway.Application.Modules.Identity.Users.Commands.Update
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email cannot be empty.")
                 .EmailAddress().WithMessage("Email is not a valid email address.")
+                .MustAsync(async (command, email, cancellation) =>
+                {
+                    var emailTaken = await dbContext.Users
+                        .AnyAsync(u => u.Email == email && u.Id != command.Id, cancellation);
+
+                    if (emailTaken)
+                        throw new StowawayConflictException("A user with this email already exists.");
+
+                    return true;
+                })
                 .When(x => x.Email is not null);
 
             RuleFor(x => x.Password)

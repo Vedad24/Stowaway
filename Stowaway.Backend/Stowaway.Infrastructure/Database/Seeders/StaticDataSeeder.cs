@@ -90,6 +90,7 @@ public static class StaticDataSeeder
             Permissions.CartManage,
             Permissions.CartManageAny,
             Permissions.WarehouseUsersManage,
+            Permissions.OrderCreateAny
         };
 
         var existingDescriptions = await context.Permissions
@@ -269,9 +270,10 @@ public static class StaticDataSeeder
     private static readonly string[] AdminOnlyPermissions =
     {
         Permissions.RolesCreate, Permissions.RolesUpdate, Permissions.RolesDelete,
-        Permissions.OrderUpdate, Permissions.OrderDelete,
+        Permissions.OrderUpdate, Permissions.OrderDelete, Permissions.OrderCreateAny,
         Permissions.CartManage,
         Permissions.CartManageAny
+
     };
 
     private static readonly string[] SharedByAllRolesPermissions =

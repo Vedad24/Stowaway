@@ -6,13 +6,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
+import { EMPTY, of } from 'rxjs';
+import { catchError, finalize, map, switchMap } from 'rxjs/operators';
 import { CartService } from '../../../services/sales/cart/cart-service';
 import { AddToCartCommand, CartItemDto, CartItemStatus } from '../../../services/sales/cart/cart-service.models';
 import { CurrentUserService } from '../../../services/identity/auth/current-user-service';
 import { OrderService } from '../../../services/sales/order/order-service';
 import { CreateOrderCommand, CreateOrderCommandDto, SharedOrderCommandContainerType } from '../../../services/sales/order/order-service.models';
 import { PaymentService } from '../../../services/sales/payment/payment-service';
-import { CreatePaymentCommand } from '../../../services/sales/payment/payment-service.models';
+import { CreatePaymentCommand, CreatePaymentResponse } from '../../../services/sales/payment/payment-service.models';
 
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
 
@@ -38,6 +40,7 @@ export class Cart implements OnInit {
   private get userId() { return this.currentUserService.userId}
   public cartItems = signal<CartItemDto[]>([]);
   isLoading = signal(false);
+  isCheckingOut = signal(false);
   message: string | null = null;
 
   ngOnInit(): void {
@@ -134,27 +137,37 @@ export class Cart implements OnInit {
     });
   }
 
-  private confirmedCheckout() {
-    const createOrderCommand : CreateOrderCommand = this.prepareOrder();
+  private confirmedCheckout(): void {
+    if (this.isCheckingOut()) {
+      return;
+    }
+    this.isCheckingOut.set(true);
+    this.message = null;
 
-    this.orderService.create(createOrderCommand).subscribe(
-      (createOrderResponse) =>
-        {
-          this.clearCart().subscribe(
-            (response) => 
-            {
-              this.pay(createOrderResponse).subscribe(
-                (paymentResponse) => 
-                {
-                  window.location.href = paymentResponse.checkoutUrl;
-                  //this.router.navigate([paymentResponse.checkoutUrl]);
-                }
-              );
-            }
+    const createOrderCommand: CreateOrderCommand = this.prepareOrder();
+
+    this.orderService.create(createOrderCommand).pipe(
+      switchMap((createOrderResponse : CreateOrderCommandDto) =>
+        this.pay(createOrderResponse).pipe(
+          switchMap((paymentResponse : CreatePaymentResponse) =>
+            this.clearCart().pipe(
+              map(() => paymentResponse),
+              catchError(() => {
+                // Payment session already exists; cart cleanup failing must not block checkout.
+                return of(paymentResponse);
+              })
+            )
           )
-          
-        } 
-    )
+        )
+      ),
+      catchError(() => {
+        this.message = 'Unable to complete checkout. Please try again.';
+        return EMPTY;
+      }),
+      finalize(() => this.isCheckingOut.set(false))
+    ).subscribe((paymentResponse: CreatePaymentResponse) => {
+      window.location.href = paymentResponse.checkoutUrl;
+    });
   }
   pay(createOrderResponse: CreateOrderCommandDto) {
     const paymentRequest : CreatePaymentCommand = {orderId:createOrderResponse.orderId}

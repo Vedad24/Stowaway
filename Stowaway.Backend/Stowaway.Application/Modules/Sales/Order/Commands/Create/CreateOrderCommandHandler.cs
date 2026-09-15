@@ -16,7 +16,7 @@ namespace Stowaway.Application.Modules.Sales.Order.Commands.Create
     {
         public async Task<CreateOrderCommandDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            if (request.UserId != currentUser.UserId)
+            if (request.UserId != currentUser.UserId && !currentUser.HasPermission(Permissions.OrderCreateAny))
                 throw new StowawayBusinessRuleException(BusinessRuleCodes.OrderNotOwner, "Users can only place orders for themselves");
 
             #region MakeOrder
