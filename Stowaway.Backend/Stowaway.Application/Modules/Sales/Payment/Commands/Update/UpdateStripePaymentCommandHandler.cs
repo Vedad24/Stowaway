@@ -74,9 +74,12 @@ namespace Stowaway.Application.Modules.Sales.Payment.Commands.Update
             {
                 await db.SaveChangesAsync(ct);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException )
             {
-                // Same event processed concurrently by another delivery - already applied, nothing more to do.
+                if (await db.ProcessedStripeEvents.AnyAsync(x => x.EventId == eventId, ct))
+                    return; // confirmed: concurrent delivery already recorded it
+                //Another exception has happened:
+                throw;
             }
         }
     }
