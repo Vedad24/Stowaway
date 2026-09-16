@@ -1,9 +1,9 @@
 namespace Stowaway.Application.Modules.Storage.StorageIdentity.Queries.List
 {
     public sealed class ListPriviledgeGroupsQueryHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
-        : IRequestHandler<ListPriviledgeGroupsQuery, List<ListPriviledgeGroupQueryDto>>
+        : IRequestHandler<ListPriviledgeGroupsQuery, PageResult<ListPriviledgeGroupQueryDto>>
     {
-        public async Task<List<ListPriviledgeGroupQueryDto>> Handle(ListPriviledgeGroupsQuery request, CancellationToken cancellationToken)
+        public async Task<PageResult<ListPriviledgeGroupQueryDto>> Handle(ListPriviledgeGroupsQuery request, CancellationToken cancellationToken)
         {
             var query = ctx.PriviledgeGroups
                 .AsNoTracking()
@@ -20,7 +20,7 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Queries.List
                 query = query.Where(x => x.WarehouseId == request.WarehouseId.Value);
             }
 
-            return await query
+            var projectedQuery = query
                 .OrderBy(x => x.Name)
                 .Select(x => new ListPriviledgeGroupQueryDto
                 {
@@ -30,8 +30,9 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity.Queries.List
                     PriviledgeIds = x.Priviledges != null
                         ? x.Priviledges.Select(p => p.PriviledgeId).ToList()
                         : new List<int>()
-                })
-                .ToListAsync(cancellationToken);
+                });
+
+            return await PageResult<ListPriviledgeGroupQueryDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);
         }
     }
 }

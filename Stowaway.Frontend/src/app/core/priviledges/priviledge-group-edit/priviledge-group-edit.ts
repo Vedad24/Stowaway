@@ -11,9 +11,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { firstValueFrom } from 'rxjs';
 import { PriviledgeGroupService } from '../../../services/storage-identity/priviledge-group/priviledge-group-service';
 import { PriviledgesService } from '../../../services/storage-identity/priviledges/priviledges-service';
-import { ListPriviledgeGroupQueryDto, UpdatePriviledgeGroupCommand } from '../../../services/storage-identity/priviledge-group/priviledge-group-service.models';
+import { ListPriviledgeGroupQueryDto, ListPriviledgeGroupsQuery, UpdatePriviledgeGroupCommand } from '../../../services/storage-identity/priviledge-group/priviledge-group-service.models';
 import { ListPriviledgesQueryDto } from '../../../services/storage-identity/priviledges/priviledges-service.models';
 import { PriviledgeGroupAdd } from '../priviledge-group-add/priviledge-group-add';
 import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
@@ -25,6 +26,8 @@ interface PrivilegeToggleOption {
   name: string;
   enabled: boolean;
 }
+
+const MAX_PAGE_SIZE = 100;
 
 @Component({
   selector: 'app-priviledge-group-edit',
@@ -114,17 +117,31 @@ export class PriviledgeGroupEdit implements OnInit {
     return this.groups.find((group) => group.id === this.selectedGroupId);
   }
 
-  loadGroups(): void {
+  async loadGroups(): Promise<void> {
     const warehouseId = this.warehouseId;
-    this.priviledgeGroupService.list(warehouseId ?? 0).subscribe({
-      next: (response) => {
-        this.groups = response ?? [];
-        if (!this.selectedGroupId && this.groups.length) {
-          this.selectGroup(this.groups[0]);
-        }
-        this.cdr.detectChanges();
-      },
-    });
+    const groups: ListPriviledgeGroupQueryDto[] = [];
+    let page = 1;
+
+    while (true) {
+      const query = new ListPriviledgeGroupsQuery();
+      query.warehouseId = warehouseId ?? 0;
+      query.paging.page = page;
+      query.paging.pageSize = MAX_PAGE_SIZE;
+
+      const response = await firstValueFrom(this.priviledgeGroupService.list(query));
+      groups.push(...(response.items ?? []));
+
+      if (page >= (response.totalPages ?? 1)) {
+        break;
+      }
+      page++;
+    }
+
+    this.groups = groups;
+    if (!this.selectedGroupId && this.groups.length) {
+      this.selectGroup(this.groups[0]);
+    }
+    this.cdr.detectChanges();
   }
 
   loadPrivileges(): void {
