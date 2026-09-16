@@ -4,11 +4,13 @@ import {
   CreatePriviledgeGroupCommand,
   CreateUpdateWarehouseUserCommand,
   CreateUpdateWarehouseUserCommandDto,
-  ListPriviledgeGroupQueryDto,
+  ListPriviledgeGroupQueryResponse,
+  ListPriviledgeGroupsQuery,
   UpdatePriviledgeGroupCommand,
 } from './priviledge-group-service.models';
 import { API_CONFIG } from '../../../core/config/api-config';
 import { buildUrl } from '../../../models/build-url';
+import { buildHttpParams } from '../../../models/build-http-params';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -18,9 +20,9 @@ export class PriviledgeGroupService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(API_CONFIG);
 
-  public list(warehouseId: number): Observable<ListPriviledgeGroupQueryDto[]> {
-    const params = { warehouseId: warehouseId.toString() };
-    return this.http.get<ListPriviledgeGroupQueryDto[]>(`${this.config.baseUrl}/${this.config.storageIdentity.privilegeGroups.list}`, { params });
+  public list(query: ListPriviledgeGroupsQuery): Observable<ListPriviledgeGroupQueryResponse> {
+    const params = buildHttpParams(query as any);
+    return this.http.get<ListPriviledgeGroupQueryResponse>(`${this.config.baseUrl}/${this.config.storageIdentity.privilegeGroups.list}`, { params });
   }
 
   public create(payload: CreatePriviledgeGroupCommand): Observable<{ id: number }> {

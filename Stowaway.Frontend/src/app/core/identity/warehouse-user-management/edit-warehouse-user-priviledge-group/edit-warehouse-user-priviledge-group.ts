@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { PriviledgeGroupService } from '../../../../services/storage-identity/priviledge-group/priviledge-group-service';
-import { ListPriviledgeGroupQueryDto } from '../../../../services/storage-identity/priviledge-group/priviledge-group-service.models';
+import { ListPriviledgeGroupQueryDto, ListPriviledgeGroupsQuery } from '../../../../services/storage-identity/priviledge-group/priviledge-group-service.models';
 import { WarehouseApiService } from '../../../../services/storage/warehouse/warehouse';
 import { UserService } from '../../../../services/identity/user/user-service';
 import { AutocompleteComponent, IOptionsInfo } from '../../../../shared/autocomplete-component/autocomplete-component';
@@ -35,9 +35,12 @@ export class EditWarehouseUserPriviledgeGroup {
   priviledgeGroupControl = new FormControl<ListPriviledgeGroupQueryDto | null>(null);
 
   constructor() {
-    this.priviledgeGroupService.list(this.data.warehouseId).subscribe(
+    const query = new ListPriviledgeGroupsQuery();
+    query.warehouseId = this.data.warehouseId;
+
+    this.priviledgeGroupService.list(query).subscribe(
       (response) => {
-        this.priviledgeGroups.set(response);
+        this.priviledgeGroups.set(response.items ?? []);
       }
     );
 
