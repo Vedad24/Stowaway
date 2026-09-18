@@ -67,5 +67,14 @@ namespace Stowaway.API.Controllers
             var result = await sender.Send(command, ct);
             return Ok(result);
         }
+
+        [HttpDelete("warehouse-users")]
+        [HasPermission(Permissions.WarehouseUsersManage)]
+        [HasPriviledge(Priviledges.WarehouseUsersManage, WarehouseResolutionStrategy.QueryStringField, routeKey: "warehouseId")]
+        public async Task<ActionResult> DeleteWarehouseUser([FromQuery] DeleteWarehouseUserCommand command, CancellationToken ct)
+        {
+            await sender.Send(command, ct);
+            return Ok();
+        }
     }
 }

@@ -8,12 +8,7 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Create
     {
         public async Task<int> Handle(CreateWarehouseCommand request, CancellationToken cancellationToken)
         {
-            var normalized = request.Name?.Trim();
-
-            if (string.IsNullOrWhiteSpace(normalized))
-            {
-                throw new ValidationException("Name is required.");
-            }
+            var normalized = request.Name.Trim();
 
             bool exists = await ctx.Warehouses.AnyAsync(x => x.Name == normalized, cancellationToken);
 

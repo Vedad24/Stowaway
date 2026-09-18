@@ -1,4 +1,5 @@
 ﻿using Stowaway.Shared.Constants;
+using Stowaway.Application.Modules.Storage.StorageIdentity;
 using Serilog;
 using Stowaway.Domain.Entities.Identity;
 using Stowaway.Domain.Entities.Sales;
@@ -406,13 +407,13 @@ public static class DynamicDataSeeder
             var warehouse = warehouses[i];
 
             var ownerGroup = await context.PriviledgeGroups
-                .FirstOrDefaultAsync(group => group.WarehouseId == warehouse.Id && group.Name == "Owner");
+                .FirstOrDefaultAsync(group => group.WarehouseId == warehouse.Id && group.Name == WarehouseOwnerProvisioning.OwnerGroupName);
 
             if (ownerGroup == null)
             {
                 ownerGroup = new PriviledgeGroupEntity
                 {
-                    Name = "Owner",
+                    Name = WarehouseOwnerProvisioning.OwnerGroupName,
                     WarehouseId = warehouse.Id,
                 };
 
