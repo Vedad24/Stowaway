@@ -1,5 +1,6 @@
 using Stowaway.Domain.Entities.Storage;
 using Stowaway.Application.Modules.Storage.Container.Commands.Create;
+using Stowaway.Application.Modules.Storage.Container.Shared;
 namespace Stowaway.Application.Modules.Storage.Container.Commands.Create
 {
     public class CreateContainerCommandHandler(IAppDbContext ctx) : IRequestHandler<CreateContainerCommand, int>
@@ -44,6 +45,8 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Create
                     throw new ValidationException(
                         $"This container type (max {containerType.MaxItems} items / {containerType.MaxContainers} containers) must be strictly smaller than the parent container's capacity (max {parentType.MaxItems} items / {parentType.MaxContainers} containers) — same-size containers can't nest either.");
                 }
+
+                await ContainerCapacityHelper.EnsureContainerCountFits(ctx, parent.Id, 1, cancellationToken);
             }
 
             var container = new ContainerEntity

@@ -51,6 +51,13 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Update
                     $"Cannot shrink to a type with max {containerType.MaxItems} items / {containerType.MaxContainers} containers — it already holds a container that needs max {oversizedChildType.MaxItems} items / {oversizedChildType.MaxContainers} containers.");
             }
 
+            var childCount = await ctx.Containers.CountAsync(x => x.ParentContainerId == container.Id, cancellationToken);
+            if (childCount > containerType.MaxContainers)
+            {
+                throw new ValidationException(
+                    $"Cannot shrink to a type with max {containerType.MaxContainers} containers — it already holds {childCount} direct child containers.");
+            }
+
             // Relabeling the type doesn't move any items, so only this container's own new
             // cap needs checking against what it (and everything nested inside it) already holds.
             var recursiveUsedItems = await ContainerCapacityHelper.GetRecursiveItemQuantity(ctx, container.Id, cancellationToken);

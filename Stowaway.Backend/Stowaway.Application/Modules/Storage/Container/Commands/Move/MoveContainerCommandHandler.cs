@@ -56,6 +56,7 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Move
                     .FirstOrDefaultAsync(cancellationToken);
             }
 
+            await ContainerCapacityHelper.EnsureContainerCountFits(ctx, target.Id, 1, cancellationToken, excludeContainerId: container.Id);
             await ContainerCapacityHelper.EnsureSubtreeFits(ctx, container.Id, target.Id, cancellationToken);
 
             container.ParentContainerId = target.Id;

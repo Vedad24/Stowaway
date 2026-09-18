@@ -62,6 +62,8 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.Delete
                                 $"The target container (max {targetType.MaxItems} items / {targetType.MaxContainers} containers) isn't strictly larger than one of the sub-containers being moved (needs max {oversizedChildType.MaxItems} items / {oversizedChildType.MaxContainers} containers).");
                         }
                     }
+
+                    await ContainerCapacityHelper.EnsureContainerCountFits(ctx, target.Id, childContainers.Count, cancellationToken);
                 }
 
                 // Covers items directly in `container` as well as anything nested inside the
