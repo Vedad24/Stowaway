@@ -15,15 +15,17 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Update
                 throw new StowawayNotFoundException($"Warehouse with id: {request.Id} not found");
             }
 
+            var normalizedName = request.Name.Trim();
+
             var exist = await ctx.Warehouses
-                .AnyAsync(x => x.Id != request.Id && x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+                .AnyAsync(x => x.Id != request.Id && x.Name.ToLower() == normalizedName.ToLower(), cancellationToken);
 
             if (exist)
             {
                 throw new StowawayConflictException("Warehouse with this name already exists");
             }
 
-            warehouse.Name = request.Name.Trim();
+            warehouse.Name = normalizedName;
             warehouse.Description = request.Description.Trim();
             warehouse.City = request.City.Trim();
             warehouse.Address = request.Address.Trim();
