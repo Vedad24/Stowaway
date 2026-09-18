@@ -131,5 +131,33 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
                 }
             }
         }
+
+        public static async Task EnsureContainerCountFits(
+            IAppDbContext ctx,
+            int targetContainerId,
+            int incomingCount,
+            CancellationToken cancellationToken,
+            int? excludeContainerId = null)
+        {
+            var target = await ctx.Containers
+                .Where(c => c.Id == targetContainerId)
+                .Select(c => new { c.Name, MaxContainers = c.ContainerType!.MaxContainers })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (target is null)
+            {
+                return;
+            }
+
+            var currentChildCount = await ctx.Containers
+                .Where(c => c.ParentContainerId == targetContainerId && (excludeContainerId == null || c.Id != excludeContainerId))
+                .CountAsync(cancellationToken);
+
+            if (currentChildCount + incomingCount > target.MaxContainers)
+            {
+                throw new ValidationException(
+                    $"\"{target.Name}\" can only hold {target.MaxContainers} direct child containers; this would bring it to {currentChildCount + incomingCount}.");
+            }
+        }
     }
 }
