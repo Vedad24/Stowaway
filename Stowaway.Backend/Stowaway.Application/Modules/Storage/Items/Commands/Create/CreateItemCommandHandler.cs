@@ -41,6 +41,10 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
 
             await ContainerCapacityHelper.EnsureItemFits(ctx, container.Id, request.Quantity, cancellationToken);
 
+            var validTagIds = request.TagIds.Count > 0
+                ? await ctx.Tags.Where(t => request.TagIds.Contains(t.Id)).Select(t => t.Id).ToListAsync(cancellationToken)
+                : [];
+
             var item = new ItemEntity
             {
                 Name = normalizedName,
@@ -49,40 +53,21 @@ namespace Stowaway.Application.Modules.Storage.Items.Commands.Create
                 Quantity = request.Quantity,
                 SupplierId = request.SupplierId,
                 ContainerId = request.ContainerId,
+                Images = request.Images.Select((image, i) => new ItemImageEntity
+                {
+                    ByteImage = Convert.FromBase64String(image),
+                    SortOrder = i,
+                }).ToList(),
             };
 
             ctx.Item.Add(item);
+
+            foreach (var tagId in validTagIds)
+            {
+                ctx.ItemTags.Add(new Item_TagEntity { Item = item, TagId = tagId });
+            }
+
             await ctx.SaveChangesAsync(cancellationToken);
-
-            if (request.TagIds.Count > 0)
-            {
-                var validTagIds = await ctx.Tags
-                    .Where(t => request.TagIds.Contains(t.Id))
-                    .Select(t => t.Id)
-                    .ToListAsync(cancellationToken);
-
-                foreach (var tagId in validTagIds)
-                {
-                    ctx.ItemTags.Add(new Item_TagEntity { ItemId = item.Id, TagId = tagId });
-                }
-
-                await ctx.SaveChangesAsync(cancellationToken);
-            }
-
-            if (request.Images.Count > 0)
-            {
-                for (int i = 0; i < request.Images.Count; i++)
-                {
-                    ctx.ItemImages.Add(new ItemImageEntity
-                    {
-                        ItemId = item.Id,
-                        ByteImage = Convert.FromBase64String(request.Images[i]),
-                        SortOrder = i,
-                    });
-                }
-
-                await ctx.SaveChangesAsync(cancellationToken);
-            }
 
             return item.Id;
         }

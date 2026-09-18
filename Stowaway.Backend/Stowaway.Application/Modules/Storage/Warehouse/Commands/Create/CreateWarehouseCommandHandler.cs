@@ -32,9 +32,8 @@ namespace Stowaway.Application.Modules.Storage.Warehouse.Commands.Create
             }
 
             ctx.Warehouses.Add(warehouse);
+            await WarehouseOwnerProvisioning.EnsureOwnerAccessAsync(ctx, warehouse, appCurrentUser.UserId.Value, cancellationToken);
             await ctx.SaveChangesAsync(cancellationToken);
-
-            await WarehouseOwnerProvisioning.EnsureOwnerAccessAsync(ctx, warehouse.Id, appCurrentUser.UserId.Value, cancellationToken);
 
             return warehouse.Id;
         }

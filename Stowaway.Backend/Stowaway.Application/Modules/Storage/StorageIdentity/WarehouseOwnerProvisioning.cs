@@ -1,4 +1,5 @@
 using Stowaway.Shared.Constants;
+using Stowaway.Domain.Entities.Storage;
 using Stowaway.Domain.Entities.Storage.StorageIdentity;
 
 namespace Stowaway.Application.Modules.Storage.StorageIdentity
@@ -7,39 +8,32 @@ namespace Stowaway.Application.Modules.Storage.StorageIdentity
     {
         public const string OwnerGroupName = "Owner";
 
-        public static async Task EnsureOwnerAccessAsync(IAppDbContext ctx, int warehouseId, int userId, CancellationToken cancellationToken)
+        // Stages entities via navigation properties only — does not call SaveChangesAsync,
+        // so the caller can add `warehouse` and this method's entities in one graph and save once.
+        public static async Task EnsureOwnerAccessAsync(IAppDbContext ctx, WarehouseEntity warehouse, int userId, CancellationToken cancellationToken)
         {
-            var ownerGroup = new PriviledgeGroupEntity
-            {
-                Name = OwnerGroupName,
-                WarehouseId = warehouseId,
-            };
-
-            ctx.PriviledgeGroups.Add(ownerGroup);
-            await ctx.SaveChangesAsync(cancellationToken);
-
             var privilegeIds = await ctx.Priviledges
                 .Where(p => Stowaway.Shared.Constants.Priviledges.AllCodes.Contains(p.Code))
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken);
 
-            foreach (var privilegeId in privilegeIds)
+            var ownerGroup = new PriviledgeGroupEntity
             {
-                ctx.PriviledgeGroupsPriviledges.Add(new PriviledgeGroup_PriviledgeEntity
-                {
-                    PriviledgeGroupId = ownerGroup.Id,
-                    PriviledgeId = privilegeId,
-                });
-            }
+                Name = OwnerGroupName,
+                Warehouse = warehouse,
+                Priviledges = privilegeIds
+                    .Select(privilegeId => new PriviledgeGroup_PriviledgeEntity { PriviledgeId = privilegeId })
+                    .ToList(),
+            };
+
+            ctx.PriviledgeGroups.Add(ownerGroup);
 
             ctx.WarehouseUsers.Add(new Warehouse_UserEntity
             {
-                WarehouseId = warehouseId,
+                Warehouse = warehouse,
                 UserId = userId,
-                PriviledgeGroupId = ownerGroup.Id,
+                PriviledgeGroup = ownerGroup,
             });
-
-            await ctx.SaveChangesAsync(cancellationToken);
         }
     }
 }
