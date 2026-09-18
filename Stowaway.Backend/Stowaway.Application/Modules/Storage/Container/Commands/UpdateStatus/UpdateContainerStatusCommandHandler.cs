@@ -32,13 +32,12 @@ namespace Stowaway.Application.Modules.Storage.Container.Commands.UpdateStatus
             {
                 status = new ContainerStatusEntity { Description = request.Status };
                 ctx.ContainerStatuses.Add(status);
-                await ctx.SaveChangesAsync(cancellationToken);
             }
 
             ctx.ContainerStatusHistories.Add(new ContainerStatusHistoryEntity
             {
                 ContainerId = container.Id,
-                StatusId = status.Id,
+                Status = status,
                 UserId = currentUser.UserId.Value,
                 Date = DateTime.UtcNow,
             });
