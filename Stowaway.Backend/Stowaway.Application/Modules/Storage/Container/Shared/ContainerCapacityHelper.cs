@@ -2,11 +2,6 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
 {
     public sealed record ContainerCapacityNode(int Id, string Name, int MaxItems);
 
-    // Items nested inside a sub-container are still physically stored inside every
-    // container that transitively holds it, so capacity has to be checked against a
-    // whole subtree's usage — and against every ancestor up the chain, since a deeply
-    // nested addition counts against all of them — not just what's directly assigned
-    // to one container.
     public static class ContainerCapacityHelper
     {
         public static async Task<HashSet<int>> CollectSubtreeIds(IAppDbContext ctx, int rootContainerId, CancellationToken cancellationToken)
@@ -49,7 +44,59 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
             return await query.SumAsync(i => (int?)i.Quantity, cancellationToken) ?? 0;
         }
 
-        // Walks from `containerId` up to the warehouse root, inclusive of `containerId` itself.
+        public static async Task<Dictionary<int, int>> GetRecursiveItemQuantities(
+            IAppDbContext ctx,
+            IReadOnlyCollection<int> rootContainerIds,
+            CancellationToken cancellationToken)
+        {
+            var roots = rootContainerIds.Distinct().ToList();
+            var totals = roots.ToDictionary(id => id, _ => 0);
+
+            if (roots.Count == 0)
+            {
+                return totals;
+            }
+
+            var owner = roots.ToDictionary(id => id, id => id);
+            var allIds = new HashSet<int>(roots);
+            var frontier = roots;
+
+            while (frontier.Count > 0)
+            {
+                var children = await ctx.Containers
+                    .Where(c => c.ParentContainerId != null && frontier.Contains(c.ParentContainerId.Value))
+                    .Select(c => new { c.Id, ParentId = c.ParentContainerId!.Value })
+                    .ToListAsync(cancellationToken);
+
+                var nextFrontier = new List<int>();
+                foreach (var child in children)
+                {
+                    if (!allIds.Add(child.Id))
+                    {
+                        continue;
+                    }
+
+                    owner[child.Id] = owner[child.ParentId];
+                    nextFrontier.Add(child.Id);
+                }
+
+                frontier = nextFrontier;
+            }
+
+            var sumsByContainer = await ctx.Item
+                .Where(i => allIds.Contains(i.ContainerId))
+                .GroupBy(i => i.ContainerId)
+                .Select(g => new { ContainerId = g.Key, Sum = g.Sum(i => i.Quantity) })
+                .ToListAsync(cancellationToken);
+
+            foreach (var entry in sumsByContainer)
+            {
+                totals[owner[entry.ContainerId]] += entry.Sum;
+            }
+
+            return totals;
+        }
+
         public static async Task<List<ContainerCapacityNode>> GetAncestorChain(IAppDbContext ctx, int containerId, CancellationToken cancellationToken)
         {
             var chain = new List<ContainerCapacityNode>();
@@ -74,11 +121,6 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
             return chain;
         }
 
-        // Validates that adding `quantity` items into `containerId` doesn't overflow that
-        // container or any ancestor it's nested inside. `excludeItemIds` should list any
-        // item(s) already counted somewhere in the chain that this same quantity replaces
-        // (e.g. an item keeping its container but changing quantity, or moving between two
-        // containers that share an ancestor).
         public static async Task EnsureItemFits(
             IAppDbContext ctx,
             int containerId,
@@ -99,11 +141,6 @@ namespace Stowaway.Application.Modules.Storage.Container.Shared
             }
         }
 
-        // Same as EnsureItemFits, but for relocating an entire container subtree (e.g.
-        // moving a container, or reparenting a deleted container's children) rather than a
-        // single item. `movingContainerId`'s whole subtree is excluded from every ancestor's
-        // "already used" count so a move within the same branch nets to zero instead of
-        // double-counting the items that are simply relocating, not growing in number.
         public static async Task EnsureSubtreeFits(
             IAppDbContext ctx,
             int movingContainerId,

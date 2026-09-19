@@ -68,12 +68,12 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
 
             var results = await projectedQuery.ToListAsync(cancellationToken);
 
-            // Recursive (self + nested sub-containers) and the type's human-readable size
-            // label — not translatable into the SQL projection above, so filled in per row
-            // once the base rows are materialized.
+            var quantitiesByContainer = await ContainerCapacityHelper.GetRecursiveItemQuantities(
+                ctx, results.Select(r => r.Id).ToList(), cancellationToken);
+
             foreach (var result in results)
             {
-                result.ItemQuantityUsed = await ContainerCapacityHelper.GetRecursiveItemQuantity(ctx, result.Id, cancellationToken);
+                result.ItemQuantityUsed = quantitiesByContainer[result.Id];
                 result.ContainerTypeName = ContainerTypeEntity.DescribeSize(result.MaxItems, result.MaxContainers);
             }
 
