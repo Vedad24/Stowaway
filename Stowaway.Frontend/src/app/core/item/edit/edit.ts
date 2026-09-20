@@ -53,7 +53,7 @@ export class EditItem
   }
 
   loadContainers() {
-    this.containerService.list().subscribe(res => {
+    this.containerService.listAll().subscribe(res => {
       this.containers = res;
       this.tryPatchForm();
     });

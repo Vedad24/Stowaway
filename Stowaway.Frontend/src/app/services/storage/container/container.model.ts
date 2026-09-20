@@ -1,7 +1,7 @@
 import { BasePagedQuery } from "../../../models/paging/base-paged-query";
 import { PageResult } from "../../../models/paging/page-result";
 
-export class ListContainersQuery{
+export class ListContainersQuery extends BasePagedQuery{
     search?: string | null;
     warehouseId?: number | null;
     parentContainerId?: number | null;
@@ -30,7 +30,7 @@ export interface ListContainersQueryDto {
     currentStatus: SharedContainerStatusDto | null,
 }
 
-export type ListContainersQueryResponse = ListContainersQueryDto[];
+export interface ListContainersQueryResponse extends PageResult<ListContainersQueryDto>{ }
 
 export interface UpdateCanvasPositionCommand{
     canvasX: number | null,

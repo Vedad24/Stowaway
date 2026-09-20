@@ -1,10 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, onErrorResumeNextWith } from 'rxjs';
+import { Observable, from, onErrorResumeNextWith } from 'rxjs';
 import { buildHttpParams } from '../../../models/build-http-params';
 import { buildUrl } from '../../../models/build-url';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { API_CONFIG } from '../../../core/config/api-config';
 import { ListContainersQueryResponse, ListContainersQuery, ListContainersQueryDto, MoveContainerCommand, UpdateCanvasPositionCommand, CreateContainerCommand, UpdateContainerCommand, DeleteContainerRequest, ContainerStatusName } from './container.model';
+
+const MAX_PAGE_SIZE = 100;
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +17,37 @@ export class ContainerApiService {
   private get baseUrl() { return this.config.baseUrl; }
   private http = inject(HttpClient);
 
-  list(request? : ListContainersQuery): Observable<ListContainersQueryResponse>{
+  list(request?: Partial<ListContainersQuery>): Observable<ListContainersQueryResponse>{
     const params = request ? buildHttpParams(request as any) : undefined;
     return this.http.get<ListContainersQueryResponse>(`${this.baseUrl}/${this.config.container.list}`, { params });
+  }
+
+  // Fetches every page and concatenates the results. Use for tree walks, dropdown
+  // options, and other callers that need the full matching set rather than one page.
+  listAll(request?: Partial<ListContainersQuery>): Observable<ListContainersQueryDto[]> {
+    return from(this.fetchAllPages(request));
+  }
+
+  private async fetchAllPages(request?: Partial<ListContainersQuery>): Promise<ListContainersQueryDto[]> {
+    const query = new ListContainersQuery();
+    Object.assign(query, request);
+    query.paging.pageSize = MAX_PAGE_SIZE;
+
+    const results: ListContainersQueryDto[] = [];
+    let page = 1;
+
+    while (true) {
+      query.paging.page = page;
+      const response = await firstValueFrom(this.list(query));
+      results.push(...(response.items ?? []));
+
+      if (page >= (response.totalPages ?? 1)) {
+        break;
+      }
+      page++;
+    }
+
+    return results;
   }
 
   getById(id: number): Observable<ListContainersQueryDto>{

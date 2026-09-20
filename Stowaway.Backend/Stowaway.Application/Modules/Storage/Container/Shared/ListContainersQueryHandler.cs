@@ -5,9 +5,9 @@ using Stowaway.Domain.Entities.Storage;
 namespace Stowaway.Application.Modules.Storage.Items.Queries.List
 {
     public class ListContainersQueryHandler(IAppDbContext ctx, IAppCurrentUser appCurrentUser)
-        : IRequestHandler<ListContainersQuery, List<ListContainersDto>>
+        : IRequestHandler<ListContainersQuery, PageResult<ListContainersDto>>
     {
-        public async Task<List<ListContainersDto>> Handle(ListContainersQuery request, CancellationToken cancellationToken)
+        public async Task<PageResult<ListContainersDto>> Handle(ListContainersQuery request, CancellationToken cancellationToken)
         {
             var accessibleWarehouseIds = appCurrentUser.IsAdmin
                 ? ctx.Warehouses.Select(w => w.Id)
@@ -49,7 +49,7 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     .FirstOrDefault() == request.StatusId.Value);
             }
 
-            var projectedQuery = query.Select(x => new ListContainersDto
+            var projectedQuery = query.OrderBy(x => x.Name).Select(x => new ListContainersDto
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -69,18 +69,18 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
                     .FirstOrDefault(),
             });
 
-            var results = await projectedQuery.ToListAsync(cancellationToken);
+            var pageResult = await PageResult<ListContainersDto>.FromQueryableAsync(projectedQuery, request.Paging, cancellationToken);
 
             var quantitiesByContainer = await ContainerCapacityHelper.GetRecursiveItemQuantities(
-                ctx, results.Select(r => r.Id).ToList(), cancellationToken);
+                ctx, pageResult.Items.Select(r => r.Id).ToList(), cancellationToken);
 
-            foreach (var result in results)
+            foreach (var result in pageResult.Items)
             {
                 result.ItemQuantityUsed = quantitiesByContainer[result.Id];
                 result.ContainerTypeName = ContainerTypeEntity.DescribeSize(result.MaxItems, result.MaxContainers);
             }
 
-            return results;
+            return pageResult;
         }
     }
 }

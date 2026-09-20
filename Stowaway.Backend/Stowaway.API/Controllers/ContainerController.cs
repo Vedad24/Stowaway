@@ -19,7 +19,7 @@ namespace Stowaway.API.Controllers
     {
         [HttpGet]
         [HasPermission(Permissions.ContainerRead)]
-        public async Task<ActionResult<ListContainersDto>> ListNames([FromQuery] ListContainersQuery query, CancellationToken cancellationToken)
+        public async Task<ActionResult<PageResult<ListContainersDto>>> ListNames([FromQuery] ListContainersQuery query, CancellationToken cancellationToken)
         {
             var result = await sender.Send(query, cancellationToken);
             return Ok(result);

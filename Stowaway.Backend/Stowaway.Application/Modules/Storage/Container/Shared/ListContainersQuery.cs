@@ -7,7 +7,7 @@ using Stowaway.Application.Modules.Storage.Items.Queries.List;
 
 namespace Stowaway.Application.Modules.Storage.Container.Shared
 {
-    public class ListContainersQuery : IRequest<List<ListContainersDto>>
+    public sealed class ListContainersQuery : BasePagedQuery<ListContainersDto>
     {
         public string? Search { get; init; }
         public int? WarehouseId { get; init; }

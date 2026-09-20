@@ -293,7 +293,7 @@ export class WarehouseCanvas {
     // Responses of a level we already navigated away from must not land in the current layout.
     const levelToken = ++this.loadToken;
 
-    this.containerService.list({ warehouseId, parentContainerId: containerId }).subscribe({
+    this.containerService.listAll({ warehouseId, parentContainerId: containerId }).subscribe({
       next: containers => {
         if (levelToken !== this.loadToken) {
           return;
@@ -314,12 +314,11 @@ export class WarehouseCanvas {
     if (containerId != null) {
       const query = new ListItemQuery();
       query.containerId = containerId;
-      this.itemService.list(query).subscribe({
-        next: response => {
+      this.itemService.listAll(query).subscribe({
+        next: items => {
           if (levelToken !== this.loadToken) {
             return;
           }
-          const items = response.items ?? [];
           this.items.set(items);
           this.mergeLayout('item', items);
         },

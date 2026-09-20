@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProductPageService } from '../../../services/sales/product-page/product-page-service';
 import { ListWarehousesQueryDto } from '../../../services/sales/product-page/product-page-service.models';
 import { ContainerApiService } from '../../../services/storage/container/container';
-import { ListContainersQueryResponse, ListContainersQueryDto } from '../../../services/storage/container/container.model';
+import { ListContainersQueryDto } from '../../../services/storage/container/container.model';
 import { AffectedContainers, WarehouseCanvasState } from '../../../services/storage/warehouse-canvas-state';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -336,11 +336,11 @@ export class Sidebar implements OnInit {
     const requestToken = ++node.requestToken;
     this.refreshTree();
 
-    this.containerService.list({
+    this.containerService.listAll({
       warehouseId,
       parentContainerId,
     }).subscribe({
-      next: (response: ListContainersQueryResponse) => {
+      next: (response: ListContainersQueryDto[]) => {
         if (requestToken !== node.requestToken) {
           return;
         }
@@ -370,12 +370,12 @@ export class Sidebar implements OnInit {
     const query = new ListItemQuery();
     query.containerId = node.id;
 
-    this.itemService.list(query).subscribe({
+    this.itemService.listAll(query).subscribe({
       next: (response) => {
         if (requestToken !== node.itemsRequestToken) {
           return;
         }
-        node.items = response.items ?? [];
+        node.items = response;
         node.itemsLoaded = true;
         node.itemsLoading = false;
         this.refreshTree();
@@ -618,8 +618,8 @@ export class Sidebar implements OnInit {
   ): void {
     const requestToken = ++node.requestToken;
 
-    this.containerService.list({ warehouseId, parentContainerId }).subscribe({
-      next: (response: ListContainersQueryResponse) => {
+    this.containerService.listAll({ warehouseId, parentContainerId }).subscribe({
+      next: (response: ListContainersQueryDto[]) => {
         if (requestToken !== node.requestToken) {
           return;
         }
@@ -648,12 +648,12 @@ export class Sidebar implements OnInit {
     const query = new ListItemQuery();
     query.containerId = node.id;
 
-    this.itemService.list(query).subscribe({
+    this.itemService.listAll(query).subscribe({
       next: (response) => {
         if (requestToken !== node.itemsRequestToken) {
           return;
         }
-        node.items = response.items ?? [];
+        node.items = response;
         this.refreshTree();
       },
       error: () => {},

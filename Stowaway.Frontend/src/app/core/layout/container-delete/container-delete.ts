@@ -71,9 +71,9 @@ export class ContainerDelete implements OnInit {
     Promise.all([
       firstValueFrom(this.containerService.list({ warehouseId: this.data.warehouseId, parentContainerId: this.data.id })),
       firstValueFrom(this.itemService.list(itemQuery)),
-    ]).then(([childContainers, itemResponse]) => {
-      this.childContainerCount.set(childContainers.length);
-      this.childItemCount.set((itemResponse.items ?? []).length);
+    ]).then(([containerResponse, itemResponse]) => {
+      this.childContainerCount.set(containerResponse.total ?? 0);
+      this.childItemCount.set(itemResponse.total ?? 0);
       this.isLoading.set(false);
     }).catch(() => {
       this.isLoading.set(false);
