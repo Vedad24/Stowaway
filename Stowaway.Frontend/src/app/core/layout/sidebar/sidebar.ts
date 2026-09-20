@@ -11,7 +11,7 @@ import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
-import { WarehouseReportDialog, WarehouseReportType } from '../warehouse-report-dialog/warehouse-report-dialog';
+import { WarehouseReportDialog, WarehouseReportDialogResult } from '../warehouse-report-dialog/warehouse-report-dialog';
 import { WarehouseAdd } from '../warehouse-add/warehouse-add';
 import { WarehouseApiService } from '../../../services/storage/warehouse/warehouse';
 import { ItemApiService } from '../../../services/storage/item/item';
@@ -671,11 +671,17 @@ export class Sidebar implements OnInit {
       data: { warehouseName: warehouse.name },
     });
 
-    dialogRef.afterClosed().subscribe((type: WarehouseReportType | undefined) => {
-      if (!type) {
+    dialogRef.afterClosed().subscribe((result: WarehouseReportDialogResult | undefined) => {
+      if (!result) {
         return;
       }
-      this.router.navigate(['/report', warehouse.id], { queryParams: { type } });
+      this.router.navigate(['/report', warehouse.id], {
+        queryParams: {
+          type: result.type,
+          containerColumns: result.containerColumns,
+          itemColumns: result.itemColumns,
+        },
+      });
     });
   }
 }

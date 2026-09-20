@@ -37,6 +37,15 @@ export class WarehouseApiService {
     return this.http.patch<UpdateWarehouseNameCommandDto>(`${this.baseUrl}/${buildUrl(this.config.warehouse.updateName, { id })}`, payload);
   }
 
+  downloadReport(id: number, type: string, containerColumns?: string[], itemColumns?: string[]): Observable<Blob>{
+    const params = buildHttpParams({ type, containerColumns, itemColumns });
+
+    return this.http.get(`${this.baseUrl}/${buildUrl(this.config.warehouse.report, { id })}`, {
+      params,
+      responseType: 'blob',
+    });
+  }
+
   delete(id: number): Observable<void>{
     return this.http.delete<void>(`${this.baseUrl}/${buildUrl(this.config.warehouse.delete, { id })}`)
   }

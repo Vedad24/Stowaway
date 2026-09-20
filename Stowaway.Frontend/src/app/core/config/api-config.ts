@@ -61,6 +61,7 @@ export interface ApiConfig {
     update: string;
     updateName: string;
     delete: string;
+    report: string;
   };
 
   item: {
@@ -170,6 +171,7 @@ export const defaultApiConfig: ApiConfig = {
     update: 'Warehouse/:id',
     updateName: 'Warehouse/:id/name',
     delete: 'Warehouse/:id',
+    report: 'Warehouse/:id/report',
   },
 
   item: {
