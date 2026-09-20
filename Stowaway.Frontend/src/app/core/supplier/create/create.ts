@@ -28,12 +28,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 })
 export class CreateSupplier
   extends BaseFormComponent<GetSupplierByIdDto> {
-  protected override loadData(): void {
-    throw new Error('Method not implemented.');
-  }
-  protected override save(): void {
-    throw new Error('Method not implemented.');
-  }
   private fb = inject(FormBuilder);
   private api = inject(SupplierApiService);
   router = inject(Router);
@@ -48,7 +42,14 @@ export class CreateSupplier
     });
   }
 
-  createItem() {
+  protected override loadData(): void {}
+
+  protected override save(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     this.startLoading();
 
     const command: CreateSupplierCommand = {
@@ -65,23 +66,8 @@ export class CreateSupplier
         this.router.navigate(['/supplier'])
       },
       error: (err) => {
+        this.stopLoading();
       }
     })
-  }
-
-  submit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('name', this.form.value.name);
-    formData.append('description', this.form.value.description ?? '');
-    formData.append('address', this.form.value.address ?? '');
-    formData.append('totalDeliveries', this.form.value.totalDeliveries);
-    formData.append('failedDeliveries', this.form.value.failedDeliveries);
-
-    this.createItem();
   }
 }
