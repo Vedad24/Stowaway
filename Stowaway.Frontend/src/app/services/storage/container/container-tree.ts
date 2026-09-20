@@ -22,7 +22,7 @@ export class ContainerTreeService {
     const options: ContainerOption[] = [];
 
     const walk = async (parentContainerId: number | null, pathLabel: string): Promise<void> => {
-      const children = await firstValueFrom(this.containerService.list({ warehouseId, parentContainerId }));
+      const children = await firstValueFrom(this.containerService.listAll({ warehouseId, parentContainerId }));
       for (const child of children) {
         if (child.id === excludeContainerId) {
           continue;

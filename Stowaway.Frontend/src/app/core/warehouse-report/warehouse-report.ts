@@ -178,7 +178,7 @@ export class WarehouseReport implements OnInit {
     parentContainerId: number | null,
     ancestorNames: string[],
   ): Promise<ContainerReportRow[]> {
-    const children = await firstValueFrom(this.containerService.list({ warehouseId, parentContainerId }));
+    const children = await firstValueFrom(this.containerService.listAll({ warehouseId, parentContainerId }));
     const rows: ContainerReportRow[] = [];
 
     for (const container of children) {
