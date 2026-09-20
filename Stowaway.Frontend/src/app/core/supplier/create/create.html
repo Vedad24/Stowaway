@@ -16,7 +16,7 @@
         <p class="create-supplier-subtitle">Enter the supplier's details below.</p>
       </header>
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="supplier-form">
+      <form [formGroup]="form" (ngSubmit)="save()" class="supplier-form">
         <mat-form-field appearance="outline">
           <mat-label>Name</mat-label>
           <input matInput formControlName="name" />
