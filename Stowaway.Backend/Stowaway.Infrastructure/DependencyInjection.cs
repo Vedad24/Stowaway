@@ -1,8 +1,10 @@
 ﻿using Stowaway.Application.Abstractions;
 using Stowaway.Application.Abstractions.Payments;
+using Stowaway.Application.Abstractions.Reporting;
 using Stowaway.Infrastructure.Common;
 using Stowaway.Infrastructure.Database;
 using Stowaway.Infrastructure.Payments.Stripe;
+using Stowaway.Infrastructure.Reporting.QuestPdf;
 using Stowaway.Shared.Constants;
 using Stowaway.Shared.Options;
 using Microsoft.Extensions.Configuration;
@@ -57,6 +59,9 @@ public static class DependencyInjection
 
         // Stripe payment provider
         services.AddScoped<IPaymentProvider, StripePaymentProvider>();
+
+        // PDF report generation
+        services.AddScoped<IPdfReportGenerator, QuestPdfWarehouseReportGenerator>();
 
         return services;
     }

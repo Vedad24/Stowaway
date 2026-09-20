@@ -8,8 +8,40 @@
     <mat-radio-button value="both">Containers and items</mat-radio-button>
   </mat-radio-group>
 
+  @if (reportType.value !== 'items') {
+    <div class="columns-group">
+      <p class="columns-label">Container columns (Name is always included)</p>
+      @for (option of containerColumnOptions; track option.key) {
+        <mat-checkbox
+          [checked]="selectedContainerColumns().has(option.key)"
+          (change)="toggleContainerColumn(option.key, $event)">
+          {{ option.label }}
+        </mat-checkbox>
+      }
+      @if (selectedContainerColumns().size === 0) {
+        <p class="columns-error">Select at least one container column.</p>
+      }
+    </div>
+  }
+
+  @if (reportType.value !== 'containers') {
+    <div class="columns-group">
+      <p class="columns-label">Item columns (Name is always included)</p>
+      @for (option of itemColumnOptions; track option.key) {
+        <mat-checkbox
+          [checked]="selectedItemColumns().has(option.key)"
+          (change)="toggleItemColumn(option.key, $event)">
+          {{ option.label }}
+        </mat-checkbox>
+      }
+      @if (selectedItemColumns().size === 0) {
+        <p class="columns-error">Select at least one item column.</p>
+      }
+    </div>
+  }
+
   <div class="actions">
     <button mat-button type="button" (click)="dialogRef.close()">Cancel</button>
-    <button mat-flat-button type="button" (click)="generate()">Generate</button>
+    <button mat-flat-button type="button" [disabled]="!canGenerate()" (click)="generate()">Generate</button>
   </div>
 </div>

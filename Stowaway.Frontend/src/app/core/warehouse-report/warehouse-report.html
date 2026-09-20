@@ -9,7 +9,11 @@
     </div>
     <div class="header-actions">
       <app-theme-toggle></app-theme-toggle>
-      <button mat-flat-button color="primary" type="button" [disabled]="isLoading()" (click)="print()">
+      <button mat-flat-button color="primary" type="button" [disabled]="isLoading() || isDownloading()" (click)="downloadPdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        {{ isDownloading() ? 'Generating…' : 'Download PDF' }}
+      </button>
+      <button mat-stroked-button type="button" [disabled]="isLoading()" (click)="print()">
         <mat-icon>print</mat-icon>
         Print
       </button>
@@ -54,47 +58,57 @@
                       <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
                     }
                   </th>
-                  <th class="sortable" (click)="toggleContainerSort('ancestorPath')">
-                    Location
-                    @if (containerSort()?.column === 'ancestorPath') {
-                      <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
-                  <th class="sortable" (click)="toggleContainerSort('typeName')">
-                    Type
-                    @if (containerSort()?.column === 'typeName') {
-                      <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
-                  <th class="sortable" (click)="toggleContainerSort('itemsUsed')">
-                    Items
-                    @if (containerSort()?.column === 'itemsUsed') {
-                      <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
-                  <th class="sortable" (click)="toggleContainerSort('containersUsed')">
-                    Containers
-                    @if (containerSort()?.column === 'containersUsed') {
-                      <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
-                  <th class="sortable" (click)="toggleContainerSort('status')">
-                    Status
-                    @if (containerSort()?.column === 'status') {
-                      <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
+                  @if (isContainerColumnVisible('location')) {
+                    <th class="sortable" (click)="toggleContainerSort('ancestorPath')">
+                      Location
+                      @if (containerSort()?.column === 'ancestorPath') {
+                        <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
+                  @if (isContainerColumnVisible('type')) {
+                    <th class="sortable" (click)="toggleContainerSort('typeName')">
+                      Type
+                      @if (containerSort()?.column === 'typeName') {
+                        <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
+                  @if (isContainerColumnVisible('items')) {
+                    <th class="sortable" (click)="toggleContainerSort('itemsUsed')">
+                      Items
+                      @if (containerSort()?.column === 'itemsUsed') {
+                        <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
+                  @if (isContainerColumnVisible('containers')) {
+                    <th class="sortable" (click)="toggleContainerSort('containersUsed')">
+                      Containers
+                      @if (containerSort()?.column === 'containersUsed') {
+                        <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
+                  @if (isContainerColumnVisible('status')) {
+                    <th class="sortable" (click)="toggleContainerSort('status')">
+                      Status
+                      @if (containerSort()?.column === 'status') {
+                        <span class="sort-indicator">{{ containerSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
                 </tr>
               </thead>
               <tbody>
                 @for (row of sortedContainerRows(); track row.id) {
                   <tr>
                     <td>{{ row.name }}</td>
-                    <td>{{ row.ancestorPath | truncate }}</td>
-                    <td>{{ row.typeName }}</td>
-                    <td>{{ row.itemsUsed }} / {{ row.maxItems }}</td>
-                    <td>{{ row.containersUsed }} / {{ row.maxContainers }}</td>
-                    <td>{{ row.status }}</td>
+                    @if (isContainerColumnVisible('location')) { <td>{{ row.ancestorPath | truncate }}</td> }
+                    @if (isContainerColumnVisible('type')) { <td>{{ row.typeName }}</td> }
+                    @if (isContainerColumnVisible('items')) { <td>{{ row.itemsUsed }} / {{ row.maxItems }}</td> }
+                    @if (isContainerColumnVisible('containers')) { <td>{{ row.containersUsed }} / {{ row.maxContainers }}</td> }
+                    @if (isContainerColumnVisible('status')) { <td>{{ row.status }}</td> }
                   </tr>
                 }
               </tbody>
@@ -118,40 +132,48 @@
                       <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
                     }
                   </th>
-                  <th class="sortable" (click)="toggleItemSort('containerPath')">
-                    Container
-                    @if (itemSort()?.column === 'containerPath') {
-                      <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
-                  <th class="sortable" (click)="toggleItemSort('quantity')">
-                    Quantity
-                    @if (itemSort()?.column === 'quantity') {
-                      <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
-                  <th class="sortable" (click)="toggleItemSort('supplierName')">
-                    Supplier
-                    @if (itemSort()?.column === 'supplierName') {
-                      <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
-                  <th class="sortable" (click)="toggleItemSort('tags')">
-                    Tags
-                    @if (itemSort()?.column === 'tags') {
-                      <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
-                    }
-                  </th>
+                  @if (isItemColumnVisible('container')) {
+                    <th class="sortable" (click)="toggleItemSort('containerPath')">
+                      Container
+                      @if (itemSort()?.column === 'containerPath') {
+                        <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
+                  @if (isItemColumnVisible('quantity')) {
+                    <th class="sortable" (click)="toggleItemSort('quantity')">
+                      Quantity
+                      @if (itemSort()?.column === 'quantity') {
+                        <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
+                  @if (isItemColumnVisible('supplier')) {
+                    <th class="sortable" (click)="toggleItemSort('supplierName')">
+                      Supplier
+                      @if (itemSort()?.column === 'supplierName') {
+                        <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
+                  @if (isItemColumnVisible('tags')) {
+                    <th class="sortable" (click)="toggleItemSort('tags')">
+                      Tags
+                      @if (itemSort()?.column === 'tags') {
+                        <span class="sort-indicator">{{ itemSort()!.direction === 'asc' ? '▲' : '▼' }}</span>
+                      }
+                    </th>
+                  }
                 </tr>
               </thead>
               <tbody>
                 @for (row of sortedItemRows(); track row.id) {
                   <tr>
                     <td>{{ row.name }}</td>
-                    <td>{{ row.containerPath }}</td>
-                    <td>{{ row.quantity }}</td>
-                    <td>{{ row.supplierName }}</td>
-                    <td>{{ row.tags | truncate }}</td>
+                    @if (isItemColumnVisible('container')) { <td>{{ row.containerPath }}</td> }
+                    @if (isItemColumnVisible('quantity')) { <td>{{ row.quantity }}</td> }
+                    @if (isItemColumnVisible('supplier')) { <td>{{ row.supplierName }}</td> }
+                    @if (isItemColumnVisible('tags')) { <td>{{ row.tags | truncate }}</td> }
                   </tr>
                 }
               </tbody>

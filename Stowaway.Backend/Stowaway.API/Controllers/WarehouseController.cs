@@ -6,6 +6,7 @@ using Stowaway.Application.Modules.Storage.Warehouse.Commands.Update;
 using Stowaway.Application.Modules.Storage.Warehouse.Commands.UpdateName;
 using Stowaway.Application.Modules.Storage.Warehouse.Queries.GetById;
 using Stowaway.Application.Modules.Storage.Warehouse.Queries.List;
+using Stowaway.Application.Modules.Storage.Warehouse.Queries.Report;
 
 namespace Stowaway.API.Controllers
 {
@@ -62,6 +63,15 @@ namespace Stowaway.API.Controllers
         {
             command.Id = id;
             return await sender.Send(command, ct);
+        }
+
+        [HttpGet("{id:int}/report")]
+        [HasPermission(Permissions.WarehouseRead)]
+        public async Task<FileContentResult> DownloadReport(int id, [FromQuery] GenerateWarehouseReportQuery query, CancellationToken ct)
+        {
+            query.WarehouseId = id;
+            var result = await sender.Send(query, ct);
+            return File(result.FileContent, "application/pdf", result.FileName);
         }
     }
 }

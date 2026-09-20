@@ -76,6 +76,12 @@ export class WarehouseReport implements OnInit {
   containerRows = signal<ContainerReportRow[]>([]);
   itemRows = signal<ItemReportRow[]>([]);
 
+  // Which columns to include, as chosen in the "Generate report" dialog. Empty means "all
+  // columns" (e.g. when the report page is opened without going through the dialog). Drives
+  // both the on-screen tables and the downloaded PDF.
+  containerColumns = signal<string[]>([]);
+  itemColumns = signal<string[]>([]);
+
   containerSort = signal<SortState<ContainerSortColumn> | null>(null);
   itemSort = signal<SortState<ItemSortColumn> | null>(null);
 
@@ -94,12 +100,48 @@ export class WarehouseReport implements OnInit {
     this.warehouseId = Number(this.route.snapshot.paramMap.get('warehouseId'));
     const requestedType = this.route.snapshot.queryParamMap.get('type') as WarehouseReportType | null;
     this.reportType.set(requestedType === 'containers' || requestedType === 'items' ? requestedType : 'both');
+    this.containerColumns.set(this.route.snapshot.queryParamMap.getAll('containerColumns'));
+    this.itemColumns.set(this.route.snapshot.queryParamMap.getAll('itemColumns'));
 
     this.loadReport();
   }
 
+  isDownloading = signal(false);
+
   print(): void {
     window.print();
+  }
+
+  isContainerColumnVisible(key: string): boolean {
+    const selected = this.containerColumns();
+    return selected.length === 0 || selected.includes(key);
+  }
+
+  isItemColumnVisible(key: string): boolean {
+    const selected = this.itemColumns();
+    return selected.length === 0 || selected.includes(key);
+  }
+
+  async downloadPdf(): Promise<void> {
+    this.isDownloading.set(true);
+    try {
+      const blob = await firstValueFrom(this.warehouseService.downloadReport(
+        this.warehouseId,
+        this.reportType(),
+        this.containerColumns(),
+        this.itemColumns(),
+      ));
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${this.warehouseName() || 'warehouse'}-report.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      this.errorMessage.set(extractErrorMessage(err, 'Unable to download the PDF report. Please try again.'));
+    } finally {
+      this.isDownloading.set(false);
+    }
   }
 
   goBack(): void {
