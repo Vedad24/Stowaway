@@ -16,9 +16,12 @@ namespace Stowaway.Application.Modules.Storage.Items.Queries.List
     {
         public async Task<PageResult<ListItemQueryDto>> Handle(ListItemQuery request, CancellationToken cancellationToken)
         {
-            var accessibleWarehouseIds = ctx.WarehouseUsers
-                .Where(wu => wu.UserId == appCurrentUser.UserId)
-                .Select(wu => wu.WarehouseId);
+            var accessibleWarehouseIds = appCurrentUser.IsAdmin
+                ? ctx.Warehouses.Select(w => w.Id)
+                : ctx.WarehouseUsers
+                    .Where(wu => wu.UserId == appCurrentUser.UserId
+                        && wu.PriviledgeGroup.Priviledges.Any(p => p.Priviledge.Code == Stowaway.Shared.Constants.Priviledges.ItemRead))
+                    .Select(wu => wu.WarehouseId);
 
             var query = ctx.Item.AsNoTracking()
                 .Where(x => accessibleWarehouseIds.Contains(x.Container.WarehouseId));
